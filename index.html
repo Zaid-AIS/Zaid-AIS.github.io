@@ -326,6 +326,35 @@ margin:25px;
   }
 }
 
+
+
+
+
+
+/* الكود الجديد للاسم */
+.hero h1 span {
+    background: linear-gradient(to right, #00ffff 20%, #ffffff 50%, #00ffff 80%);
+    background-size: 200% auto;
+    color: #000;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 3s linear infinite;
+    font-weight: 900; /* عشان يبين اللون منيح */
+}
+
+@keyframes shine {
+    to {
+        background-position: 200% center;
+    }
+}
+    
+
+
+
+
+
+
+
 </style>
 </head>
 
@@ -387,7 +416,7 @@ document.querySelector(".switcher").innerHTML=`<i class="fa-solid fa-desktop"></
 <div class="hero" id="home">
 <div>
 <div class="badge">Accounting Information Systems Graduate</div>
-<h1>Hi I'm <span>Zaid Khaled Zaid</span></h1>
+<h1 class="typewriter">Hi I'm <span>Zaid Khaled</span></h1>
 <h3>Accounting Information Systems (AIS) Graduate
 </h3>
 <p>أجد شغفي في نقطة التلاقي بين المحاسبة، التكنولوجيا، وتحليل البيانات</p>
