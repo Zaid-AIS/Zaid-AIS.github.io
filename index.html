@@ -3,8 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>AIS.Zaid</title>
-<link rel="icon" href="logo title.png">
+
+<!-- فافيكون تبويب -->
+<link rel="icon" type="image/png" href="logo title.png">
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700;800&display=swap" rel="stylesheet">
@@ -18,9 +21,7 @@ color:white;
 overflow-x:hidden;
 }
 
-/* ---------------- خلفية 3D متحركة ---------------- */
-
-/* ---------------- خلفية 3D متحركة خرافية بدون صور ---------------- */
+/* ---------------- خلفية متحركة ---------------- */
 
 #space-bg{
 position:fixed;
@@ -34,14 +35,12 @@ animation:gradientMove 10s ease infinite;
 z-index:-2;
 }
 
-/* حركة تدرّج 3D */
 @keyframes gradientMove{
 0%{background-position:0% 50%}
 50%{background-position:100% 50%}
 100%{background-position:0% 50%}
 }
 
-/* نجوم متحركة لطيفة */
 .stars{
 position:absolute;
 width:2px;
@@ -51,14 +50,12 @@ animation:blink 3s infinite ease-in-out;
 opacity:0.9;
 }
 
-/* وميض النجوم */
 @keyframes blink{
 0%{opacity:0.2;transform:scale(1)}
 50%{opacity:1;transform:scale(1.5)}
 100%{opacity:0.2;transform:scale(1)}
 }
 
-/* ❌ حذف طبقة الدخان القديمة نهائيًا */
 #smoke{display:none}
 
 /* ---------------- Navbar ---------------- */
@@ -77,13 +74,21 @@ border-bottom:1px solid rgba(255,255,255,0.1);
 z-index:10;
 }
 
+/* شعار */
+
 .logo{
-font-size:1.7rem;
-font-weight:900;
-background:linear-gradient(45deg,#1e90ff,#00ffff);
--webkit-background-clip:text;
-color:transparent;
+display:flex;
+align-items:center;
+gap:10px;
 }
+
+.logo img{
+height:45px;
+display:block;
+object-fit:contain;
+}
+
+/* روابط الناف بار */
 
 nav a{
 color:white;
@@ -168,6 +173,7 @@ border-left:4px solid cyan;
 padding-left:10px;
 margin-bottom:10px;
 }
+
 /* ====== CONTACT NEW STYLE ====== */
 
 .contact-box{
@@ -217,7 +223,6 @@ cursor:pointer;
 <div id="smoke"></div>
 
 <script>
-// generate stars dynamically
 for(let i=0;i<180;i++){
 let s=document.createElement("div");
 s.className="stars";
@@ -228,8 +233,13 @@ document.body.appendChild(s);
 }
 </script>
 
+<!-- NAVBAR -->
 <nav>
-<div class="logo">Zaid.khaled.AIS</div>
+
+<div class="logo">
+  <img src="logo title.png" alt="AIS Logo">
+</div>
+
 <div>
 <a href="#home">من أنا؟</a>
 <a href="#about">تعريف</a>
@@ -237,6 +247,7 @@ document.body.appendChild(s);
 <a href="#cert">الشهادات</a>
 <a href="#contact">تواصل</a>
 </div>
+
 </nav>
 
 <!-- ================= HERO ================= -->
@@ -249,7 +260,7 @@ document.body.appendChild(s);
 </div>
 </div>
 
-<!-- ================= ABOUT ================= -->
+<!-- ABOUT -->
 <section id="about">
 <h2>نبذة عني</h2>
 <p style="text-align:center">
@@ -265,41 +276,22 @@ Interests:
 </p>
 </section>
 
-<!-- ================= SKILLS ================= -->
+<!-- SKILLS -->
 <section id="skills">
 <h2>المهارات التقنية</h2>
 
 <div class="grid">
 
-<div class="card">
-<i class="fas fa-file-excel fa-2x"></i>
-<h3>Advanced Excel</h3>
-</div>
-
-<div class="card">
-<i class="fas fa-chart-line fa-2x"></i>
-<h3>Power BI</h3>
-</div>
-
-<div class="card">
-<i class="fas fa-code fa-2x"></i>
-<h3>Python (Basics)</h3>
-</div>
-
-<div class="card">
-<i class="fas fa-database fa-2x"></i>
-<h3>SQL</h3>
-</div>
-
-<div class="card">
-<i class="fas fa-shield-halved fa-2x"></i>
-<h3>Information Systems Auditing</h3>
-</div>
+<div class="card"><i class="fas fa-file-excel fa-2x"></i><h3>Advanced Excel</h3></div>
+<div class="card"><i class="fas fa-chart-line fa-2x"></i><h3>Power BI</h3></div>
+<div class="card"><i class="fas fa-code fa-2x"></i><h3>Python (Basics)</h3></div>
+<div class="card"><i class="fas fa-database fa-2x"></i><h3>SQL</h3></div>
+<div class="card"><i class="fas fa-shield-halved fa-2x"></i><h3>Information Systems Auditing</h3></div>
 
 </div>
 </section>
 
-<!-- ================= CERTIFICATES ================= -->
+<!-- CERT -->
 <section id="cert">
 <h2>📜 الشهادات والدورات</h2>
 
@@ -311,14 +303,13 @@ Interests:
 <p style="opacity:.7">أتعلم ال AI وإمكانية دمجه في مجال المحاسبة وأنظمة ال ERP</p>
 </section>
 
-<!-- ================= CONTACT ================= -->
+<!-- CONTACT -->
 <section id="contact">
 <h2>للتواصل</h2>
 
 <div class="contact-box">
 
-<a class="contact-card" target="_blank"
-href="https://www.linkedin.com/in/zaid-khaled-zaid-2799b9365">
+<a class="contact-card" target="_blank" href="https://www.linkedin.com/in/zaid-khaled-zaid-2799b9365">
 <i class="fa-brands fa-linkedin"></i>
 LinkedIn Profile
 </a>
@@ -334,19 +325,11 @@ zaid.khaled.zaid004@gmail.com
 </a>
 
 </div>
-
-
 </section>
-<footer style="margin-top:15px;opacity:.6 ; text-align:center" >
+
+<footer style="margin-top:15px;opacity:.6;text-align:center">
 Designed for Zaid Khalid Zaid — 2026 ©
 </footer>
 
-
 </body>
 </html>
-
-
-
-
-
-
