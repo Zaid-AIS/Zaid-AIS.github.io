@@ -12,90 +12,132 @@
 
 body{
 font-family:'Tajawal';
-background:radial-gradient(circle at top,#03203f,#00020a);
+background:radial-gradient(circle at top,#001a33,#000000 70%);
 color:white;
 min-height:100vh;
 }
 
+/* ====== عنوان راقي ====== */
 h1{
 text-align:center;
-padding:20px 0;
+padding:25px 0 5px;
 font-weight:900;
-font-size:30px;
+font-size:34px;
+letter-spacing:1px;
 }
 
-/* Glass main box */
+/* ====== صندوق زجاجي فاخر ====== */
 .wrapper{
-max-width:1000px;
+max-width:1100px;
 margin:20px auto;
-padding:25px;
-border-radius:25px;
-background:rgba(255,255,255,0.06);
-backdrop-filter:blur(15px);
-border:1px solid rgba(255,255,255,0.2);
-box-shadow:0 0 50px rgba(0,255,255,.15);
+padding:30px;
+border-radius:28px;
+background:linear-gradient(135deg,rgba(255,255,255,0.07),rgba(255,255,255,0.02));
+backdrop-filter:blur(18px);
+border:1px solid rgba(0,255,255,.25);
+box-shadow:0 0 60px rgba(0,255,255,.15);
 }
 
-/* small section title */
+/* عنوان داخلي */
 h3{
 text-align:center;
+margin:12px 0 18px;
+font-size:18px;
+}
+
+/* فصل */
+.line{
+height:1px;
+background:linear-gradient(90deg,transparent,#00ffee,transparent);
 margin:15px 0;
 }
 
-/* subject card */
+/* ====== كرت المادة ====== */
 .subject{
 display:grid;
-grid-template-columns:repeat(5,1fr);
-gap:8px;
-padding:12px;
+grid-template-columns:1fr 1fr 1fr 1fr auto;
+gap:10px;
+padding:14px;
 border-radius:18px;
-background:rgba(0,0,0,.45);
+background:linear-gradient(135deg,rgba(0,0,0,.55),rgba(0,0,0,.75));
 border:1px solid rgba(0,255,255,.35);
-margin-bottom:8px;
+box-shadow:0 0 18px rgba(0,255,255,.08) inset;
 }
 
+/* ====== الحقول ====== */
 input,select{
-padding:7px;
-border-radius:12px;
+padding:10px;
+border-radius:14px;
 border:none;
 outline:none;
 text-align:center;
+font-weight:700;
 }
 
-/* buttons */
-.btn{
-padding:8px 12px;
-border-radius:12px;
+/* ====== زر حذف نيون أحمر ====== */
+.remove{
+background:linear-gradient(135deg,#ff3b3b,#b90000);
+border:none;
+color:white;
+font-size:18px;
+padding:5px 15px;
+border-radius:50px;
+cursor:pointer;
+box-shadow:0 0 15px rgba(255,0,0,.6);
+transition:.2s;
+}
+.remove:hover{
+transform:scale(1.1);
+}
+
+/* ====== زر إضافة نيون أخضر ====== */
+.add{
+background:linear-gradient(135deg,#00ffbf,#00aaff);
+padding:9px 16px;
+border-radius:18px;
 border:none;
 cursor:pointer;
-font-weight:800;
+font-weight:900;
+color:black;
+box-shadow:0 0 18px rgba(0,255,255,.8);
+transition:.3s;
+}
+.add:hover{
+transform:translateY(-2px) scale(1.03);
 }
 
-.add{
-background:#00ffaa;
-}
-
-.remove{
-background:#ff4d4d;
-color:white;
-}
-
+/* ====== زر حساب نيون أزرق قوي ====== */
 .calc{
-background:cyan;
-margin-top:10px;
+background:linear-gradient(135deg,#00ffea,#0077ff);
+padding:10px 22px;
+border-radius:22px;
+border:none;
+cursor:pointer;
+font-weight:900;
+box-shadow:0 0 22px rgba(0,170,255,.9);
+color:black;
+font-size:17px;
+transition:.25s;
+}
+.calc:hover{
+transform:scale(1.05);
 }
 
+/* ====== صندوق النتائج ====== */
 .results{
 display:flex;
 justify-content:space-around;
-margin-top:18px;
-font-size:20px;
+margin-top:20px;
+font-size:21px;
+font-weight:900;
 }
 
+/* ====== نتيجة نيون ====== */
 .badge{
-padding:6px 12px;
+padding:7px 14px;
 background:black;
 border-radius:12px;
+box-shadow:0 0 12px rgba(0,255,255,.7);
 }
 
 </style>
@@ -109,22 +151,24 @@ border-radius:12px;
 
 <h3>📌 المعدل التراكمي السابق (اختياري)</h3>
 
-<div style="display:flex;gap:8px;justify-content:center">
+<div style="display:flex;gap:10px;justify-content:center">
 <input type="number" id="oldGPA" step="0.01" placeholder="المعدل السابق">
 <input type="number" id="oldHours" placeholder="الساعات المقطوعة">
 </div>
 
-<hr style="opacity:.2;margin:15px 0">
+<div class="line"></div>
 
 <h3>📚 مواد الفصل</h3>
 
 <div id="list"></div>
 
-<button class="btn add" onclick="add()">➕ إضافة مادة</button>
+<button class="add" onclick="add()">➕ إضافة مادة</button>
 
 <br><br>
 
-<button class="btn calc" onclick="calc()">احسب المعدل</button>
+<center>
+<button class="calc" onclick="calc()">🚀 احسب المعدل الآن</button>
+</center>
 
 <div class="results">
 <div>📍 المعدل الفصلي: <span class="badge" id="term">0.00</span></div>
@@ -135,7 +179,7 @@ border-radius:12px;
 
 <script>
 
-// grade → points (حسب الصورة التي أرسلتها)
+// تحويل الرمز إلى نقاط
 function toPoint(g){
 switch(g){
 case "A+": return 4;
@@ -154,7 +198,7 @@ default: return 0;
 }
 }
 
-// add subject card
+// إضافة مادة
 function add(){
 
 let d=document.createElement("div");
@@ -179,19 +223,18 @@ d.innerHTML=`
 <option>D+</option><option>D</option><option>F</option>
 </select>
 
-<input disabled value="نأخذ الأعلى 🙂">
+<input disabled value="الأفضل يُحسب تلقائيًا">
 
-<button class="btn remove" onclick="this.parentElement.remove()">−</button>
-
+<button class="remove" onclick="this.parentElement.remove()">−</button>
 `;
 
 document.getElementById("list").appendChild(d);
 }
 
-// add two rows default
+// مواد جاهزة افتراضيًا
 add();add();
 
-// calculate
+// حساب المعدل
 function calc(){
 
 let hours=document.querySelectorAll(".hours");
@@ -208,24 +251,25 @@ if(h<=0)continue;
 let oldG=toPoint(old[i].value);
 let newG=toPoint(newer[i].value);
 
-// always take BEST grade
-let g = Math.max(oldG,newG);
+// يأخذ الأعلى دائمًا 🔥
+let g=Math.max(oldG,newG);
 
-totalH += h;
-totalP += h*g;
+totalH+=h;
+totalP+=h*g;
 }
 
-// term GPA
-let term = totalP/totalH || 0;
+// معدل فصلي
+let term=totalP/totalH || 0;
 document.getElementById("term").innerHTML=term.toFixed(2);
 
-// previous GPA
+// قديم
 let og=Number(document.getElementById("oldGPA").value);
 let oh=Number(document.getElementById("oldHours").value);
 
-// new CGPA
-let cg = ((og*oh)+totalP)/(oh+totalH) || term;
+// تراكمي
+let cg=((og*oh)+totalP)/(oh+totalH) || term;
 document.getElementById("cgpa").innerHTML=cg.toFixed(2);
+
 }
 
 </script>
