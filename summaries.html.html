@@ -10,9 +10,16 @@
 
 <style>
 
+*{margin:0;padding:0;box-sizing:border-box}
+
 body{
-  /* ---------------- خلفية 3D متحركة ---------------- */
-/* ---------------- خلفية 3D متحركة خرافية بدون صور ---------------- */
+font-family:'Tajawal',sans-serif;
+color:white;
+padding:25px;
+overflow-x:hidden;
+}
+
+/* ---------------- خلفية 3D متحركة ---------------- */
 
 #space-bg{
 position:fixed;
@@ -33,7 +40,7 @@ z-index:-2;
 100%{background-position:0% 50%}
 }
 
-/* نجوم متحركة لطيفة */
+/* نجوم متحركة */
 .stars{
 position:absolute;
 width:2px;
@@ -50,18 +57,13 @@ opacity:0.9;
 100%{opacity:0.2;transform:scale(1)}
 }
 
-/* ❌ حذف طبقة الدخان القديمة نهائيًا */
 #smoke{display:none}
-font-family:'Tajawal',sans-serif;
-background:linear-gradient(120deg,#000428,#004e92,#00111f,#000000);
-color:white;
-padding:25px;
-}
 
 /* صندوق الصفحة */
 .container{
 max-width:900px;
 margin:auto;
+margin-top:30px;
 background:rgba(255,255,255,0.05);
 padding:25px;
 border-radius:20px;
@@ -126,34 +128,47 @@ font-weight:700;
 
 <body>
 
+<div id="space-bg"></div>
+<div id="smoke"></div>
+
+<script>
+// توليد النجوم
+for(let i=0;i<160;i++){
+let s=document.createElement("div");
+s.className="stars";
+s.style.top=Math.random()*100+"%";
+s.style.left=Math.random()*100+"%";
+s.style.animationDelay=Math.random()*3+"s";
+document.body.appendChild(s);
+}
+</script>
+
 <div class="container">
 
 <h1>📚 ملخصات زيد</h1>
-<p style="text-align:center;opacity:.8">اكتب اسم المادة للبحث عن الملخص</p>
+<p style="text-align:center;opacity:.8">
+اكتب اسم المادة للبحث عن الملخص
+</p>
 
 <input type="text" id="search" class="search-box" placeholder="ابحث عن: محاسبة – تدقيق – نظم معلومات…">
 
 <div class="grid" id="list">
 
-<!-- مثال مادة 1 -->
 <div class="card" data-name="نظم المعلومات المحاسبية 2">
 <h3>نظم المعلومات المحاسبية 2</h3>
 <a class="btn" href="#" target="_blank">فتح الملخص</a>
 </div>
 
-<!-- مثال مادة 2 -->
 <div class="card" data-name="تدقيق نظم المعلومات">
 <h3>تدقيق نظم المعلومات</h3>
 <a class="btn" href="#" target="_blank">فتح الملخص</a>
 </div>
 
-<!-- مثال مادة 3 -->
 <div class="card" data-name="محاسبة متوسطة 1">
 <h3>محاسبة متوسطة 1</h3>
 <a class="btn" href="#" target="_blank">فتح الملخص</a>
 </div>
 
-<!-- مثال مادة 4 -->
 <div class="card" data-name="قانون ضريبة الدخل والمبيعات">
 <h3>قانون ضريبة الدخل والمبيعات</h3>
 <a class="btn" href="#" target="_blank">فتح الملخص</a>
@@ -163,7 +178,7 @@ font-weight:700;
 </div>
 
 <script>
-// البحث المباشر بدون تحديث الصفحة
+// البحث المباشر
 let search = document.getElementById("search");
 let cards = document.querySelectorAll(".card");
 
@@ -179,5 +194,3 @@ card.style.display = name.includes(value) ? "block" : "none";
 
 </body>
 </html>
-
-
