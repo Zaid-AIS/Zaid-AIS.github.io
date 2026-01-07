@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>حاسبة المعدل الجامعي</title>
-<link rel="icon" href="logo title (2).png">
 
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
 
@@ -18,7 +17,7 @@ color:white;
 min-height:100vh;
 }
 
-/* ====== عنوان راقي ====== */
+/* ====== عنوان ====== */
 h1{
 text-align:center;
 padding:25px 0 5px;
@@ -26,7 +25,7 @@ font-weight:900;
 font-size:34px;
 }
 
-/* ====== صندوق زجاجي فاخر ====== */
+/* ====== صندوق رئيسي زجاجي ====== */
 .wrapper{
 max-width:1100px;
 margin:20px auto;
@@ -50,7 +49,7 @@ background:linear-gradient(90deg,transparent,#00ffee,transparent);
 margin:15px 0;
 }
 
-/* ====== كرت المادة ====== */
+/* ====== كرت مادة ====== */
 .subject{
 display:grid;
 grid-template-columns:1fr 1fr 1fr auto;
@@ -61,7 +60,7 @@ background:linear-gradient(135deg,rgba(0,0,0,.55),rgba(0,0,0,.75));
 border:1px solid rgba(0,255,255,.35);
 }
 
-/* ====== الحقول ====== */
+/* ====== حقول إدخال ====== */
 input{
 padding:10px;
 border-radius:14px;
@@ -71,21 +70,27 @@ text-align:center;
 font-weight:700;
 }
 
-/* ====== select بشكل رائع ====== */
+/* ====== select ثابت بدون مشاكل ====== */
 select{
 padding:10px;
 border-radius:14px;
-border:none;
+border:1px solid #00ffff;
 outline:none;
 font-weight:900;
 text-align:center;
-background:linear-gradient(135deg,#041b2d,#022f47);
+background:#012030;
 color:white;
-box-shadow:0 0 12px rgba(0,255,255,.4) inset;
 cursor:pointer;
 }
 
-/* ====== زر حذف نيون أحمر ====== */
+/* خيارات القائمة */
+select option{
+background:#012030;
+color:white;
+font-weight:700;
+}
+
+/* ====== زر حذف ====== */
 .remove{
 background:linear-gradient(135deg,#ff3b3b,#b90000);
 border:none;
@@ -95,13 +100,9 @@ padding:5px 15px;
 border-radius:50px;
 cursor:pointer;
 box-shadow:0 0 15px rgba(255,0,0,.6);
-transition:.2s;
-}
-.remove:hover{
-transform:scale(1.12);
 }
 
-/* ====== زر إضافة ====== */
+/* ====== زر إضافة مادة ====== */
 .add{
 background:linear-gradient(135deg,#00ffbf,#00aaff);
 padding:10px 16px;
@@ -113,7 +114,7 @@ color:black;
 box-shadow:0 0 18px rgba(0,255,255,.8);
 }
 
-/* ====== زر حساب ====== */
+/* ====== زر الحساب ====== */
 .calc{
 background:linear-gradient(135deg,#00ffea,#0077ff);
 padding:10px 22px;
@@ -232,7 +233,9 @@ document.getElementById("list").appendChild(d);
 }
 
 /* مواد افتراضية */
-add();add();add();
+add();
+add();
+add();
 
 /* حساب المعدل */
 function calc(){
@@ -251,7 +254,7 @@ if(h<=0)continue;
 let oldG=toPoint(old[i].value);
 let newG=toPoint(newer[i].value);
 
-/* نحسب الأفضل دائمًا */
+/* نأخذ الأعلى دائمًا */
 let g=Math.max(oldG,newG);
 
 totalH+=h;
