@@ -3,342 +3,137 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AIS.Zaid</title>
-<link rel="icon" href="logo title (2).png">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<title>ملخصات زيد AIS</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700;800&display=swap" rel="stylesheet">
 
 <style>
 
-*{margin:0;padding:0;box-sizing:border-box}
 body{
 font-family:'Tajawal',sans-serif;
-color:white;
-overflow-x:hidden;
-}
-
-/* ---------------- خلفية 3D متحركة ---------------- */
-/* ---------------- خلفية 3D متحركة خرافية بدون صور ---------------- */
-
-#space-bg{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
 background:linear-gradient(120deg,#000428,#004e92,#00111f,#000000);
-background-size:400% 400%;
-animation:gradientMove 10s ease infinite;
-z-index:-2;
-}
-
-/* حركة تدرّج 3D */
-@keyframes gradientMove{
-0%{background-position:0% 50%}
-50%{background-position:100% 50%}
-100%{background-position:0% 50%}
-}
-
-/* نجوم متحركة لطيفة */
-.stars{
-position:absolute;
-width:2px;
-height:2px;
-background:white;
-animation:blink 3s infinite ease-in-out;
-opacity:0.9;
-}
-
-/* وميض النجوم */
-@keyframes blink{
-0%{opacity:0.2;transform:scale(1)}
-50%{opacity:1;transform:scale(1.5)}
-100%{opacity:0.2;transform:scale(1)}
-}
-
-/* ❌ حذف طبقة الدخان القديمة نهائيًا */
-#smoke{display:none}
-
-/* ---------------- Navbar ---------------- */
-
-nav{
-position:fixed;
-top:0;
-width:100%;
-padding:15px 30px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-backdrop-filter:blur(10px);
-background:rgba(0,0,0,0.35);
-border-bottom:1px solid rgba(255,255,255,0.1);
-z-index:10;
-}
-
-.logo{
-font-size:1.7rem;
-font-weight:900;
-background:linear-gradient(45deg,#1e90ff,#00ffff);
--webkit-background-clip:text;
-color:transparent;
-}
-
-nav a{
 color:white;
-margin-left:15px;
-font-weight:700;
+padding:25px;
 }
 
-/* ---------------- Hero ---------------- */
-
-.hero{
-min-height:100vh;
-display:flex;
-align-items:center;
-justify-content:center;
-text-align:center;
-padding:120px 20px 60px;
-}
-
-.hero h1{
-font-size:3.3rem;
-margin-bottom:10px;
-}
-
-.hero span{
-color:#3bffff;
-}
-
-.badge{
-display:inline-block;
-background:rgba(0,255,255,.15);
-padding:6px 15px;
-border-radius:20px;
-border:1px solid #00ffff;
-margin-bottom:10px;
-}
-
-/* ---------------- Sections ---------------- */
-
-section{
-max-width:1000px;
+/* صندوق الصفحة */
+.container{
+max-width:900px;
 margin:auto;
-margin-bottom:80px;
-padding:20px;
-backdrop-filter:blur(20px);
 background:rgba(255,255,255,0.05);
-border:1px solid rgba(255,255,255,0.15);
+padding:25px;
 border-radius:20px;
-box-shadow:0 0 40px rgba(0,255,255,0.05);
+backdrop-filter:blur(15px);
+border:1px solid rgba(255,255,255,0.15);
 }
 
-h2{
+/* عنوان */
+h1{
 text-align:center;
 margin-bottom:15px;
 }
 
-/* ---------------- Skills ---------------- */
+/* مربع البحث */
+.search-box{
+width:100%;
+padding:12px;
+border-radius:15px;
+border:none;
+outline:none;
+font-size:17px;
+margin-bottom:20px;
+}
 
+/* شبكة الملخصات */
 .grid{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
 gap:15px;
 }
 
+/* كرت المادة */
 .card{
-padding:18px;
+padding:15px;
 border-radius:15px;
-background:rgba(0,0,0,0.4);
-border:1px solid rgba(0,255,255,0.2);
-text-align:center;
+background:rgba(0,0,0,0.45);
+border:1px solid cyan;
 transition:.3s;
+text-align:center;
 }
 
 .card:hover{
-transform:translateY(-6px) scale(1.02);
-box-shadow:0 0 20px rgba(0,255,255,0.35);
+transform:scale(1.03);
+box-shadow:0 0 25px rgba(0,255,255,.4);
 }
 
-/* ---------------- Certificates ---------------- */
-
-.cert{
-border-left:4px solid cyan;
-padding-left:10px;
-margin-bottom:10px;
-}
-
-/* ====== CONTACT NEW STYLE ====== */
-
-.contact-box{
-display:flex;
-justify-content:center;
-gap:20px;
-flex-wrap:wrap;
-margin-top:25px;
-}
-
-.contact-card{
-min-width:260px;
-padding:14px 18px;
-border-radius:18px;
-background:linear-gradient(135deg,#02203c,#043b63);
-border:1px solid rgba(255,255,255,0.15);
-box-shadow:0 0 25px rgba(0,255,255,0.08);
-display:flex;
-align-items:center;
-gap:10px;
-color:white;
-font-weight:800;
-transition:.3s;
-}
-
-.contact-card i{
-background:linear-gradient(135deg,#00fff0,#00b7ff);
-color:#012b33;
-padding:10px;
-border-radius:50%;
-box-shadow:0 0 15px rgba(0,255,255,.4);
-}
-
-.contact-card:hover{
-transform:translateY(-6px) scale(1.02);
-box-shadow:0 0 30px rgba(0,255,255,.35);
-border-color:#00ffff;
-cursor:pointer;
+/* زر تحميل */
+.btn{
+display:inline-block;
+margin-top:8px;
+padding:6px 12px;
+border-radius:12px;
+background:cyan;
+color:black;
+text-decoration:none;
+font-weight:700;
 }
 
 </style>
+
 </head>
 
 <body>
 
-<div id="space-bg"></div>
-<div id="smoke"></div>
+<div class="container">
+
+<h1>📚 ملخصات زيد</h1>
+<p style="text-align:center;opacity:.8">اكتب اسم المادة للبحث عن الملخص</p>
+
+<input type="text" id="search" class="search-box" placeholder="ابحث عن: محاسبة – تدقيق – نظم معلومات…">
+
+<div class="grid" id="list">
+
+<!-- مثال مادة 1 -->
+<div class="card" data-name="نظم المعلومات المحاسبية 2">
+<h3>نظم المعلومات المحاسبية 2</h3>
+<a class="btn" href="#" target="_blank">فتح الملخص</a>
+</div>
+
+<!-- مثال مادة 2 -->
+<div class="card" data-name="تدقيق نظم المعلومات">
+<h3>تدقيق نظم المعلومات</h3>
+<a class="btn" href="#" target="_blank">فتح الملخص</a>
+</div>
+
+<!-- مثال مادة 3 -->
+<div class="card" data-name="محاسبة متوسطة 1">
+<h3>محاسبة متوسطة 1</h3>
+<a class="btn" href="#" target="_blank">فتح الملخص</a>
+</div>
+
+<!-- مثال مادة 4 -->
+<div class="card" data-name="قانون ضريبة الدخل والمبيعات">
+<h3>قانون ضريبة الدخل والمبيعات</h3>
+<a class="btn" href="#" target="_blank">فتح الملخص</a>
+</div>
+
+</div>
+</div>
 
 <script>
-// generate stars dynamically
-for(let i=0;i<180;i++){
-let s=document.createElement("div");
-s.className="stars";
-s.style.top=Math.random()*100+"%";
-s.style.left=Math.random()*100+"%";
-s.style.animationDelay=Math.random()*3+"s";
-document.body.appendChild(s);
-}
+// البحث المباشر بدون تحديث الصفحة
+let search = document.getElementById("search");
+let cards = document.querySelectorAll(".card");
+
+search.addEventListener("keyup", function(){
+let value = this.value.toLowerCase();
+
+cards.forEach(card=>{
+let name = card.getAttribute("data-name").toLowerCase();
+card.style.display = name.includes(value) ? "block" : "none";
+});
+});
 </script>
-
-<nav>
-<div class="logo">Zaid.khaled.AIS</div>
-<div>
-<a href="#home">من أنا؟</a>
-<a href="#about">تعريف</a>
-<a href="#skills">المهارات</a>
-<a href="#cert">الشهادات</a>
-<a href="#contact">تواصل</a>
-</div>
-</nav>
-
-<!-- ================= HERO ================= -->
-<div class="hero" id="home">
-<div>
-<div class="badge">Accounting Information Systems Graduate</div>
-<h1>أنا <span>زيد خالد زيد</span></h1>
-<h3>AIS – نظم معلومات محاسبية</h3>
-<p>أجمع بين المحاسبة والتكنولوجيا لتحليل البيانات وبناء أنظمة مالية</p>
-</div>
-</div>
-
-<!-- ================= ABOUT ================= -->
-<section id="about">
-<h2>نبذة عني</h2>
-<p style="text-align:center">
-خريج جامعة آل البيت متخصص في نظم المعلومات المحاسبية AIS  
-أعمل على الدمج بين المحاسبة – قواعد البيانات – الذكاء الاصطناعي – تحليل البيانات  
-</p>
-
-<br>
-
-<p style="text-align:center">
-Interests:
-<b>Data Analysis – ERP System – Tax Specialist - AI </b>
-</p>
-</section>
-
-<!-- ================= SKILLS ================= -->
-<section id="skills">
-<h2>المهارات التقنية</h2>
-
-<div class="grid">
-
-<div class="card">
-<i class="fas fa-file-excel fa-2x"></i>
-<h3>Advanced Excel</h3>
-</div>
-
-<div class="card">
-<i class="fas fa-chart-line fa-2x"></i>
-<h3>Power BI</h3>
-</div>
-
-<div class="card">
-<i class="fas fa-code fa-2x"></i>
-<h3>Python (Basics)</h3>
-</div>
-
-<div class="card">
-<i class="fas fa-database fa-2x"></i>
-<h3>SQL</h3>
-</div>
-
-<div class="card">
-<i class="fas fa-shield-halved fa-2x"></i>
-<h3>Information Systems Auditing</h3>
-</div>
-
-</div>
-</section>
-
-<!-- ================= CERTIFICATES ================= -->
-<section id="cert">
-<h2>📜 الشهادات والدورات</h2>
-
-<div class="cert">شهادة جامعية من جامعة ال البيت - تخصص نظم المعلومات المحاسبية بتقدير إمتياز</div>
-<div class="cert">شهادة الخبير الضريبي والتدريب في قسم المحاسبة بشركة الرجاء الدولية</div>
-<div class="cert">شهادة محلل بيانات مع فترة تدريب 6 شهور - شركة قفزة </div>
-<div class="cert">شهادة إكسل متقدم - شركة معًا نمضي </div>
-
-<p style="opacity:.7">أتعلم ال AI وإمكانية دمجه في مجال المحاسبة وأنظمة ال ERP</p>
-</section>
-
-<!-- ================= CONTACT ================= -->
-<section id="contact">
-<h2>للتواصل</h2>
-
-<div class="contact-box">
-
-<a class="contact-card" target="_blank"
-href="https://www.linkedin.com/in/zaid-khaled-zaid-2799b9365">
-<i class="fa-brands fa-linkedin"></i>
-LinkedIn Profile
-</a>
-
-<a class="contact-card" href="tel:0792073638">
-<i class="fa fa-phone"></i>
-0792073638
-</a>
-
-<a class="contact-card" href="mailto:zaid.khaled.zaid004@gmail.com">
-<i class="fa fa-envelope"></i>
-zaid.khaled.zaid004@gmail.com
-</a>
-
-</div>
-</section>
-
-<footer style="margin-top:15px;opacity:.6 ; text-align:center">
-Designed for Zaid Khalid Zaid — 2026 ©
-</footer>
 
 </body>
 </html>
-
