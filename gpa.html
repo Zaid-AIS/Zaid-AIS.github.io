@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حاسبة المعدل التراكمي</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700;800&display=swap" rel="stylesheet">
+
+<style>
+
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+font-family:'Tajawal';
+background:linear-gradient(120deg,#000428,#004e92,#00111f,#000000);
+color:white;
+padding:25px;
+}
+
+/* الصندوق الرئيسي */
+.box{
+max-width:900px;
+margin:auto;
+background:rgba(255,255,255,0.06);
+border-radius:25px;
+padding:25px;
+border:1px solid rgba(255,255,255,0.2);
+backdrop-filter:blur(15px);
+}
+
+/* العنوان */
+h1{
+text-align:center;
+margin-bottom:10px;
+}
+
+/* عنوان فرعي */
+h3{
+text-align:center;
+margin:10px 0;
+}
+
+/* المدخلات */
+.row{
+display:flex;
+gap:10px;
+margin-bottom:8px;
+flex-wrap:wrap;
+}
+
+input,select{
+padding:7px;
+border-radius:12px;
+border:none;
+outline:none;
+}
+
+/* زر */
+.btn{
+background:cyan;
+color:black;
+padding:8px 14px;
+border-radius:15px;
+border:none;
+cursor:pointer;
+font-weight:800;
+}
+
+.add{
+background:#00ffaa;
+}
+
+.remove{
+background:#ff4d4d;
+color:white;
+border:none;
+padding:4px 10px;
+border-radius:50%;
+cursor:pointer;
+}
+
+/* النتائج */
+.result-box{
+display:flex;
+justify-content:space-around;
+margin-top:25px;
+font-size:20px;
+}
+
+.badge{
+padding:6px 12px;
+background:black;
+border-radius:12px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>📊 حاسبة المعدل الجامعي</h1>
+
+<div class="box">
+
+<h3>المعدل التراكمي السابق (اختياري)</h3>
+
+<div class="row">
+<input type="number" id="oldGPA" step="0.01" placeholder="المعدل السابق">
+<input type="number" id="oldHours" placeholder="الساعات المقطوعة">
+</div>
+
+<hr style="opacity:.3;margin:15px 0">
+
+<h3>📝 مواد الفصل</h3>
+
+<div id="subjects"></div>
+
+<button class="add" onclick="addRow()">➕ إضافة مادة</button>
+
+<br><br>
+
+<button class="btn" onclick="calculate()">حساب المعدل</button>
+
+<div class="result-box">
+
+<div>
+📌 المعدل الفصلي:
+<span class="badge" id="termGPA">0.00</span>
+</div>
+
+<div>
+📌 المعدل التراكمي الجديد:
+<span class="badge" id="cgpa">0.00</span>
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+// تحويل الرمز إلى نقاط حسب الجدول المرسل
+function gradeToPoint(g){
+switch(g){
+case "A+": return 4;
+case "A": return 3.75;
+case "A-": return 3.5;
+case "B+": return 3.25;
+case "B": return 3;
+case "B-": return 2.75;
+case "C+": return 2.5;
+case "C": return 2.25;
+case "C-": return 2;
+case "D+": return 1.75;
+case "D": return 1.5;
+case "F": return 0.75;
+default: return 0;
+}
+}
+
+// إضافة صف مادة
+function addRow(){
+
+let div=document.createElement("div");
+div.className="row";
+
+div.innerHTML=`
+<input type="number" placeholder="ساعات المادة" class="hours">
+
+<select class="grade">
+<option value="A+">A+</option>
+<option value="A">A</option>
+<option value="A-">A-</option>
+<option value="B+">B+</option>
+<option value="B">B</option>
+<option value="B-">B-</option>
+<option value="C+">C+</option>
+<option value="C">C</option>
+<option value="C-">C-</option>
+<option value="D+">D+</option>
+<option value="D">D</option>
+<option value="F">F</option>
+</select>
+
+<button class="remove" onclick="this.parentElement.remove()">−</button>
+`;
+
+document.getElementById("subjects").appendChild(div);
+}
+
+addRow();
+addRow();
+
+// عملية الحساب
+function calculate(){
+
+let hours=document.querySelectorAll(".hours");
+let grades=document.querySelectorAll(".grade");
+
+let totalPoints=0;
+let totalHours=0;
+
+for(let i=0;i<hours.length;i++){
+let h=Number(hours[i].value);
+let g=gradeToPoint(grades[i].value);
+
+if(h>0){
+totalHours+=h;
+totalPoints+=h*g;
+}
+}
+
+// المعدل الفصلي
+let term= totalPoints / totalHours || 0;
+document.getElementById("termGPA").innerHTML=term.toFixed(2);
+
+// المعدل التراكمي السابق
+let oldG=Number(document.getElementById("oldGPA").value);
+let oldH=Number(document.getElementById("oldHours").value);
+
+// المعدل التراكمي الجديد
+let newGPA = ((oldG*oldH)+(totalPoints)) / (oldH+totalHours) || term;
+
+document.getElementById("cgpa").innerHTML=newGPA.toFixed(2);
+
+}
+
+</script>
+
+</body>
+</html>
