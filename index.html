@@ -12,6 +12,30 @@
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700;800&display=swap" rel="stylesheet">
 
 <style>
+nav ul{
+  list-style:none;
+  display:flex;
+  gap:25px;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  margin:0;
+}
+
+nav ul li{
+  display:inline-block;
+}
+
+nav a{
+  color:white;
+  text-decoration:none;
+  font-weight:800;
+  font-size:16px;
+}
+
+nav a:hover{
+  color:#00ffff;
+}
 
 html,body{
 margin:0;
@@ -230,13 +254,17 @@ if(e.ctrlKey && (e.key==="u"||e.key==="U"||e.key==="c"||e.key==="C"||e.key==="s"
 <div class="xl">Zaid.khaled.AIS</div>
 
 <div>
-<a href="#h0">من أنا؟</a>
-<a href="#a0">تعريف</a>
-<a href="#s0">المهارات</a>
-<a href="#c0">الشهادات</a>
-<a href="#t0">تواصل</a>
-<a href="summaries.html">ملخصاتي</a>
-<a href="gpa.html">حاسبة المعدل التراكمي</a>
+<nav>
+ <ul>
+  <li><a href="#home">من أنا؟</a></li>
+  <li><a href="#about">تعريف</a></li>
+  <li><a href="#skills">المهارات</a></li>
+  <li><a href="#cert">الشهادات</a></li>
+  <li><a href="#contact">تواصل</a></li>
+  <li><a href="gpa.html">حاسبة المعدل التراكمي</a></li>
+  <li><a href="summaries.html">ملخصاتي</a></li>
+ </ul>
+</nav>
 </div>
 </nav>
 
@@ -301,3 +329,4 @@ Designed for Zaid Khalid Zaid © 2026
 
 </body>
 </html>
+
