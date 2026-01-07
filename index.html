@@ -12,30 +12,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700;800&display=swap" rel="stylesheet">
 
 <style>
-nav ul{
-  list-style:none;
-  display:flex;
-  gap:25px;
-  align-items:center;
-  justify-content:center;
-  padding:0;
-  margin:0;
-}
-
-nav ul li{
-  display:inline-block;
-}
-
-nav a{
-  color:white;
-  text-decoration:none;
-  font-weight:800;
-  font-size:16px;
-}
-
-nav a:hover{
-  color:#00ffff;
-}
 
 html,body{
 margin:0;
@@ -97,6 +73,7 @@ border-bottom:1px solid rgba(255,255,255,0.1);
 z-index:10;
 }
 
+/* الشعار */
 .xl{
 font-size:1.7rem;
 font-weight:900;
@@ -105,11 +82,29 @@ background:linear-gradient(45deg,#1e90ff,#00ffff);
 color:transparent;
 }
 
+/* قائمة الروابط */
+nav ul{
+list-style:none;
+display:flex;
+gap:25px;
+margin:0;
+padding:0;
+}
+
+nav ul li{
+display:inline-block;
+}
+
 nav a{
 color:white;
-margin-left:15px;
-font-weight:700;
 text-decoration:none;
+font-weight:800;
+font-size:15px;
+}
+
+nav a:hover{
+color:#00ffff;
+text-shadow:0 0 8px #00ffff;
 }
 
 /* hero */
@@ -241,34 +236,33 @@ d.className="z2";
 d.style.top=Math.random()*100+"%";
 d.style.left=Math.random()*100+"%";
 d.style.animationDelay=Math.random()*3+"s";
-document.body.appendChild(d)
+document.body.appendChild(d);
 }
 
-/* تعطيل اختصارات النسخ والفحص */
+/* تعطيل نسخ وفحص */
 document.onkeydown=function(e){
-if(e.ctrlKey && (e.key==="u"||e.key==="U"||e.key==="c"||e.key==="C"||e.key==="s"||e.key==="S"||e.key==="i"))return false;
+if(e.ctrlKey && (e.key==="u"||e.key==="U"||e.key==="c"||e.key==="C"||e.key==="s"||e.key==="S"||e.key==="i"))
+return false;
 }
 </script>
 
+<!-- NAVBAR الحقيقي الصحيح -->
 <nav>
-<div class="xl">Zaid.khaled.AIS</div>
+  <div class="xl">Zaid.khaled.AIS</div>
 
-<div>
-<nav>
- <ul>
-  <li><a href="#home">من أنا؟</a></li>
-  <li><a href="#about">تعريف</a></li>
-  <li><a href="#skills">المهارات</a></li>
-  <li><a href="#cert">الشهادات</a></li>
-  <li><a href="#contact">تواصل</a></li>
-  <li><a href="gpa.html">حاسبة المعدل التراكمي</a></li>
-  <li><a href="summaries.html">ملخصاتي</a></li>
- </ul>
-</nav>
-</div>
+  <ul>
+    <li><a href="#home">من أنا؟</a></li>
+    <li><a href="#about">تعريف</a></li>
+    <li><a href="#skills">المهارات</a></li>
+    <li><a href="#cert">الشهادات</a></li>
+    <li><a href="#contact">تواصل</a></li>
+    <li><a href="gpa.html">حاسبة المعدل التراكمي</a></li>
+    <li><a href="summaries.html">ملخصاتي</a></li>
+  </ul>
 </nav>
 
-<div class="hx" id="h0">
+<!-- HERO -->
+<div class="hx" id="home">
 <div>
 <div class="bx">Accounting Information Systems Graduate</div>
 <h1>أنا <span>زيد خالد زيد</span></h1>
@@ -277,14 +271,16 @@ if(e.ctrlKey && (e.key==="u"||e.key==="U"||e.key==="c"||e.key==="C"||e.key==="s"
 </div>
 </div>
 
-<section id="a0">
+<!-- ABOUT -->
+<section id="about">
 <h2>نبذة عني</h2>
 <p style="text-align:center">خريج جامعة آل البيت متخصص في نظم المعلومات المحاسبية AIS</p>
 <p style="text-align:center">أعمل على الدمج بين المحاسبة – قواعد البيانات – الذكاء الاصطناعي – تحليل البيانات</p>
 <p style="text-align:center">Interests: <b>Data Analysis – ERP – Tax – AI</b></p>
 </section>
 
-<section id="s0">
+<!-- SKILLS -->
+<section id="skills">
 <h2>المهارات التقنية</h2>
 <div class="gx">
 <div class="cx"><i class="fas fa-file-excel fa-2x"></i><h3>Advanced Excel</h3></div>
@@ -295,7 +291,8 @@ if(e.ctrlKey && (e.key==="u"||e.key==="U"||e.key==="c"||e.key==="C"||e.key==="s"
 </div>
 </section>
 
-<section id="c0">
+<!-- CERTIFICATES -->
+<section id="cert">
 <h2>الشهادات والدورات</h2>
 <div class="kx">شهادة جامعية من جامعة آل البيت بتقدير امتياز</div>
 <div class="kx">دورة خبير ضريبي</div>
@@ -303,7 +300,8 @@ if(e.ctrlKey && (e.key==="u"||e.key==="U"||e.key==="c"||e.key==="C"||e.key==="s"
 <div class="kx">شهادة إكسل متقدم</div>
 </section>
 
-<section id="t0">
+<!-- CONTACT -->
+<section id="contact">
 <h2>تواصل</h2>
 
 <div class="cb">
@@ -329,4 +327,3 @@ Designed for Zaid Khalid Zaid © 2026
 
 </body>
 </html>
-
