@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>الملخصات</title>
-<link rel="icon" href="logo title (2).png">
+<title>ملخصات زيد</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700;800&display=swap" rel="stylesheet">
 
@@ -15,69 +14,79 @@
 body{
 font-family:'Tajawal',sans-serif;
 color:white;
-padding:25px;
 overflow-x:hidden;
 }
 
-/* ---------------- خلفية 3D متحركة ---------------- */
-
+/* خلفية 3D */
 #space-bg{
 position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
+inset:0;
 background:linear-gradient(120deg,#000428,#004e92,#00111f,#000000);
 background-size:400% 400%;
-animation:gradientMove 10s ease infinite;
+animation:move 12s infinite alternate;
 z-index:-2;
 }
 
-/* حركة تدرّج 3D */
-@keyframes gradientMove{
-0%{background-position:0% 50%}
-50%{background-position:100% 50%}
-100%{background-position:0% 50%}
+@keyframes move{
+0%{background-position:0 0}
+100%{background-position:100% 100%}
 }
 
-/* نجوم متحركة */
-.stars{
-position:absolute;
-width:2px;
-height:2px;
+/* نجوم */
+.star{
+position:fixed;
+width:3px;height:3px;
 background:white;
-animation:blink 3s infinite ease-in-out;
-opacity:0.9;
+border-radius:50%;
+animation:blink 2.5s infinite;
 }
 
-/* وميض النجوم */
 @keyframes blink{
-0%{opacity:0.2;transform:scale(1)}
-50%{opacity:1;transform:scale(1.5)}
-100%{opacity:0.2;transform:scale(1)}
+0%{opacity:.2;transform:scale(1)}
+50%{opacity:1;transform:scale(2)}
+100%{opacity:.2;transform:scale(1)}
 }
 
-#smoke{display:none}
-
-/* صندوق الصفحة */
+/* صندوق المحتوى */
 .container{
-max-width:900px;
-margin:auto;
-margin-top:30px;
-background:rgba(255,255,255,0.05);
-padding:25px;
-border-radius:20px;
-backdrop-filter:blur(15px);
-border:1px solid rgba(255,255,255,0.15);
+max-width:1100px;
+margin:60px auto;
+background:rgba(255,255,255,0.06);
+border:1px solid rgba(255,255,255,0.2);
+padding:30px;
+border-radius:25px;
+backdrop-filter:blur(18px);
+box-shadow:0 0 50px rgba(0,255,255,.1);
 }
 
-/* عنوان */
+/* العنوان */
 h1{
 text-align:center;
-margin-bottom:15px;
+margin-bottom:10px;
 }
 
-/* مربع البحث */
+/* وصف */
+.subtitle{
+text-align:center;
+opacity:.8;
+margin-bottom:10px;
+}
+
+/* عداد النجوم – لعبة 😍 */
+.game-box{
+text-align:center;
+margin-bottom:15px;
+font-weight:800;
+}
+
+.badge{
+display:inline-block;
+padding:6px 12px;
+border-radius:12px;
+border:1px solid cyan;
+}
+
+/* البحث */
 .search-box{
 width:100%;
 padding:12px;
@@ -85,32 +94,32 @@ border-radius:15px;
 border:none;
 outline:none;
 font-size:17px;
-margin-bottom:20px;
+margin:15px 0 20px 0;
 }
 
 /* شبكة الملخصات */
 .grid{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
 gap:15px;
 }
 
 /* كرت المادة */
 .card{
-padding:15px;
-border-radius:15px;
-background:rgba(0,0,0,0.45);
+padding:18px;
+border-radius:18px;
+background:rgba(0,0,0,.55);
 border:1px solid cyan;
-transition:.3s;
 text-align:center;
+transition:.3s;
 }
 
 .card:hover{
-transform:scale(1.03);
-box-shadow:0 0 25px rgba(0,255,255,.4);
+transform:translateY(-5px) scale(1.03);
+box-shadow:0 0 30px rgba(0,255,255,.4);
 }
 
-/* زر تحميل */
+/* زر */
 .btn{
 display:inline-block;
 margin-top:8px;
@@ -119,26 +128,24 @@ border-radius:12px;
 background:cyan;
 color:black;
 text-decoration:none;
-font-weight:700;
+font-weight:800;
 }
 
 </style>
-
 </head>
 
 <body>
 
 <div id="space-bg"></div>
-<div id="smoke"></div>
 
+<!-- نجوم -->
 <script>
-// توليد النجوم
-for(let i=0;i<160;i++){
+for(let i=0;i<170;i++){
 let s=document.createElement("div");
-s.className="stars";
+s.className="star";
 s.style.top=Math.random()*100+"%";
 s.style.left=Math.random()*100+"%";
-s.style.animationDelay=Math.random()*3+"s";
+s.style.animationDelay=Math.random()*2+"s";
 document.body.appendChild(s);
 }
 </script>
@@ -146,48 +153,65 @@ document.body.appendChild(s);
 <div class="container">
 
 <h1>📚 ملخصات زيد</h1>
-<p style="text-align:center;opacity:.8">
-اكتب اسم المادة للبحث عن الملخص
-</p>
+<p class="subtitle">اكتب اسم المادة للبحث عن الملخص</p>
 
-<input type="text" id="search" class="search-box" placeholder="ابحث عن: محاسبة – تدقيق – نظم معلومات…">
+<!-- ⭐ لعبة صغيرة -->
+<div class="game-box">
+نقاطك: 
+<span class="badge" id="score">0</span>
+<br>
+<span style="font-size:13px;opacity:.7">
+(اضغط على النجوم الصغيرة واجمع نقاط 😄)
+</span>
+</div>
+
+<input id="search" class="search-box" placeholder="ابحث عن: محاسبة – تدقيق – نظم معلومات…">
 
 <div class="grid" id="list">
 
 <div class="card" data-name="نظم المعلومات المحاسبية 2">
 <h3>نظم المعلومات المحاسبية 2</h3>
-<a class="btn" href="#" target="_blank">فتح الملخص</a>
+<a class="btn" href="#">فتح الملخص</a>
 </div>
 
 <div class="card" data-name="تدقيق نظم المعلومات">
 <h3>تدقيق نظم المعلومات</h3>
-<a class="btn" href="#" target="_blank">فتح الملخص</a>
+<a class="btn" href="#">فتح الملخص</a>
 </div>
 
 <div class="card" data-name="محاسبة متوسطة 1">
 <h3>محاسبة متوسطة 1</h3>
-<a class="btn" href="#" target="_blank">فتح الملخص</a>
+<a class="btn" href="#">فتح الملخص</a>
 </div>
 
 <div class="card" data-name="قانون ضريبة الدخل والمبيعات">
 <h3>قانون ضريبة الدخل والمبيعات</h3>
-<a class="btn" href="#" target="_blank">فتح الملخص</a>
+<a class="btn" href="#">فتح الملخص</a>
 </div>
 
 </div>
 </div>
 
 <script>
-// البحث المباشر
-let search = document.getElementById("search");
-let cards = document.querySelectorAll(".card");
+// بحث مباشر
+let search=document.getElementById("search");
+let cards=document.querySelectorAll(".card");
 
-search.addEventListener("keyup", function(){
-let value = this.value.toLowerCase();
+search.addEventListener("keyup",()=>{
+let v=search.value.toLowerCase();
+cards.forEach(c=>{
+let name=c.getAttribute("data-name").toLowerCase();
+c.style.display=name.includes(v)?"block":"none";
+});
+});
 
-cards.forEach(card=>{
-let name = card.getAttribute("data-name").toLowerCase();
-card.style.display = name.includes(value) ? "block" : "none";
+// لعبة النجوم ⭐
+let score=0;
+document.querySelectorAll(".star").forEach(s=>{
+s.addEventListener("click",()=>{
+score++;
+document.getElementById("score").innerText=score;
+s.style.display="none";
 });
 });
 </script>
