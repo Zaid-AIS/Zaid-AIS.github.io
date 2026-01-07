@@ -11,6 +11,47 @@
 <style>
 
 body{
+  /* ---------------- خلفية 3D متحركة ---------------- */
+/* ---------------- خلفية 3D متحركة خرافية بدون صور ---------------- */
+
+#space-bg{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:linear-gradient(120deg,#000428,#004e92,#00111f,#000000);
+background-size:400% 400%;
+animation:gradientMove 10s ease infinite;
+z-index:-2;
+}
+
+/* حركة تدرّج 3D */
+@keyframes gradientMove{
+0%{background-position:0% 50%}
+50%{background-position:100% 50%}
+100%{background-position:0% 50%}
+}
+
+/* نجوم متحركة لطيفة */
+.stars{
+position:absolute;
+width:2px;
+height:2px;
+background:white;
+animation:blink 3s infinite ease-in-out;
+opacity:0.9;
+}
+
+/* وميض النجوم */
+@keyframes blink{
+0%{opacity:0.2;transform:scale(1)}
+50%{opacity:1;transform:scale(1.5)}
+100%{opacity:0.2;transform:scale(1)}
+}
+
+/* ❌ حذف طبقة الدخان القديمة نهائيًا */
+#smoke{display:none}
 font-family:'Tajawal',sans-serif;
 background:linear-gradient(120deg,#000428,#004e92,#00111f,#000000);
 color:white;
@@ -138,4 +179,5 @@ card.style.display = name.includes(value) ? "block" : "none";
 
 </body>
 </html>
+
 
