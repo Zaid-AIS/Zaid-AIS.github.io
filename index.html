@@ -20,11 +20,10 @@ box-sizing:border-box;
 font-family:'Tajawal',sans-serif;
 color:#fff;
 overflow-x:hidden;
-user-select:none;
 }
 
-/* خلفية */
-#z0{
+/* ================= خلفية ================= */
+#bg{
 position:fixed;
 top:0;
 left:0;
@@ -32,33 +31,33 @@ width:100%;
 height:100%;
 background:linear-gradient(120deg,#000428,#004e92,#00111f,#000000);
 background-size:400% 400%;
-animation:z1 10s ease infinite;
+animation:bgmove 10s ease infinite;
 z-index:-2;
 }
 
-@keyframes z1{
+@keyframes bgmove{
 0%{background-position:0% 50%}
 50%{background-position:100% 50%}
 100%{background-position:0% 50%}
 }
 
 /* نجوم */
-.z2{
+.star{
 position:absolute;
 width:2px;
 height:2px;
 background:white;
-animation:z3 3s infinite ease-in-out;
 opacity:.9;
+animation:blink 2.5s infinite;
 }
 
-@keyframes z3{
-0%{opacity:.2;transform:scale(1)}
-50%{opacity:1;transform:scale(1.5)}
-100%{opacity:.2;transform:scale(1)}
+@keyframes blink{
+0%{opacity:.2}
+50%{opacity:1}
+100%{opacity:.2}
 }
 
-/* navbar */
+/* ================= NAV ================= */
 nav{
 position:fixed;
 top:0;
@@ -73,8 +72,8 @@ border-bottom:1px solid rgba(255,255,255,0.1);
 z-index:10;
 }
 
-/* الشعار */
-.xl{
+/* شعار */
+.logo{
 font-size:1.7rem;
 font-weight:900;
 background:linear-gradient(45deg,#1e90ff,#00ffff);
@@ -82,7 +81,7 @@ background:linear-gradient(45deg,#1e90ff,#00ffff);
 color:transparent;
 }
 
-/* قائمة الروابط */
+/* روابط */
 nav ul{
 list-style:none;
 display:flex;
@@ -91,9 +90,7 @@ margin:0;
 padding:0;
 }
 
-nav ul li{
-display:inline-block;
-}
+nav ul li{display:inline-block;}
 
 nav a{
 color:white;
@@ -107,39 +104,36 @@ color:#00ffff;
 text-shadow:0 0 8px #00ffff;
 }
 
-/* hero */
-.hx{
-min-height:100vh;
+main{
+margin-top:110px;
+}
+
+/* ================= HERO ================= */
+.hero{
+min-height:85vh;
 display:flex;
-align-items:center;
 justify-content:center;
+align-items:center;
 text-align:center;
-padding:120px 20px 60px;
+padding:40px 20px;
 }
 
-.hx h1{
-font-size:3.3rem;
-margin-bottom:10px;
-}
+.hero span{color:#00ffff;}
 
-.hx span{
-color:#3bffff;
-}
-
-.bx{
+.badge{
 display:inline-block;
-background:rgba(0,255,255,.15);
 padding:6px 15px;
 border-radius:20px;
+background:rgba(0,255,255,.12);
 border:1px solid #00ffff;
-margin-bottom:10px;
+margin-bottom:8px;
 }
 
-/* sections */
+/* ================= أقسام عامة ================= */
 section{
 max-width:1000px;
 margin:auto;
-margin-bottom:80px;
+margin-bottom:70px;
 padding:20px;
 backdrop-filter:blur(20px);
 background:rgba(255,255,255,0.05);
@@ -148,107 +142,83 @@ border-radius:20px;
 box-shadow:0 0 40px rgba(0,255,255,0.05);
 }
 
-h2{
-text-align:center;
-margin-bottom:15px;
-}
+section h2{text-align:center;margin-bottom:15px}
 
 /* skills grid */
-.gx{
+.grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
 gap:15px;
 }
 
-.cx{
+.card{
 padding:18px;
 border-radius:15px;
-background:rgba(0,0,0,0.4);
+background:rgba(0,0,0,0.45);
 border:1px solid rgba(0,255,255,0.2);
 text-align:center;
 transition:.3s;
 }
-
-.cx:hover{
+.card:hover{
 transform:translateY(-6px) scale(1.02);
 box-shadow:0 0 20px rgba(0,255,255,0.35);
 }
 
-/* certs */
-.kx{
-border-left:4px solid cyan;
-padding-left:10px;
-margin-bottom:10px;
-}
-
-/* contacts */
-.cb{
+/* contact cards */
+.contacts{
 display:flex;
 justify-content:center;
 gap:20px;
 flex-wrap:wrap;
-margin-top:25px;
 }
 
-.cc{
+.contact{
 min-width:260px;
 padding:14px 18px;
 border-radius:18px;
 background:linear-gradient(135deg,#02203c,#043b63);
 border:1px solid rgba(255,255,255,0.15);
-box-shadow:0 0 25px rgba(0,255,255,0.08);
 display:flex;
 align-items:center;
 gap:10px;
+text-decoration:none;
 color:white;
 font-weight:800;
 transition:.3s;
-text-decoration:none;
+}
+.contact:hover{
+transform:translateY(-6px);
+border-color:#00ffff;
 }
 
-.cc i{
-background:linear-gradient(135deg,#00fff0,#00b7ff);
-color:#012b33;
+.contact i{
 padding:10px;
 border-radius:50%;
-box-shadow:0 0 15px rgba(0,255,255,.4);
-}
-
-.cc:hover{
-transform:translateY(-6px) scale(1.02);
-box-shadow:0 0 30px rgba(0,255,255,.35);
-border-color:#00ffff;
-cursor:pointer;
+background:linear-gradient(135deg,#00fff0,#00b7ff);
+color:#012b33;
 }
 
 </style>
-
 </head>
 
-<body oncontextmenu="return false">
+<body>
 
-<div id="z0"></div>
+<!-- خلفية -->
+<div id="bg"></div>
 
 <script>
-for(let i=0;i<180;i++){
-let d=document.createElement("div");
-d.className="z2";
-d.style.top=Math.random()*100+"%";
-d.style.left=Math.random()*100+"%";
-d.style.animationDelay=Math.random()*3+"s";
-document.body.appendChild(d);
-}
-
-/* تعطيل نسخ وفحص */
-document.onkeydown=function(e){
-if(e.ctrlKey && (e.key==="u"||e.key==="U"||e.key==="c"||e.key==="C"||e.key==="s"||e.key==="S"||e.key==="i"))
-return false;
+/* إنشاء نجوم */
+for(let i=0;i<160;i++){
+let s=document.createElement("div");
+s.className="star";
+s.style.top=Math.random()*100+"%";
+s.style.left=Math.random()*100+"%";
+document.body.appendChild(s);
 }
 </script>
 
-<!-- NAVBAR الحقيقي الصحيح -->
 <nav>
-  <div class="xl">Zaid.khaled.AIS</div>
+  <div class="logo">Zaid.khaled.AIS</div>
 
   <ul>
     <li><a href="#home">من أنا؟</a></li>
@@ -261,67 +231,66 @@ return false;
   </ul>
 </nav>
 
-<!-- HERO -->
-<div class="hx" id="home">
-<div>
-<div class="bx">Accounting Information Systems Graduate</div>
-<h1>أنا <span>زيد خالد زيد</span></h1>
-<h3>AIS – نظم معلومات محاسبية</h3>
-<p>أجمع بين المحاسبة والتكنولوجيا لتحليل البيانات وبناء أنظمة مالية</p>
-</div>
+<!-- ================= MAIN CONTENT ================= -->
+<main>
+
+<div class="hero" id="home">
+  <div>
+    <div class="badge">Accounting Information Systems Graduate</div>
+    <h1>أنا <span>زيد خالد زيد</span></h1>
+    <h3>AIS – نظم معلومات محاسبية</h3>
+    <p>أجمع بين المحاسبة والتكنولوجيا لتحليل البيانات وبناء أنظمة مالية</p>
+  </div>
 </div>
 
-<!-- ABOUT -->
 <section id="about">
-<h2>نبذة عني</h2>
-<p style="text-align:center">خريج جامعة آل البيت متخصص في نظم المعلومات المحاسبية AIS</p>
-<p style="text-align:center">أعمل على الدمج بين المحاسبة – قواعد البيانات – الذكاء الاصطناعي – تحليل البيانات</p>
-<p style="text-align:center">Interests: <b>Data Analysis – ERP – Tax – AI</b></p>
+  <h2>نبذة عني</h2>
+  <p style="text-align:center">خريج جامعة آل البيت متخصص في نظم المعلومات المحاسبية AIS</p>
+  <p style="text-align:center">دمج المحاسبة – قواعد البيانات – الذكاء الاصطناعي – تحليل البيانات</p>
 </section>
 
-<!-- SKILLS -->
 <section id="skills">
-<h2>المهارات التقنية</h2>
-<div class="gx">
-<div class="cx"><i class="fas fa-file-excel fa-2x"></i><h3>Advanced Excel</h3></div>
-<div class="cx"><i class="fas fa-chart-line fa-2x"></i><h3>Power BI</h3></div>
-<div class="cx"><i class="fas fa-code fa-2x"></i><h3>Python Basics</h3></div>
-<div class="cx"><i class="fas fa-database fa-2x"></i><h3>SQL</h3></div>
-<div class="cx"><i class="fas fa-shield-halved fa-2x"></i><h3>Information Systems Auditing</h3></div>
-</div>
+  <h2>المهارات التقنية</h2>
+  <div class="grid">
+    <div class="card"><i class="fas fa-file-excel fa-2x"></i><h3>Advanced Excel</h3></div>
+    <div class="card"><i class="fas fa-chart-line fa-2x"></i><h3>Power BI</h3></div>
+    <div class="card"><i class="fas fa-code fa-2x"></i><h3>Python Basics</h3></div>
+    <div class="card"><i class="fas fa-database fa-2x"></i><h3>SQL</h3></div>
+    <div class="card"><i class="fas fa-shield-halved fa-2x"></i><h3>IS Auditing</h3></div>
+  </div>
 </section>
 
-<!-- CERTIFICATES -->
 <section id="cert">
-<h2>الشهادات والدورات</h2>
-<div class="kx">شهادة جامعية من جامعة آل البيت بتقدير امتياز</div>
-<div class="kx">دورة خبير ضريبي</div>
-<div class="kx">شهادة محلل بيانات</div>
-<div class="kx">شهادة إكسل متقدم</div>
+  <h2>الشهادات والدورات</h2>
+  <p>شهادة جامعية بتقدير امتياز</p>
+  <p>خبير ضريبي</p>
+  <p>محلل بيانات</p>
+  <p>إكسل متقدم</p>
 </section>
 
-<!-- CONTACT -->
 <section id="contact">
-<h2>تواصل</h2>
+  <h2>تواصل</h2>
 
-<div class="cb">
+  <div class="contacts">
 
-<a class="cc" target="_blank" href="https://www.linkedin.com/in/zaid-khaled-zaid-2799b9365">
-<i class="fa-brands fa-linkedin"></i> LinkedIn
-</a>
+    <a class="contact" target="_blank" href="https://www.linkedin.com/in/zaid-khaled-zaid-2799b9365">
+      <i class="fa-brands fa-linkedin"></i> LinkedIn
+    </a>
 
-<a class="cc" href="tel:0792073638">
-<i class="fa fa-phone"></i> 0792073638
-</a>
+    <a class="contact" href="tel:0792073638">
+      <i class="fa fa-phone"></i> 0792073638
+    </a>
 
-<a class="cc" href="mailto:zaid.khaled.zaid004@gmail.com">
-<i class="fa fa-envelope"></i> zaid.khaled.zaid004@gmail.com
-</a>
+    <a class="contact" href="mailto:zaid.khaled.zaid004@gmail.com">
+      <i class="fa fa-envelope"></i> zaid.khaled.zaid004@gmail.com
+    </a>
 
-</div>
+  </div>
 </section>
 
-<footer style="margin-top:15px;opacity:.6;text-align:center">
+</main>
+
+<footer style="text-align:center;opacity:.6;margin-bottom:20px">
 Designed for Zaid Khalid Zaid © 2026
 </footer>
 
