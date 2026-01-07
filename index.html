@@ -305,6 +305,27 @@ margin:25px;
     border-color:#00ffff;
 }
 
+    /* إصلاح تساوي بطاقات التواصل */
+
+.contact-cards{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-top: 10px;
+}
+
+/* منع البطاقة من التمطّط بعرض الصفحة */
+.contact-card{
+  width: 100%;
+}
+
+/* للموبايل يصيروا تحت بعض */
+@media(max-width: 900px){
+  .contact-cards{
+    grid-template-columns: 1fr;
+  }
+}
+
 </style>
 </head>
 
