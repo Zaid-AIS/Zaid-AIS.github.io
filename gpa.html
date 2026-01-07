@@ -181,6 +181,62 @@ select option { background: #000; }
     text-shadow: 0 0 25px rgba(0, 255, 255, 0.6);
 }
 
+
+/* =========================================
+   تعديلات خاصة للموبايل (Mobile Responsive)
+   ========================================= */
+@media (max-width: 600px) {
+    
+    /* توسيع الصندوق ليأخذ كامل الشاشة */
+    .wrapper {
+        width: 95%;
+        padding: 15px;
+        margin-top: 10px;
+    }
+
+    /* تكبير العنوان */
+    h1 { font-size: 24px; padding-top: 15px; }
+
+    /* جعل حقول "المعدل السابق" تحت بعض بدل جنب بعض */
+    .inputs-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    /* ترتيب عناصر المادة (ساعات - علامة - حذف) */
+    .subject {
+        padding: 8px;
+        gap: 8px;
+    }
+    
+    /* تصغير الخط شوي بالحقول عشان يوسع */
+    input, select {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    /* الأزرار تصير بعرض الشاشة كاملة (أسهل للكبس بالأصبع) */
+    .buttons {
+        flex-direction: column; /* الأزرار تحت بعض */
+        gap: 10px;
+    }
+    
+    .btn, .calc {
+        width: 100%; /* العرض كامل */
+        max-width: 100%;
+        padding: 12px;
+    }
+
+    /* النتائج تحت بعض */
+    .results-container {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .result-card {
+        min-width: 100%; /* الكرت ياخد العرض كامل */
+    }
+}
 </style>
 </head>
 <body>
