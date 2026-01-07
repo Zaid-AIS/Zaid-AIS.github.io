@@ -2,10 +2,9 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>حاسبة المعدل التراكمي</title>
+<title>حاسبة المعدل الجامعي</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
 
 <style>
 
@@ -13,40 +12,46 @@
 
 body{
 font-family:'Tajawal';
-background:linear-gradient(120deg,#000428,#004e92,#00111f,#000000);
+background:radial-gradient(circle at top,#03203f,#00020a);
 color:white;
-padding:25px;
+min-height:100vh;
 }
 
-/* الصندوق الرئيسي */
-.box{
-max-width:900px;
-margin:auto;
-background:rgba(255,255,255,0.06);
-border-radius:25px;
-padding:25px;
-border:1px solid rgba(255,255,255,0.2);
-backdrop-filter:blur(15px);
-}
-
-/* العنوان */
 h1{
 text-align:center;
-margin-bottom:10px;
+padding:20px 0;
+font-weight:900;
+font-size:30px;
 }
 
-/* عنوان فرعي */
+/* Glass main box */
+.wrapper{
+max-width:1000px;
+margin:20px auto;
+padding:25px;
+border-radius:25px;
+background:rgba(255,255,255,0.06);
+backdrop-filter:blur(15px);
+border:1px solid rgba(255,255,255,0.2);
+box-shadow:0 0 50px rgba(0,255,255,.15);
+}
+
+/* small section title */
 h3{
 text-align:center;
-margin:10px 0;
+margin:15px 0;
 }
 
-/* المدخلات */
-.row{
-display:flex;
-gap:10px;
+/* subject card */
+.subject{
+display:grid;
+grid-template-columns:repeat(5,1fr);
+gap:8px;
+padding:12px;
+border-radius:18px;
+background:rgba(0,0,0,.45);
+border:1px solid rgba(0,255,255,.35);
 margin-bottom:8px;
-flex-wrap:wrap;
 }
 
 input,select{
@@ -54,14 +59,13 @@ padding:7px;
 border-radius:12px;
 border:none;
 outline:none;
+text-align:center;
 }
 
-/* زر */
+/* buttons */
 .btn{
-background:cyan;
-color:black;
-padding:8px 14px;
-border-radius:15px;
+padding:8px 12px;
+border-radius:12px;
 border:none;
 cursor:pointer;
 font-weight:800;
@@ -74,17 +78,17 @@ background:#00ffaa;
 .remove{
 background:#ff4d4d;
 color:white;
-border:none;
-padding:4px 10px;
-border-radius:50%;
-cursor:pointer;
 }
 
-/* النتائج */
-.result-box{
+.calc{
+background:cyan;
+margin-top:10px;
+}
+
+.results{
 display:flex;
 justify-content:space-around;
-margin-top:25px;
+margin-top:18px;
 font-size:20px;
 }
 
@@ -101,47 +105,38 @@ border-radius:12px;
 
 <h1>📊 حاسبة المعدل الجامعي</h1>
 
-<div class="box">
+<div class="wrapper">
 
-<h3>المعدل التراكمي السابق (اختياري)</h3>
+<h3>📌 المعدل التراكمي السابق (اختياري)</h3>
 
-<div class="row">
+<div style="display:flex;gap:8px;justify-content:center">
 <input type="number" id="oldGPA" step="0.01" placeholder="المعدل السابق">
 <input type="number" id="oldHours" placeholder="الساعات المقطوعة">
 </div>
 
-<hr style="opacity:.3;margin:15px 0">
+<hr style="opacity:.2;margin:15px 0">
 
-<h3>📝 مواد الفصل</h3>
+<h3>📚 مواد الفصل</h3>
 
-<div id="subjects"></div>
+<div id="list"></div>
 
-<button class="add" onclick="addRow()">➕ إضافة مادة</button>
+<button class="btn add" onclick="add()">➕ إضافة مادة</button>
 
 <br><br>
 
-<button class="btn" onclick="calculate()">حساب المعدل</button>
+<button class="btn calc" onclick="calc()">احسب المعدل</button>
 
-<div class="result-box">
-
-<div>
-📌 المعدل الفصلي:
-<span class="badge" id="termGPA">0.00</span>
-</div>
-
-<div>
-📌 المعدل التراكمي الجديد:
-<span class="badge" id="cgpa">0.00</span>
-</div>
-
+<div class="results">
+<div>📍 المعدل الفصلي: <span class="badge" id="term">0.00</span></div>
+<div>📍 المعدل التراكمي الجديد: <span class="badge" id="cgpa">0.00</span></div>
 </div>
 
 </div>
 
 <script>
 
-// تحويل الرمز إلى نقاط حسب الجدول المرسل
-function gradeToPoint(g){
+// grade → points (حسب الصورة التي أرسلتها)
+function toPoint(g){
 switch(g){
 case "A+": return 4;
 case "A": return 3.75;
@@ -159,71 +154,78 @@ default: return 0;
 }
 }
 
-// إضافة صف مادة
-function addRow(){
+// add subject card
+function add(){
 
-let div=document.createElement("div");
-div.className="row";
+let d=document.createElement("div");
+d.className="subject";
 
-div.innerHTML=`
-<input type="number" placeholder="ساعات المادة" class="hours">
+d.innerHTML=`
 
-<select class="grade">
-<option value="A+">A+</option>
-<option value="A">A</option>
-<option value="A-">A-</option>
-<option value="B+">B+</option>
-<option value="B">B</option>
-<option value="B-">B-</option>
-<option value="C+">C+</option>
-<option value="C">C</option>
-<option value="C-">C-</option>
-<option value="D+">D+</option>
-<option value="D">D</option>
-<option value="F">F</option>
+<input type="number" class="hours" placeholder="ساعات المادة">
+
+<select class="old">
+<option value="">علامة قديمة (إعادة)</option>
+<option>A+</option><option>A</option><option>A-</option>
+<option>B+</option><option>B</option><option>B-</option>
+<option>C+</option><option>C</option><option>C-</option>
+<option>D+</option><option>D</option><option>F</option>
 </select>
 
-<button class="remove" onclick="this.parentElement.remove()">−</button>
+<select class="new">
+<option>A+</option><option>A</option><option>A-</option>
+<option>B+</option><option>B</option><option>B-</option>
+<option>C+</option><option>C</option><option>C-</option>
+<option>D+</option><option>D</option><option>F</option>
+</select>
+
+<input disabled value="نأخذ الأعلى 🙂">
+
+<button class="btn remove" onclick="this.parentElement.remove()">−</button>
+
 `;
 
-document.getElementById("subjects").appendChild(div);
+document.getElementById("list").appendChild(d);
 }
 
-addRow();
-addRow();
+// add two rows default
+add();add();
 
-// عملية الحساب
-function calculate(){
+// calculate
+function calc(){
 
 let hours=document.querySelectorAll(".hours");
-let grades=document.querySelectorAll(".grade");
+let old=document.querySelectorAll(".old");
+let newer=document.querySelectorAll(".new");
 
-let totalPoints=0;
-let totalHours=0;
+let totalP=0,totalH=0;
 
 for(let i=0;i<hours.length;i++){
+
 let h=Number(hours[i].value);
-let g=gradeToPoint(grades[i].value);
+if(h<=0)continue;
 
-if(h>0){
-totalHours+=h;
-totalPoints+=h*g;
+let oldG=toPoint(old[i].value);
+let newG=toPoint(newer[i].value);
+
+// always take BEST grade
+let g = Math.max(oldG,newG);
+
+totalH += h;
+totalP += h*g;
 }
-}
 
-// المعدل الفصلي
-let term= totalPoints / totalHours || 0;
-document.getElementById("termGPA").innerHTML=term.toFixed(2);
+// term GPA
+let term = totalP/totalH || 0;
+document.getElementById("term").innerHTML=term.toFixed(2);
 
-// المعدل التراكمي السابق
-let oldG=Number(document.getElementById("oldGPA").value);
-let oldH=Number(document.getElementById("oldHours").value);
+// previous GPA
+let og=Number(document.getElementById("oldGPA").value);
+let oh=Number(document.getElementById("oldHours").value);
 
-// المعدل التراكمي الجديد
-let newGPA = ((oldG*oldH)+(totalPoints)) / (oldH+totalHours) || term;
-
-document.getElementById("cgpa").innerHTML=newGPA.toFixed(2);
-
+// new CGPA
+let cg = ((og*oh)+totalP)/(oh+totalH) || term;
+document.getElementById("cgpa").innerHTML=cg.toFixed(2);
 }
 
 </script>
