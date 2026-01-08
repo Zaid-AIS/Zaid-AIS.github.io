@@ -139,7 +139,7 @@
     </script>
 
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        const { useState } = React;
 
         // =================================================================
         // قاعدة البيانات الكاملة (60 سؤال)
@@ -277,7 +277,8 @@
             );
         };
 
-        const GameView = ({ questions, currentIndex, score, onAnswer, feedback, isAnswered, onNext, onSkip }) => {
+        // ✅ هنا أضفنا selectedOption ضمن الـ props
+        const GameView = ({ questions, currentIndex, score, onAnswer, feedback, isAnswered, onNext, onSkip, selectedOption }) => {
             const question = questions[currentIndex];
             const progress = ((currentIndex + 1) / questions.length) * 100;
 
@@ -413,6 +414,12 @@
 
             const handleStart = () => setGameState('levelSelect');
 
+            const resetState = () => {
+                setSelectedOption(null);
+                setIsAnswered(false);
+                setFeedback(null);
+            };
+
             const handleSelectLevel = (level) => {
                 let levelQuestions = questionsDB.filter(q => q.level === level);
                 if(levelQuestions.length === 0) levelQuestions = questionsDB;
@@ -425,12 +432,6 @@
                 setScore(0);
                 setGameState('playing');
                 resetState();
-            };
-
-            const resetState = () => {
-                setSelectedOption(null);
-                setIsAnswered(false);
-                setFeedback(null);
             };
 
             const handleAnswer = (idx) => {
@@ -457,6 +458,14 @@
                 }
             };
 
+            const handleRestart = () => {
+                setGameState('welcome');
+                setQuestions([]);
+                setCurrentIndex(0);
+                setScore(0);
+                resetState();
+            };
+
             return (
                 <div className="w-full h-full flex flex-col items-center">
                     <nav className="w-full p-6 flex justify-between items-center z-20">
@@ -481,9 +490,10 @@
                                 isAnswered={isAnswered}
                                 onNext={handleNext}
                                 onSkip={handleNext}
+                                selectedOption={selectedOption}  {/* ✅ تمرير selectedOption */}
                             />
                         )}
-                        {gameState === 'results' && <ResultScreen score={score} total={questions.length} onRestart={() => setGameState('welcome')} />}
+                        {gameState === 'results' && <ResultScreen score={score} total={questions.length} onRestart={handleRestart} />}
                     </main>
                     
                     <footer className="w-full text-center p-4 text-xs text-gray-600 glass-panel border-none rounded-none bg-transparent shadow-none">
@@ -497,8 +507,4 @@
         root.render(<App />);
     </script>
 </body>
-
 </html>
-
-
-
