@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIS Professional Challenge</title>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* ================== 1. إعدادات الصفحة ================== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Tajawal', sans-serif;
+            color: white;
+            overflow-x: hidden;
+            background-color: #000;
+        }
+
+        /* ================== 2. الخلفية (من البورتفوليو) ================== */
+        #space-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(120deg, #000428, #004e92, #00111f, #000000);
+            background-size: 400% 400%;
+            animation: gradientMove 10s ease infinite;
+            z-index: -2;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50% }
+            50% { background-position: 100% 50% }
+            100% { background-position: 0% 50% }
+        }
+
+        .stars {
+            position: absolute;
+            width: 2px; height: 2px;
+            background: white;
+            animation: blink 3s infinite ease-in-out;
+            opacity: 0.9;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        @keyframes blink {
+            0% { opacity: 0.2; transform: scale(1) }
+            50% { opacity: 1; transform: scale(1.5) }
+            100% { opacity: 0.2; transform: scale(1) }
+        }
+
+        /* ================== 3. تصميم الداشبورد (Pro UI) ================== */
+        
+        .pro-card {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(56, 189, 248, 0.3);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            border-radius: 24px;
+            transition: transform 0.3s ease;
+        }
+
+        .brand-text {
+            background: linear-gradient(90deg, #fff, #38bdf8);
+            -webkit-background-clip: text;
+            color: transparent;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .option-item {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .option-item:hover:not(:disabled) {
+            background: rgba(56, 189, 248, 0.1);
+            border-color: #38bdf8;
+            transform: translateX(-5px);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0284c7, #0ea5e9);
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(14, 165, 233, 0.5);
+        }
+
+        .tag-badge {
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: #38bdf8;
+        }
+
+        .fade-enter { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.98) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .progress-rail { background: rgba(255,255,255,0.05); }
+        .progress-bar { 
+            background: linear-gradient(90deg, #38bdf8, #818cf8);
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <div id="space-bg"></div>
+    <div id="root" class="relative z-10 min-h-screen flex flex-col"></div>
+
+    <script>
+        const bg = document.body;
+        for(let i=0; i<150; i++){
+            let s = document.createElement("div");
+            s.className = "stars";
+            s.style.top = Math.random() * 100 + "%";
+            s.style.left = Math.random() * 100 + "%";
+            s.style.animationDelay = Math.random() * 3 + "s";
+            bg.appendChild(s);
+        }
+    </script>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // =================================================================
+        // قاعدة البيانات الكاملة (60 سؤال)
+        // =================================================================
+        const questionsDB = [
+            // --- مبتدئ (Beginner) ---
+            { id: 1, level: 'beginner', category: 'مبادئ', question: 'ما هي المعادلة المحاسبية الأساسية؟', options: ['الأصول = الخصوم - الملكية', 'الأصول = الخصوم + حقوق الملكية', 'الخصوم = الأصول + الملكية', 'حقوق الملكية = الأصول + الخصوم'], correctIndex: 1, explanation: 'المعادلة الأساسية: الأصول = الخصوم + حقوق الملكية.' },
+            { id: 2, level: 'beginner', category: 'مالية', question: 'أي مما يلي يعتبر أصل متداول؟', options: ['المباني', 'رأس المال', 'النقدية', 'قرض طويل الأجل'], correctIndex: 2, explanation: 'النقدية تعتبر أصلاً متداولاً لسيولتها العالية.' },
+            { id: 3, level: 'beginner', category: 'مبادئ', question: 'الطرف "المدين" في الحساب يعني:', options: ['الجانب الأيمن', 'الجانب الأيسر', 'الزيادة دائماً', 'النقص دائماً'], correctIndex: 0, explanation: 'الطرف المدين هو الجانب الأيمن من حساب T.' },
+            { id: 4, level: 'beginner', category: 'دورة محاسبية', question: 'أول خطوة في الدورة المحاسبية هي:', options: ['ميزان المراجعة', 'الترحيل للأستاذ', 'تحليل العمليات المالية', 'إعداد القوائم'], correctIndex: 2, explanation: 'تبدأ بتحليل المستندات والعمليات.' },
+            { id: 5, level: 'beginner', category: 'مالية', question: 'قائمة الدخل توضح:', options: ['المركز المالي', 'نتيجة الأعمال (ربح/خسارة)', 'التدفقات النقدية', 'حقوق الملاك'], correctIndex: 1, explanation: 'تختص بالإيرادات والمصروفات.' },
+            { id: 6, level: 'beginner', category: 'مصطلحات', question: 'ماذا يعني مصطلح "الخصوم"؟', options: ['ممتلكات', 'التزامات وديون', 'استثمارات', 'أرباح'], correctIndex: 1, explanation: 'الخصوم هي الالتزامات المالية تجاه الغير.' },
+            { id: 7, level: 'beginner', category: 'قيود', question: 'عند شراء أصل نقداً:', options: ['الأصول تزيد', 'الأصول تقل', 'إجمالي الأصول لا يتغير', 'حقوق الملكية تزيد'], correctIndex: 2, explanation: 'يزيد أصل ويقل أصل آخر (النقدية) بنفس القيمة.' },
+            { id: 8, level: 'beginner', category: 'أصول', question: 'من الأصول غير الملموسة:', options: ['الأراضي', 'المخزون', 'براءة الاختراع', 'السيارات'], correctIndex: 2, explanation: 'براءة الاختراع ليس لها وجود مادي.' },
+            { id: 9, level: 'beginner', category: 'قيود', question: 'القيد الصحيح لزيادة رأس المال نقداً:', options: ['من ح/ رأس المال إلى النقدية', 'من ح/ النقدية إلى رأس المال', 'من ح/ المسحوبات للنقدية', 'من ح/ النقدية للإيراد'], correctIndex: 1, explanation: 'النقدية (مدين) ورأس المال (دائن).' },
+            { id: 10, level: 'beginner', category: 'عام', question: 'السنة المالية عادة مدتها:', options: ['6 أشهر', '12 شهراً', 'سنتين', '3 أشهر'], correctIndex: 1, explanation: 'الفترة المحاسبية القياسية.' },
+            { id: 11, level: 'beginner', category: 'جرد', question: 'مخزون آخر المدة يظهر في:', options: ['قائمة الدخل فقط', 'الميزانية فقط', 'قائمة الدخل والميزانية', 'التدفقات فقط'], correctIndex: 2, explanation: 'لتحديد تكلفة المبيعات وكأصل متداول.' },
+            { id: 12, level: 'beginner', category: 'مصروفات', question: 'أي مما يلي يعتبر مصروفاً؟', options: ['أوراق الدفع', 'الإيجار المدفوع', 'المدينون', 'النقدية'], correctIndex: 1, explanation: 'الإيجار تكلفة تشغيلية.' },
+            { id: 13, level: 'beginner', category: 'طبيعة الحسابات', question: 'حساب "المبيعات" طبيعته:', options: ['دائن', 'مدين', 'مزدوج', 'لا شيء'], correctIndex: 0, explanation: 'الإيرادات دائنة بطبيعتها.' },
+            { id: 14, level: 'beginner', category: 'دفاتر', question: 'دفتر الأستاذ (Ledger) يستخدم لـ:', options: ['التسجيل اليومي', 'تصنيف وتلخيص الحسابات', 'الموازنات', 'الضرائب'], correctIndex: 1, explanation: 'لمعرفة رصيد كل حساب على حدة.' },
+            { id: 15, level: 'beginner', category: 'مبادئ', question: 'مبدأ التكلفة التاريخية يعني التسجيل بـ:', options: ['السعر السوقي', 'سعر التصفية', 'سعر الشراء الفعلي', 'سعر الاستبدال'], correctIndex: 2, explanation: 'التكلفة الفعلية وقت الاقتناء.' },
+            { id: 16, level: 'beginner', category: 'أخطاء', question: 'تساوي ميزان المراجعة يعني:', options: ['عدم وجود أخطاء', 'تسجيل كل العمليات', 'تساوي الأرصدة المدنية والدائنة', 'الربح صحيح'], correctIndex: 2, explanation: 'تساوي حسابي فقط.' },
+            { id: 17, level: 'beginner', category: 'أصول', question: 'الإهلاك يخص:', options: ['الأراضي', 'الأصول الثابتة (عدا الأراضي)', 'المتداولة', 'الاستثمارات'], correctIndex: 1, explanation: 'لتوزيع تكلفة الأصل على عمره.' },
+            { id: 18, level: 'beginner', category: 'خصوم', question: 'أوراق الدفع تعتبر:', options: ['أصل', 'التزام (خصم)', 'إيراد', 'مصروف'], correctIndex: 1, explanation: 'تعهد بالدفع للغير.' },
+            { id: 19, level: 'beginner', category: 'معادلات', question: 'صافي الربح =', options: ['الأصول - الخصوم', 'الإيرادات - المصروفات', 'المبيعات - التكلفة', 'رأس المال + المسحوبات'], correctIndex: 1, explanation: 'قائمة الدخل.' },
+            { id: 20, level: 'beginner', category: 'تحليل', question: 'السيولة تعني:', options: ['الربحية', 'القدرة على سداد الالتزامات القصيرة', 'زيادة المبيعات', 'تقليل المصاريف'], correctIndex: 1, explanation: 'تحويل الأصول لنقد لسداد الديون.' },
+
+            // --- متوسط (Intermediate) ---
+            { id: 21, level: 'intermediate', category: 'إهلاك', question: 'معادلة القسط الثابت للإهلاك:', options: ['(التكلفة - الخردة) ÷ العمر', 'التكلفة × النسبة', 'التكلفة ÷ الوحدات', 'الخردة ÷ العمر'], correctIndex: 0, explanation: 'يوزع التكلفة بالتساوي.' },
+            { id: 22, level: 'intermediate', category: 'تسويات', question: 'المصروف المقدم يظهر في الميزانية كـ:', options: ['التزام', 'أصل متداول', 'ملكية', 'إيراد'], correctIndex: 1, explanation: 'حق للشركة للحصول على خدمة مستقبلاً.' },
+            { id: 23, level: 'intermediate', category: 'مخزون', question: 'في التضخم، طريقة FIFO تعطي:', options: ['تكلفة أعلى', 'ربح أعلى', 'مخزون أقل', 'ضرائب أقل'], correctIndex: 1, explanation: 'بيع المخزون الرخيص وبقاء الغالي يرفع الربح.' },
+            { id: 24, level: 'intermediate', category: 'بنوك', question: 'شيكات بالطريق (Outstanding) هي:', options: ['حررت ولم تصرف', 'مرفوضة', 'إيداعات', 'مؤجلة'], correctIndex: 0, explanation: 'خصمت من الدفاتر ولم تخصم من البنك.' },
+            { id: 25, level: 'intermediate', category: 'ديون', question: 'قيد تكوين مخصص ديون مشكوك فيها:', options: ['من المعدومة للمدينين', 'من مصروف ديون للمخصص', 'من المخصص للمدينين', 'من الأرباح للمدينين'], correctIndex: 1, explanation: 'تحميل المصروف وإنشاء حساب مقابل.' },
+            { id: 26, level: 'intermediate', category: 'إدارية', question: 'نقطة التعادل تتحقق عندما:', options: ['الربح = التكاليف', 'هامش المساهمة = التكاليف الثابتة', 'التكاليف المتغيرة 0', 'المبيعات = المتغيرة'], correctIndex: 1, explanation: 'الربح يساوي صفراً.' },
+            { id: 27, level: 'intermediate', category: 'تحليل', question: 'نسبة التداول =', options: ['الأصول المتداولة / الخصوم المتداولة', 'النقدية / الخصوم', 'الأصول / الخصوم', 'المبيعات / الأصول'], correctIndex: 0, explanation: 'قياس السيولة.' },
+            { id: 28, level: 'intermediate', category: 'أخطاء', question: 'خطأ لا يكشفه ميزان المراجعة:', options: ['قيد بمبلغ خطأ في الطرفين', 'ترحيل طرف واحد', 'خطأ جمع', 'مدين مكان دائن'], correctIndex: 0, explanation: 'لأن التوازن يظل قائماً.' },
+            { id: 29, level: 'intermediate', category: 'تسويات', question: 'الإيراد المستحق هو:', options: ['نقد مستلم مقدماً', 'خدمة قدمت ولم تسجل/تحصل', 'مصروف', 'التزام'], correctIndex: 1, explanation: 'إيراد يخص الفترة ولم يثبت.' },
+            { id: 30, level: 'intermediate', category: 'ملكية', question: 'الأرباح المحتجزة جزء من:', options: ['الأصول', 'الخصوم', 'حقوق الملكية', 'الإيرادات'], correctIndex: 2, explanation: 'أرباح غير موزعة.' },
+            { id: 31, level: 'intermediate', category: 'تدفقات', question: 'شراء أصول ثابتة نشاط:', options: ['تشغيلي', 'استثماري', 'تمويلي', 'غير نقدي'], correctIndex: 1, explanation: 'يتعلق بالأصول طويلة الأجل.' },
+            { id: 32, level: 'intermediate', category: 'إهلاك', question: 'القسط المتناقص يؤدي إلى:', options: ['إهلاك ثابت', 'إهلاك أعلى في البداية', 'إهلاك أقل في البداية', 'زيادة الأصل'], correctIndex: 1, explanation: 'تحميل السنوات الأولى بعبء أكبر.' },
+            { id: 33, level: 'intermediate', category: 'ضرائب', question: 'ضريبة القيمة المضافة VAT:', options: ['مباشرة', 'غير مباشرة على الاستهلاك', 'جمركية', 'رأسمالية'], correctIndex: 1, explanation: 'تفرض على المستهلك النهائي.' },
+            { id: 34, level: 'intermediate', category: 'AIS', question: 'نظام ERP يربط:', options: ['الحسابات فقط', 'الموارد البشرية', 'كافة أقسام المؤسسة', 'العملاء'], correctIndex: 2, explanation: 'قاعدة بيانات موحدة للشركة.' },
+            { id: 35, level: 'intermediate', category: 'تسويات', question: 'الإيراد غير المكتسب:', options: ['إيراد', 'أصل', 'التزام', 'ملكية'], correctIndex: 2, explanation: 'دين (خدمة) على الشركة تجاه العميل.' },
+            { id: 36, level: 'intermediate', category: 'مخزون', question: 'معادلة تكلفة البضاعة المباعة:', options: ['أول + مشتريات - آخر', 'مبيعات - مصاريف', 'مشتريات - مردودات', 'آخر - أول'], correctIndex: 0, explanation: 'المتاح للبيع ناقص المتبقي.' },
+            { id: 37, level: 'intermediate', category: 'تكاليف', question: 'التكلفة الغارقة Sunk Cost:', options: ['مستقبلية', 'حدثت ولا تسترد', 'متغيرة', 'فرصة بديلة'], correctIndex: 1, explanation: 'لا تؤثر في القرارات المستقبلية.' },
+            { id: 38, level: 'intermediate', category: 'أسهم', question: 'الأسهم الممتازة:', options: ['لها تصويت', 'أولوية في الأرباح', 'أرباح متغيرة', 'بلا قيمة اسمية'], correctIndex: 1, explanation: 'تفضل على العادية في التوزيعات.' },
+            { id: 39, level: 'intermediate', category: 'تدقيق', question: 'المصادقات تستخدم لـ:', options: ['النقدية', 'الإهلاك', 'العملاء والبنوك', 'النثريات'], correctIndex: 2, explanation: 'تأكيد الأرصدة من أطراف خارجية.' },
+            { id: 40, level: 'intermediate', category: 'بنوك', question: 'خصم الورقة التجارية:', options: ['سدادها', 'بيعها للبنك قبل الاستحقاق', 'إلغاؤها', 'تجديدها'], correctIndex: 1, explanation: 'تسييل الورقة نقداً.' },
+
+            // --- متقدم (Advanced) ---
+            { id: 41, level: 'advanced', category: 'تدقيق', question: 'الامتناع عن إبداء الرأي (Disclaimer):', options: ['قوائم صحيحة', 'خلاف بسيط', 'قيود جوهرية وشاملة', 'خسارة'], correctIndex: 2, explanation: 'لعدم كفاية الأدلة.' },
+            { id: 42, level: 'advanced', category: 'IFRS', question: 'عقود الإيجار (مستأجر) IFRS 16:', options: ['مصروف فقط', 'أصل حق استخدام والتزام', 'التزام محتمل', 'لا تسجل'], correctIndex: 1, explanation: 'رسملة عقود الإيجار.' },
+            { id: 43, level: 'advanced', category: 'تكاليف', question: 'نظام ABC يخصص التكاليف بناءً على:', options: ['ساعات العمل', 'مسببات التكلفة Cost Drivers', 'حجم الإنتاج', 'السعر'], correctIndex: 1, explanation: 'ربط التكلفة بالنشاط.' },
+            { id: 44, level: 'advanced', category: 'تدفقات', question: 'الطريقة غير المباشرة تبدأ بـ:', options: ['تعديل صافي الربح', 'النقد المقبوض', 'المبيعات', 'التكاليف'], correctIndex: 0, explanation: 'تعديل الربح بالبنود غير النقدية.' },
+            { id: 45, level: 'advanced', category: 'اندماج', question: 'شراء شركة بأعلى من قيمتها العادلة:', options: ['خسارة', 'مصروف', 'شهرة محل Goodwill', 'احتياطي'], correctIndex: 2, explanation: 'الفرق هو قيمة الشهرة.' },
+            { id: 46, level: 'advanced', category: 'تحليل', question: 'العائد على الملكية ROE:', options: ['ربح / أصول', 'ربح / حقوق مساهمين', 'مبيعات / أصول', 'توزيعات / سهم'], correctIndex: 1, explanation: 'كفاءة استثمار أموال الملاك.' },
+            { id: 47, level: 'advanced', category: 'ضرائب', question: 'التزام ضريبي مؤجل ينشأ عندما:', options: ['ربح محاسبي > ضريبي', 'ربح محاسبي < ضريبي', 'تساوي', 'خسائر'], correctIndex: 0, explanation: 'تأجيل دفع الضريبة للمستقبل.' },
+            { id: 48, level: 'advanced', category: 'إدارية', question: 'هامش الأمان:', options: ['مبيعات فعلية - تعادل', 'إجمالي ربح', 'تكاليف ثابتة', 'هامش مساهمة'], correctIndex: 0, explanation: 'مقدار الأمان قبل الخسارة.' },
+            { id: 49, level: 'advanced', category: 'حوكمة', question: 'لجنة المراجعة تتكون من:', options: ['تنفيذيين', 'محاسبين', 'أعضاء مستقلين', 'مساهمين'], correctIndex: 2, explanation: 'لضمان الاستقلالية.' },
+            { id: 50, level: 'advanced', category: 'معايير', question: 'انخفاض القيمة Impairment:', options: ['دفترية > استردادية', 'سوقية تزيد', 'دفترية < عادلة', 'عند البيع'], correctIndex: 0, explanation: 'تخفيض قيمة الأصل.' },
+            { id: 51, level: 'advanced', category: 'توحيد', question: 'حقوق الأقلية تظهر في:', options: ['قائمة الدخل', 'الميزانية (ملكية)', 'التزامات', 'أصول'], correctIndex: 1, explanation: 'حصة غير المسيطرين.' },
+            { id: 52, level: 'advanced', category: 'سندات', question: 'علاوة إصدار السندات:', options: ['إيراد', 'تخفض الفائدة', 'تزيد الفائدة', 'ملكية'], correctIndex: 1, explanation: 'تخفيض لتكلفة الاقتراض.' },
+            { id: 53, level: 'advanced', category: 'تحليل', question: 'دوران مخزون عالي جداً قد يعني:', options: ['ركود', 'نفاد مخزون وضياع فرص', 'سوء إدارة', 'غلاء'], correctIndex: 1, explanation: 'مخاطرة بعدم تلبية الطلب.' },
+            { id: 54, level: 'advanced', category: 'تكاليف', question: 'تالف طبيعي:', options: ['خسارة', 'يحمل على المنتج الجيد', 'مصروف', 'لا يسجل'], correctIndex: 1, explanation: 'جزء من تكلفة الإنتاج.' },
+            { id: 55, level: 'advanced', category: 'تدقيق', question: 'خطر الرقابة Control Risk:', options: ['فشل الرقابة الداخلية', 'فشل المدقق', 'خطر طبيعي', 'إفلاس'], correctIndex: 0, explanation: 'عدم منع/كشف الأخطاء.' },
+            { id: 56, level: 'advanced', category: 'معايير', question: 'حدث لاحق معدل للقوائم:', options: ['حريق لاحق', 'إفلاس عميل متعثر قديماً', 'هبوط بورصة', 'إصدار أسهم'], correctIndex: 1, explanation: 'دليل على حالة كانت قائمة.' },
+            { id: 57, level: 'advanced', category: 'إدارية', question: 'التكلفة المستهدفة تبدأ بـ:', options: ['حساب التكلفة', 'سعر السوق - الربح', 'التكاليف الثابتة', 'المواد'], correctIndex: 1, explanation: 'السعر يقود التكلفة.' },
+            { id: 58, level: 'advanced', category: 'عقود', question: 'إيراد بمرور الزمن:', options: ['تجزئة', 'مقاولات طويلة الأجل', 'بيع فوري', 'أصول'], correctIndex: 1, explanation: 'الإنجاز المرحلي.' },
+            { id: 59, level: 'advanced', category: 'تدفقات', question: 'التدفق النقدي الحر:', options: ['ربح', 'تشغيلي - رأسمالي', 'نقد بالبنك', 'مبيعات'], correctIndex: 1, explanation: 'النقد المتاح للتوسع والتوزيع.' },
+            { id: 60, level: 'advanced', category: 'مشتقات', question: 'التحوط Hedging هدفه:', options: ['مضاربة', 'تقليل المخاطر', 'زيادة مبيعات', 'تهرب'], correctIndex: 1, explanation: 'الحماية من التقلبات.' }
+        ];
+
+        // =================================================================
+        // المكونات (Components)
+        // =================================================================
+
+        const WelcomeScreen = ({ onStart }) => (
+            <div className="flex flex-col items-center justify-center min-h-[80vh] w-full px-4 text-center fade-enter">
+                <div className="mb-6 relative">
+                    <div className="absolute inset-0 bg-sky-500 blur-[60px] opacity-20 rounded-full"></div>
+                    <i className="fa-solid fa-layer-group text-7xl text-sky-400 relative z-10 animate-pulse"></i>
+                </div>
+                
+                <h1 className="text-5xl md:text-7xl font-bold mb-4 brand-text">
+                    AIS Challenge
+                </h1>
+                
+                <div className="pro-card p-6 mb-10 max-w-lg mx-auto border-l-4 border-sky-500">
+                    <p className="text-gray-300 text-lg leading-relaxed font-light">
+                        منصة تفاعلية احترافية لاختبار المهارات المحاسبية
+                        <br/>
+                        <span className="text-sky-400 font-bold text-sm mt-3 block tracking-widest">ZAID KHALED EDITION</span>
+                    </p>
+                </div>
+
+                <button onClick={onStart} className="btn-primary py-4 px-12 rounded-xl text-xl font-bold flex items-center gap-3 group">
+                    <span>ابدأ الاختبار</span>
+                    <i className="fa-solid fa-arrow-left transition-transform group-hover:-translate-x-1"></i>
+                </button>
+            </div>
+        );
+
+        const LevelSelectScreen = ({ onSelectLevel }) => {
+            const levels = [
+                { id: 'beginner', label: 'مبتدئ', sub: 'Beginner', icon: 'fa-seedling', color: 'border-green-500/50 hover:bg-green-500/10' },
+                { id: 'intermediate', label: 'متوسط', sub: 'Intermediate', icon: 'fa-chart-simple', color: 'border-yellow-500/50 hover:bg-yellow-500/10' },
+                { id: 'advanced', label: 'متقدم', sub: 'Advanced', icon: 'fa-shield-halved', color: 'border-red-500/50 hover:bg-red-500/10' },
+            ];
+
+            return (
+                <div className="flex flex-col items-center justify-center min-h-[70vh] w-full max-w-5xl mx-auto px-6 fade-enter">
+                    <h2 className="text-3xl font-bold mb-10 text-white flex items-center gap-3">
+                        <span className="w-2 h-8 bg-sky-500 rounded-full"></span>
+                        اختر المستوى
+                    </h2>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+                        {levels.map(level => (
+                            <button
+                                key={level.id}
+                                onClick={() => onSelectLevel(level.id)}
+                                className={`pro-card p-8 h-64 flex flex-col justify-between items-start transition-all duration-300 hover:-translate-y-2 group border-t-0 border-r-0 border-b-0 border-l-4 ${level.color}`}
+                            >
+                                <div className="bg-white/5 p-4 rounded-full group-hover:bg-white/10 transition-colors">
+                                    <i className={`fa-solid ${level.icon} text-3xl text-gray-300 group-hover:text-white`}></i>
+                                </div>
+                                <div className="text-right w-full">
+                                    <span className="text-3xl font-bold text-white block mb-1">{level.label}</span>
+                                    <span className="text-sm text-gray-400 uppercase tracking-wider">{level.sub}</span>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        const GameView = ({ questions, currentIndex, score, onAnswer, feedback, isAnswered, onNext, onSkip }) => {
+            const question = questions[currentIndex];
+            const progress = ((currentIndex + 1) / questions.length) * 100;
+
+            if (!question) return <div className="text-center mt-20">Loading...</div>;
+
+            return (
+                <div className="w-full max-w-4xl mx-auto mt-8 px-4 pb-20 fade-enter">
+                    <div className="flex justify-between items-center mb-6">
+                        <div className="tag-badge px-4 py-1.5 rounded-full text-sm font-bold flex items-center gap-2">
+                            <i className="fa-regular fa-folder-open"></i>
+                            {question.category}
+                        </div>
+                        <div className="text-gray-400 font-mono text-lg">
+                            <span className="text-sky-400 font-bold">{currentIndex + 1}</span> / {questions.length}
+                        </div>
+                    </div>
+
+                    <div className="w-full progress-rail rounded-full h-1.5 mb-10 overflow-hidden">
+                        <div className="progress-bar h-full transition-all duration-700 ease-out" style={{ width: `${progress}%` }}></div>
+                    </div>
+
+                    <div className="pro-card p-8 md:p-12 mb-8 relative overflow-hidden">
+                        <h2 className="text-2xl md:text-3xl font-bold mb-10 leading-relaxed text-right text-gray-100">
+                            {question.question}
+                        </h2>
+
+                        <div className="grid gap-4">
+                            {question.options.map((option, idx) => {
+                                let statusClass = "";
+                                if (isAnswered) {
+                                    if (idx === question.correctIndex) statusClass = "!bg-emerald-500/20 !border-emerald-500 !text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.2)]";
+                                    else if (idx === selectedOption) statusClass = "!bg-rose-500/20 !border-rose-500 !text-rose-400";
+                                    else statusClass = "opacity-40 grayscale";
+                                }
+
+                                return (
+                                    <button
+                                        key={idx}
+                                        disabled={isAnswered}
+                                        onClick={() => onAnswer(idx)}
+                                        className={`option-item w-full text-right p-5 rounded-xl text-lg font-medium flex items-center justify-between group ${statusClass}`}
+                                    >
+                                        <span>{option}</span>
+                                        <span className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold bg-white/5 border border-white/10 ${!isAnswered && 'group-hover:bg-sky-500 group-hover:text-white group-hover:border-sky-500'} transition-colors`}>
+                                            {['A', 'B', 'C', 'D'][idx]}
+                                        </span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    <div className="h-24">
+                        {feedback ? (
+                            <div className={`fade-enter p-4 rounded-xl border flex items-center justify-between ${feedback.type === 'success' ? 'bg-emerald-900/30 border-emerald-500/30' : 'bg-rose-900/30 border-rose-500/30'}`}>
+                                <div className="flex items-center gap-4">
+                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xl ${feedback.type === 'success' ? 'bg-emerald-500 text-black' : 'bg-rose-500 text-white'}`}>
+                                        <i className={`fa-solid ${feedback.type === 'success' ? 'fa-check' : 'fa-xmark'}`}></i>
+                                    </div>
+                                    <div>
+                                        <h4 className={`font-bold ${feedback.type === 'success' ? 'text-emerald-400' : 'text-rose-400'}`}>
+                                            {feedback.type === 'success' ? 'إجابة صحيحة' : 'إجابة خاطئة'}
+                                        </h4>
+                                        <p className="text-sm text-gray-300 mt-1">{feedback.message}</p>
+                                    </div>
+                                </div>
+                                {feedback.type === 'error' && (
+                                     <button onClick={onNext} className="btn-primary py-2 px-6 rounded-lg text-sm font-bold">
+                                        التالي
+                                    </button>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="flex justify-end">
+                                <button onClick={onSkip} className="text-gray-500 hover:text-gray-300 font-medium text-sm transition-colors py-2 px-4 flex items-center gap-2">
+                                    تخطي السؤال <i className="fa-solid fa-forward"></i>
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        const ResultScreen = ({ score, total, onRestart }) => {
+            const percentage = total > 0 ? Math.round((score / (total * 10)) * 100) : 0;
+            
+            return (
+                <div className="flex flex-col items-center justify-center min-h-[70vh] w-full px-4 fade-enter">
+                    <div className="pro-card p-10 max-w-lg w-full text-center relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-sky-500 via-purple-500 to-sky-500"></div>
+                        
+                        <h2 className="text-2xl font-bold text-gray-300 mb-8">تقرير الأداء</h2>
+                        
+                        <div className="relative inline-block mb-8">
+                            <svg className="w-40 h-40 transform -rotate-90">
+                                <circle cx="80" cy="80" r="70" stroke="currentColor" strokeWidth="10" fill="transparent" className="text-gray-800" />
+                                <circle cx="80" cy="80" r="70" stroke="currentColor" strokeWidth="10" fill="transparent" className={percentage >= 50 ? "text-emerald-500" : "text-rose-500"} strokeDasharray="440" strokeDashoffset={440 - (440 * percentage) / 100} style={{ transition: 'stroke-dashoffset 1s ease-in-out' }} />
+                            </svg>
+                            <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center flex-col">
+                                <span className="text-4xl font-bold text-white">{percentage}%</span>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4 mb-8">
+                            <div className="bg-white/5 p-4 rounded-xl">
+                                <div className="text-xs text-gray-400 uppercase mb-1">النقاط المكتسبة</div>
+                                <div className="text-2xl font-bold text-sky-400">{score}</div>
+                            </div>
+                            <div className="bg-white/5 p-4 rounded-xl">
+                                <div className="text-xs text-gray-400 uppercase mb-1">عدد الأسئلة</div>
+                                <div className="text-2xl font-bold text-white">{total}</div>
+                            </div>
+                        </div>
+
+                        <button onClick={onRestart} className="btn-primary w-full py-3 rounded-xl font-bold text-lg">
+                            إعادة المحاولة
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- التطبيق الرئيسي ---
+        function App() {
+            const [gameState, setGameState] = useState('welcome');
+            const [questions, setQuestions] = useState([]);
+            const [currentIndex, setCurrentIndex] = useState(0);
+            const [score, setScore] = useState(0);
+            const [selectedOption, setSelectedOption] = useState(null);
+            const [isAnswered, setIsAnswered] = useState(false);
+            const [feedback, setFeedback] = useState(null);
+
+            const handleStart = () => setGameState('levelSelect');
+
+            const handleSelectLevel = (level) => {
+                let levelQuestions = questionsDB.filter(q => q.level === level);
+                if(levelQuestions.length === 0) levelQuestions = questionsDB;
+                
+                // خلط الأسئلة عشوائياً
+                levelQuestions.sort(() => Math.random() - 0.5);
+
+                setQuestions(levelQuestions);
+                setCurrentIndex(0);
+                setScore(0);
+                setGameState('playing');
+                resetState();
+            };
+
+            const resetState = () => {
+                setSelectedOption(null);
+                setIsAnswered(false);
+                setFeedback(null);
+            };
+
+            const handleAnswer = (idx) => {
+                if (isAnswered) return;
+                setSelectedOption(idx);
+                setIsAnswered(true);
+                const isCorrect = idx === questions[currentIndex].correctIndex;
+
+                if (isCorrect) {
+                    setScore(s => s + 10);
+                    setFeedback({ type: 'success', message: 'إجابة صحيحة!' });
+                    setTimeout(handleNext, 1200);
+                } else {
+                    setFeedback({ type: 'error', message: questions[currentIndex].explanation });
+                }
+            };
+
+            const handleNext = () => {
+                if (currentIndex < questions.length - 1) {
+                    setCurrentIndex(prev => prev + 1);
+                    resetState();
+                } else {
+                    setGameState('results');
+                }
+            };
+
+            return (
+                <div className="w-full h-full flex flex-col items-center">
+                    <nav className="w-full p-6 flex justify-between items-center z-20">
+                        <div className="text-xl font-black brand-text" style={{fontFamily: 'Tajawal'}}>
+                            Zaid.Khaled<span className="text-sky-500">.AIS</span>
+                        </div>
+                        <div className="text-xs md:text-sm text-gray-400 border border-gray-700 rounded-full px-3 py-1">
+                             v2.1 Pro
+                        </div>
+                    </nav>
+
+                    <main className="flex-1 w-full flex flex-col items-center justify-center p-4">
+                        {gameState === 'welcome' && <WelcomeScreen onStart={handleStart} />}
+                        {gameState === 'levelSelect' && <LevelSelectScreen onSelectLevel={handleSelectLevel} />}
+                        {gameState === 'playing' && (
+                            <GameView 
+                                questions={questions} 
+                                currentIndex={currentIndex} 
+                                score={score} 
+                                onAnswer={handleAnswer}
+                                feedback={feedback}
+                                isAnswered={isAnswered}
+                                onNext={handleNext}
+                                onSkip={handleNext}
+                            />
+                        )}
+                        {gameState === 'results' && <ResultScreen score={score} total={questions.length} onRestart={() => setGameState('welcome')} />}
+                    </main>
+                    
+                    <footer className="w-full text-center p-4 text-xs text-gray-600 glass-panel border-none rounded-none bg-transparent shadow-none">
+                        Designed for Zaid Khaled Zaid © 2026
+                    </footer>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
