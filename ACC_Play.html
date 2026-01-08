@@ -490,7 +490,7 @@
                                 isAnswered={isAnswered}
                                 onNext={handleNext}
                                 onSkip={handleNext}
-                                selectedOption={selectedOption}  {/* ✅ تمرير selectedOption */}
+                                selectedOption={selectedOption}
                             />
                         )}
                         {gameState === 'results' && <ResultScreen score={score} total={questions.length} onRestart={handleRestart} />}
@@ -508,3 +508,4 @@
     </script>
 </body>
 </html>
+
