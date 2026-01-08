@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>محاسب تحت الضغط | لعبة محاسبة استراتيجية</title>
+  <style>
+    :root{
+      --bg1:#070A17; --bg2:#0E1440; --card:#0b1230cc; --border:#2a3a80;
+      --text:#eef2ff; --muted:#b9c4ff;
+      --good:#2ee59d; --bad:#ff5b7a; --warn:#ffd166;
+      --btn:#2f6bff; --btn2:#1a2550;
+      --shadow: 0 16px 40px #00000055;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; min-height:100vh;
+      font-family: system-ui, -apple-system, "Segoe UI", Tahoma, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(900px 500px at 85% -15%, #2f6bff33, transparent 60%),
+        radial-gradient(900px 500px at 10% 5%, #2ee59d22, transparent 60%),
+        radial-gradient(700px 420px at 50% 120%, #ff5b7a22, transparent 60%),
+        linear-gradient(160deg, var(--bg1), var(--bg2));
+      overflow-x:hidden;
+    }
+    .wrap{max-width:1200px; margin:0 auto; padding:18px;}
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding:14px 16px;
+      background: var(--card);
+      border:1px solid var(--border);
+      border-radius:18px;
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+    }
+    .brand{display:flex; align-items:center; gap:12px;}
+    .logo{
+      width:44px; height:44px; border-radius:16px;
+      background: linear-gradient(135deg, #2f6bff, #2ee59d);
+      box-shadow: 0 14px 40px #00000066;
+      position:relative;
+    }
+    .logo::after{
+      content:"";
+      position:absolute; inset:10px;
+      border-radius:12px;
+      background: linear-gradient(135deg, #ffffff20, transparent);
+      border:1px solid #ffffff1f;
+    }
+    .brand h1{margin:0; font-size:16px;}
+    .brand p{margin:0; font-size:12px; color:var(--muted); line-height:1.6;}
+    .btn{
+      border:1px solid #ffffff22;
+      background: linear-gradient(135deg, var(--btn), #2f6bffcc);
+      color:white;
+      padding:10px 14px;
+      border-radius:14px;
+      cursor:pointer;
+      font-weight:900;
+      box-shadow: 0 12px 30px #00000055;
+      transition: transform .05s ease;
+      user-select:none;
+    }
+    .btn:active{transform:translateY(1px)}
+    .btn.secondary{background: var(--btn2); box-shadow:none;}
+    .btn.danger{background: #ff2f55;}
+    .btn.ghost{
+      background: transparent;
+      box-shadow:none;
+    }
+    .grid{
+      margin-top:16px;
+      display:grid; gap:16px;
+      grid-template-columns: 1.15fr .85fr;
+    }
+    @media (max-width: 980px){
+      .grid{grid-template-columns:1fr}
+    }
+    .card{
+      background: var(--card);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:16px;
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+    }
+    .screen{display:none}
+    .screen.active{display:block}
+
+    .titleRow{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px;}
+    .titleRow h2{margin:0; font-size:16px;}
+    .tag{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:5px 9px;
+      border-radius:999px;
+      border:1px solid #ffffff22;
+      background:#07102a80;
+      color:var(--muted);
+      font-size:12px;
+      white-space:nowrap;
+    }
+    .tag b{color:var(--text)}
+    .lead{color:var(--muted); line-height:1.9; margin:0;}
+    .hr{height:1px; background:#ffffff12; margin:12px 0;}
+    .rules{margin:10px 0 0; padding:0 18px 0 0; line-height:1.9;}
+    .rules li{margin:6px 0; color:var(--text);}
+
+    .kpis{
+      display:grid; gap:10px;
+      grid-template-columns: repeat(2, 1fr); /* Adjusted for new KPI */
+    }
+    @media (max-width: 700px){
+      .kpis{grid-template-columns: 1fr;} /* Adjusted for mobile */
+    }
+    .kpi{
+      background:#07102a80;
+      border:1px solid #ffffff1d;
+      border-radius:16px;
+      padding:12px;
+      transition: background-color 0.3s ease;
+    }
+    .kpi.flash-good { background-color: rgba(46, 229, 157, 0.2); }
+    .kpi.flash-bad { background-color: rgba(255, 91, 122, 0.2); }
+    .kpi .label{color:var(--muted); font-size:12px}
+    .kpi .value{font-size:18px; font-weight:1000; margin-top:4px}
+    .good{color:var(--good)}
+    .bad{color:var(--bad)}
+    .warn{color:var(--warn)}
+
+    .meter{
+      height:10px; border-radius:999px;
+      background:#ffffff10; border:1px solid #ffffff14;
+      overflow:hidden;
+    }
+    .meter > div{height:100%; width:50%; background:linear-gradient(90deg,#2f6bff,#2ee59d);}
+
+    .eventCard{
+      border:1px solid #ffffff1e;
+      background:#07102a90;
+      border-radius:18px;
+      padding:14px;
+      position:relative;
+      overflow:hidden;
+    }
+    .eventCard::before{
+      content:"";
+      position:absolute;
+      inset:-30px;
+      background: radial-gradient(400px 220px at 20% 0%, #2f6bff22, transparent 60%),
+                  radial-gradient(300px 200px at 90% 10%, #2ee59d18, transparent 60%),
+                  radial-gradient(250px 180px at 50% 120%, #ff5b7a18, transparent 60%);
+      pointer-events:none;
+    }
+    .eventCard > *{position:relative}
+    .eventTitle{display:flex; align-items:center; justify-content:space-between; gap:10px;}
+    .eventTitle h3{margin:0; font-size:15px;}
+    .eventDesc{margin:8px 0 0; color:var(--muted); line-height:1.8; font-size:13px;}
+    .choices{display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;}
+    .choiceBtn{
+      flex:1 1 160px;
+      border:1px solid #ffffff22;
+      background:#0a1333;
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:14px;
+      cursor:pointer;
+      font-weight:900;
+      transition: transform .05s ease, border-color .2s ease;
+      user-select:none;
+    }
+    .choiceBtn:hover{border-color:#2f6bff}
+    .choiceBtn:active{transform:translateY(1px)}
+
+    .toast{
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid #ffffff22;
+      background:#07102a80;
+      color:var(--text);
+      line-height:1.7;
+      font-size:13px;
+      display:none;
+    }
+    .toast.show{display:block}
+    .toast.ok{border-color:#2ee59d55}
+    .toast.no{border-color:#ff5b7a55}
+    .toast.warn{border-color:#ffd16655}
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      border-radius:14px;
+      overflow:hidden;
+      border:1px solid #ffffff1c;
+      background:#07102a80;
+    }
+    th, td{
+      padding:10px;
+      border-bottom:1px solid #ffffff12;
+      font-size:12px;
+      text-align:right;
+      vertical-align:top;
+    }
+    th{color:var(--muted); font-weight:800; background:#06102a;}
+    tr:last-child td{border-bottom:none}
+
+    .modalBack{
+      position:fixed; inset:0;
+      background:#00000088;
+      display:none;
+      align-items:center; justify-content:center;
+      padding:18px;
+      z-index:999;
+    }
+    .modalBack.show{display:flex}
+    .modal{
+      max-width:720px; width:100%;
+      background: linear-gradient(180deg, #0c1333, #080d1f);
+      border:1px solid #ffffff22;
+      border-radius:20px;
+      padding:16px;
+      box-shadow: 0 20px 70px #00000088;
+    }
+    .modal h2{margin:0 0 8px; font-size:18px}
+    .modal p{margin:0; color:var(--muted); line-height:1.9}
+    .modal .actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px}
+    .small{font-size:12px; color:var(--muted); line-height:1.7}
+
+    .shake{animation: shake .25s linear;}
+    @keyframes shake{
+      0%{transform:translateX(0)}
+      25%{transform:translateX(6px)}
+      50%{transform:translateX(-6px)}
+      75%{transform:translateX(6px)}
+      100%{transform:translateX(0)}
+    }
+
+    .confetti{
+      position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:1000;
+      display:none;
+    }
+    .confetti.show{display:block}
+    .c{
+      position:absolute; width:10px; height:14px; border-radius:4px;
+      opacity:.9;
+      animation: fall 1.2s linear forwards;
+    }
+    @keyframes fall{
+      to{transform: translateY(110vh) rotate(360deg); opacity:1}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo"></div>
+        <div>
+          <h1>محاسب تحت الضغط</h1>
+          <p>أنقذ الشركة من الإفلاس في 7 أيام - قرارات سريعة وأحداث مفاجئة</p>
+        </div>
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn secondary" id="howBtn">كيف ألعب؟</button>
+        <button class="btn" id="startBtn">ابدأ</button>
+        <button class="btn danger" id="resetBtn">إعادة</button>
+      </div>
+    </div>
+
+    <!-- INTRO -->
+    <section class="screen active" id="intro">
+      <div class="grid">
+        <div class="card">
+          <div class="titleRow">
+            <h2>القصة</h2>
+            <span class="tag">مهمة عاجلة</span>
+          </div>
+          <p class="lead">
+            شركتك على حافة الإفلاس... لديك <b>7 أيام</b> لإنقاذها.
+            كل يوم سيواجهك مجموعة من الأحداث (عمليات مالية، مخاطر، عروض) وعليك اتخاذ القرار الصحيح بسرعة.
+          </p>
+          <div class="hr"></div>
+          <div class="titleRow">
+            <h2>إعدادات</h2>
+            <span class="tag">إعدادات اللعبة</span>
+          </div>
+
+          <div style="display:grid; gap:10px; grid-template-columns:1fr 1fr;">
+            <div>
+              <label class="small">مستوى الصعوبة</label>
+              <select id="difficulty" style="width:100%; padding:11px 12px; border-radius:14px; background:#070b16; border:1px solid #ffffff22; color:var(--text);">
+                <option value="easy">سهلة (للمتعة)</option>
+                <option value="normal" selected>متوسطة</option>
+                <option value="hard">صعبة (ضغط حقيقي)</option>
+              </select>
+            </div>
+            <div>
+              <label class="small">عدد الأيام</label>
+              <select id="daysCount" style="width:100%; padding:11px 12px; border-radius:14px; background:#070b16; border:1px solid #ffffff22; color:var(--text);">
+                <option value="7" selected>7 أيام</option>
+                <option value="10">10 أيام</option>
+                <option value="14">14 يوم</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="hr"></div>
+
+          <div class="titleRow">
+            <h2>هدفك</h2>
+            <span class="tag">الخط النهائي</span>
+          </div>
+          <ul class="rules">
+            <li>لا تدع <b>السيولة النقدية (الكاش)</b> تنخفض تحت الصفر.</li>
+            <li>ارفع <b>سمعة الشركة</b> لزيادة فرص الصفقات الجيدة.</li>
+            <li>حافظ على <b>المخزون</b> (لا تبع بدون بضاعة).</li>
+            <li>تجنب <b>الاحتيال المالي</b> وإلا ستتعرض لفضيحة.</li>
+            <li>حافظ على <b>الروح المعنوية للموظفين</b> لتجنب المشاكل الداخلية.</li>
+          </ul>
+
+          <div class="hr"></div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn" id="startFromIntro">ابدأ اللعبة الآن</button>
+            <button class="btn secondary" id="openHowFromIntro">شرح سريع</button>
+          </div>
+
+          <p class="small" style="margin-top:10px;">
+            *اللعبة ليست مجرد أسئلة، بل هي محاكاة لقرارات محاسبية وإدارية في سيناريو ممتع.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="titleRow">
+            <h2>نظام النقاط</h2>
+            <span class="tag">نظام الكومبو</span>
+          </div>
+          <p class="lead">
+            كل قرار صحيح يمنحك نقاطاً. القرارات الصحيحة المتتالية تزيد من <b>مضاعف النقاط (كومبو)</b>.
+            القرارات الخاطئة تقلل من السمعة وتكسر الكومبو.
+          </p>
+          <div class="hr"></div>
+          <div class="titleRow">
+            <h2>أمثلة على الأحداث</h2>
+            <span class="tag">عينات من اللعب</span>
+          </div>
+          <p class="small">
+            - عميل يريد الشراء بالآجل... هل تقبل أم تطلب دفعة مقدمة؟<br>
+            - مورد يعرض خصماً كبيراً إذا دفعت نقداً... هل تستغل الفرصة؟<br>
+            - إنذار بدفع الرواتب... كيف تدير سيولتك النقدية؟<br>
+            - محاولة احتيال بفواتير مزورة... هل تكتشفها أم تقع في الفخ؟<br>
+            - موظف مبتكر يقترح فكرة توفر المال... كيف تتعامل معه؟
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- GAME -->
+    <section class="screen" id="game">
+      <div class="grid">
+        <div class="card" id="mainCard">
+          <div class="titleRow">
+            <h2>حدث اليوم</h2>
+            <span class="tag"><b id="dayLbl">اليوم 1</b> • <span id="timerLbl">متبقي 00</span></span>
+          </div>
+
+          <div class="eventCard" id="eventCard">
+            <div class="eventTitle">
+              <h3 id="eventTitle">—</h3>
+              <span class="tag" id="eventTypeTag">حدث</span>
+            </div>
+            <p class="eventDesc" id="eventDesc">—</p>
+            <div class="choices" id="choices"></div>
+          </div>
+
+          <div class="toast" id="toast"></div>
+
+          <div class="hr"></div>
+
+          <div class="titleRow">
+            <h2>سجل القرارات (آخر 8 قرارات)</h2>
+            <span class="tag">سجل الأحداث</span>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th style="width:70px">اليوم</th>
+                <th>الحدث</th>
+                <th style="width:110px">القرار</th>
+                <th style="width:90px">النتيجة</th>
+              </tr>
+            </thead>
+            <tbody id="logBody"></tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="titleRow">
+            <h2>لوحة المؤشرات</h2>
+            <span class="tag">بيانات الشركة</span>
+          </div>
+
+          <div class="kpis">
+            <div class="kpi" id="cashKpi">
+              <div class="label">السيولة النقدية</div>
+              <div class="value" id="cashV">0</div>
+            </div>
+            <div class="kpi" id="invKpi">
+              <div class="label">المخزون</div>
+              <div class="value" id="invV">0</div>
+            </div>
+            <div class="kpi" id="repKpi">
+              <div class="label">السمعة</div>
+              <div class="value" id="repV">0</div>
+            </div>
+            <div class="kpi" id="moraleKpi">
+              <div class="label">الروح المعنوية</div>
+              <div class="value" id="moraleV">0</div>
+            </div>
+            <div class="kpi" id="scoreKpi">
+              <div class="label">النقاط</div>
+              <div class="value" id="scoreV">0</div>
+            </div>
+          </div>
+
+          <div class="hr"></div>
+
+          <div class="titleRow">
+            <h2>الكومبو</h2>
+            <span class="tag">مضاعف <b id="comboLbl">x1</b></span>
+          </div>
+          <div class="meter"><div id="comboBar"></div></div>
+          <p class="small" id="statusLine" style="margin-top:10px;">—</p>
+
+          <div class="hr"></div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn secondary" id="pauseBtn">إيقاف مؤقت</button>
+            <button class="btn ghost" id="skipBtn" title="مرة واحدة في اليوم (مع عقوبة)">تخطي الحدث</button>
+          </div>
+
+          <p class="small" style="margin-top:10px;">
+            <b>نصيحة:</b> السيولة النقدية هي الأهم. ولكن التضحية بالسمعة قد يقلل من الصفقات الجيدة.
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- MODAL -->
+  <div class="modalBack" id="modalBack">
+    <div class="modal">
+      <h2 id="modalTitle">كيف ألعب؟</h2>
+      <p id="modalText">
+        كل يوم يواجهك 3 أحداث. لكل حدث لديك خيارات محددة. اختر بسرعة قبل انتهاء الوقت.
+        القرارات الصحيحة ترفع من نقاطك وسمعتك. القرارات الخاطئة تقلل من السمعة وقد تخسر سيولة نقدية أو تخسر المخزون.
+      </p>
+      <div class="actions">
+        <button class="btn" id="modalOk">فهمت</button>
+        <button class="btn secondary" id="modalClose">إغلاق</button>
+      </div>
+      <p class="small" style="margin-top:10px;">
+        *اللعبة تعلمك بشكل غير مباشر عن مفاهيم مثل: السيولة النقدية، المخزون، الخصومات، الذمم المدينة، مخاطر الاحتيال، وأهمية الروح المعنوية.
+      </p>
+    </div>
+  </div>
+
+  <!-- CONFETTI -->
+  <div class="confetti" id="confetti"></div>
+
+  <script>
+    // ===== Utils =====
+    const $ = (id) => document.getElementById(id);
+    const fmt = (n) => Number(n).toLocaleString('ar-JO', {maximumFractionDigits: 0}) + " د.أ";
+    const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+    const rand = (a,b)=> Math.floor(Math.random()*(b-a+1))+a;
+    const pick = (arr)=> arr[Math.floor(Math.random()*arr.length)];
+
+    // ===== Game State =====
+    let S = null;
+    let T = null;
+    let paused = false;
+    let prevKpiValues = {}; // Store previous KPI values for flashing effect
+
+    function initState(){
+      const diff = $("difficulty").value;
+      const days = Number($("daysCount").value);
+
+      const base = {
+        daysTotal: days,
+        day: 1,
+        score: 0,
+        combo: 0,
+        comboMul: 1,
+        skipUsed: false,
+
+        cash: 5000,
+        inv: 18,
+        rep: 60, // 0..100
+        morale: 60, // 0..100
+        scandal: 0, // 0..100
+        loan: 0, // Active loan amount
+        loanPaymentDue: 0, // Daily payment for loan
+
+        diff,
+        timePerEvent: diff === "easy" ? 20 : diff === "normal" ? 15 : 12,
+        log: [],
+        currentEvent: null,
+        timeLeft: 0,
+        _eventsDone: 0,
+        _pendingCollect: 0,
+        _pendingPay: 0,
+        _expenseShield: 0,
+      };
+
+      // Adjust starting values based on difficulty
+      if(diff === "easy"){
+        base.cash = 6500; base.inv = 24; base.rep = 70; base.morale = 70;
+      }
+      if(diff === "hard"){
+        base.cash = 4000; base.inv = 12; base.rep = 50; base.morale = 50;
+      }
+      
+      S = base;
+      prevKpiValues = {cash: S.cash, inv: S.inv, rep: S.rep, morale: S.morale};
+    }
+
+    // ===== Event Generator (fun scenarios, not questions) =====
+    function genEvent(){
+      const riskBoost = S.diff === "hard" ? 15 : S.diff === "normal" ? 8 : 3;
+      const rep = S.rep;
+      const morale = S.morale;
+
+      const events = [];
+
+      // SELL events
+      events.push({
+        type:"بيع",
+        title:"طابور من الزبائن!",
+        desc:`يمكنك بيع البضاعة بسرعة. مخزونك الحالي: ${S.inv} قطعة. ماذا ستفعل؟`,
+        choices:[
+          {
+            text:"بيع نقداً (ربح سريع)",
+            apply:()=>{
+              if(S.inv <= 0) return fail("ليس لديك مخزون! خسرت سمعة لأنك وعدت بدون بضاعة.");
+              const units = rand(2,6);
+              const u = Math.min(units, S.inv);
+              const revenue = u * rand(90,120);
+              S.inv -= u;
+              S.cash += revenue;
+              S.score += Math.round(60 + revenue/20);
+              S.rep += 2;
+              return ok(`بعت ${u} قطعة نقداً وربحت سيولة جيدة.`);
+            }
+          },
+          {
+            text:"بيع بالآجل (توسيع السوق)",
+            apply:()=>{
+              if(S.inv <= 0) return fail("ليس لديك مخزون! فقدت العملاء.");
+              const units = rand(3,7);
+              const u = Math.min(units, S.inv);
+              const revenue = u * rand(100,130);
+              S.inv -= u;
+              S.rep += 6;
+              S.score += Math.round(80 + revenue/25);
+              S._pendingCollect += Math.round(revenue*0.7);
+              return warn(`بعت ${u} قطعة بالآجل. ارتفعت السمعة، لكن السيولة النقدية لم تدخل بعد.`);
+            }
+          },
+          {
+            text:"رفع السعر (مخاطرة)",
+            apply:()=>{
+              if(S.inv <= 0) return fail("ليس لديك مخزون. رفع السعر لن يفيد.");
+              const units = rand(1,4);
+              const u = Math.min(units, S.inv);
+              const revenue = u * rand(130,170);
+              S.inv -= u;
+              S.cash += revenue;
+              S.score += Math.round(90 + revenue/18);
+              S.rep -= 4;
+              return warn(`رفعت السعر وبعت ${u} قطعة. سيولة أعلى لكن السمعة انخفضت.`);
+            }
+          }
+        ]
+      });
+
+      // BUY inventory event
+      events.push({
+        type:"شراء",
+        title:"مورد يعرض خصماً اليوم فقط",
+        desc:`المورد يعرض خصماً 15% إذا دفعت نقداً الآن. مخزونك الحالي: ${S.inv}.`,
+        choices:[
+          {
+            text:"اشترِ نقداً (استفد من الخصم)",
+            apply:()=>{
+              const cost = rand(900,1400);
+              if(S.cash < cost) return fail("سيولتك النقدية لا تكفي! المورد غاضب وسمعتك انخفضت.");
+              S.cash -= cost;
+              const gained = rand(8,14);
+              S.inv += gained;
+              S.score += Math.round(70 + gained*8);
+              S.rep += 3;
+              return ok(`اشتريت ${gained} قطعة بخصم. قرار ممتاز.`);
+            }
+          },
+          {
+            text:"اشترِ بالآجل (حافظ على السيولة)",
+            apply:()=>{
+              const gained = rand(7,12);
+              S.inv += gained;
+              S.rep += 1;
+              S.score += 55;
+              S._pendingPay += rand(700,1100);
+              return warn(`اشتريت بالآجل. حصلت على مخزون، لكن سيكون عليك سداد قريبًا.`);
+            }
+          },
+          {
+            text:"لا تشترِ (وفر السيولة)",
+            apply:()=>{
+              S.score += 20;
+              S.rep -= 2;
+              return warn("قررت عدم الشراء. انتبه من نفاد المخزون في أوقات الذروة.");
+            }
+          }
+        ]
+      });
+
+      // Payroll/Expenses
+      events.push({
+        type:"تشغيل",
+        title:"موعد دفع الرواتب والمصاريف!",
+        desc:`عليك التزامات تشغيلية اليوم. التأثير سيؤثر على الروح المعنوية والسمعة.`,
+        choices:[
+          {
+            text:"ادفع الرواتب كاملة",
+            apply:()=>{
+              const pay = rand(600,900);
+              if(S.cash < pay) return fail("حاولت دفع الرواتب لكن السيولة لا تكفي! خسرت سمعة كبيرة.");
+              S.cash -= pay;
+              S.morale += 8;
+              S.rep += 2;
+              S.score += 85;
+              return ok(`دفعت الرواتب (${fmt(pay)}). فريق العمل سعيد!`);
+            }
+          },
+          {
+            text:"ادفع جزءاً وأجل الباقي",
+            apply:()=>{
+              const pay = rand(300,500);
+              if(S.cash < pay) return fail("حتى الجزء لا يمكنك دفعه... الوضع خطير!");
+              S.cash -= pay;
+              S.morale -= 10;
+              S.rep -= 4;
+              S.score += 30;
+              return warn(`دفعت جزءاً (${fmt(pay)}) وأجلت الباقي. الروح المعنوية والسمعة تأثرتا سلباً.`);
+            }
+          },
+          {
+            text:"قم بخفض المصاريف (تقشف)",
+            apply:()=>{
+              S.morale -= 5;
+              S.score += 65;
+              S._expenseShield += 1;
+              return ok("قمت بتقشف ذكي: قللت المصاريف. سيفيدك ذلك في الأيام القادمة.");
+            }
+          }
+        ]
+      });
+
+      // Fraud event
+      events.push({
+        type:"احتيال",
+        title:"فاتورة مشبوهة وصلت!",
+        desc:`هناك فاتورة تبدو غير طبيعية. إذا دفعتها عن طريق الخطأ ستكون مشكلة كبيرة. ماذا ستفعل؟`,
+        choices:[
+          {
+            text:"تحقق من المستندات (تدقيق سريع)",
+            apply:()=>{
+              const caught = rand(1,100) <= (55 + Math.floor(rep/2) - riskBoost);
+              if(caught){
+                S.score += 120;
+                S.rep += 5;
+                S.scandal -= 8;
+                return ok("كشفت الاحتيال! أنقذت الشركة وربحت احترام الإدارة.");
+              } else {
+                S.score += 35;
+                S.rep -= 1;
+                return warn("تبين أن الفاتورة صحيحة... لكن من الجيد أن كنت حذراً.");
+              }
+            }
+          },
+          {
+            text:"ادفع بسرعة (استعجال)",
+            apply:()=>{
+              const hit = rand(1,100) <= (35 + riskBoost);
+              if(hit){
+                const loss = rand(900,1600);
+                S.cash -= loss;
+                S.rep -= 12;
+                S.scandal += 22;
+                return fail(`دفعت فاتورة احتيال! خسرت ${fmt(loss)} وسمعتك تدهورت.`);
+              } else {
+                const pay = rand(500,900);
+                S.cash -= pay;
+                S.score += 40;
+                return warn("دفعت وتبين أنها سليمة... لكن الاستعجال محفوف بالمخاطر.");
+              }
+            }
+          },
+          {
+            text:"ارفض الدفع (تشدد)",
+            apply:()=>{
+              S.rep -= 5;
+              S.score += 55;
+              return warn("رفضت الدفع. قد تكون الفاتورة صحيحة، والمورد قد يغضب.");
+            }
+          }
+        ]
+      });
+      
+      // NEW: Morale Events
+      if(morale < 30){
+        events.push({
+          type:"موظفين",
+          title:"خطأ من موظف محبط",
+          desc:`الروح المعنوية منخفضة. أحد الموظفين ارتكب خطأً كلف الشركة مالاً.`,
+          choices:[
+            {
+              text:"عاقب الموظف (صرامة)",
+              apply:()=>{
+                const loss = rand(200,400);
+                S.cash -= loss;
+                S.morale -= 5;
+                S.score += 25;
+                return fail(`خسرت ${fmt(loss)} بسبب الخطأ. الروح المعنوية انخفضت أكثر.`);
+              }
+            },
+            {
+              text:"تغاضى عن الأمر (تحفيز)",
+              apply:()=>{
+                S.morale += 10;
+                S.score += 60;
+                return ok("تجاهلت الخطأ. الروح المعنوية تحسنت لكنك خسرت بعض المال.");
+              }
+            }
+          ]
+        });
+      }
+      if(morale > 80){
+        events.push({
+          type:"موظفين",
+          title:"موظف مبتكر يقترح فكرة",
+          desc:`الروح المعنوية عالية. موظف يقترح فكرة قد توفر المال على المدى الطويل.`,
+          choices:[
+            {
+              text:"ادعم الفكرة (استثمار)",
+              apply:()=>{
+                const cost = rand(300,500);
+                if(S.cash < cost) return fail("لا تملك السيولة لدعم الفكرة.");
+                S.cash -= cost;
+                S.morale += 5;
+                S._expenseShield += 2; // Better shield
+                S.score += 100;
+                return ok(`استثمرت ${fmt(cost)} في الفكرة. ستوفر المال في المستقبل.`);
+              }
+            },
+            {
+              text:"اشكره فقط (لا استثمار)",
+              apply:()=>{
+                S.morale += 2;
+                S.score += 40;
+                return warn("شكرت الموظف دون دعم فكرته. الروح المعنوية تحسنت قليلاً.");
+              }
+            }
+          ]
+        });
+      }
+
+      // NEW: Investment Event
+      if(S.cash > 2000 && rand(1,100) <= 25){
+        events.push({
+          type:"استثمار",
+          title:"فرصة استثمارية",
+          desc:`فرصة لاستثمار مبلغ كبير لتحقيق أرباح مستقبلية. قد تكون مخاطرة.`,
+          choices:[
+            {
+              text:"استثمر مبلغ كبير",
+              apply:()=>{
+                const invest = rand(1500, 2500);
+                if(S.cash < invest) return fail("لا تملك سيولة كافية للاستثمار.");
+                S.cash -= invest;
+                const success = rand(1,100) <= 60; // 60% success chance
+                if(success){
+                  const returnVal = rand(invest * 1.5, invest * 2.5);
+                  S._pendingCollect += returnVal;
+                  S.score += 150;
+                  return ok(`استثمرت ${fmt(invest)} وستحصل على ${fmt(returnVal)} لاحقاً.`);
+                } else {
+                  S.score -= 50;
+                  return fail(`استثمرت ${fmt(invest)} ولكنك خسرت المبلغ.`);
+                }
+              }
+            },
+            {
+              text:"تجاهل الفرصة",
+              apply:()=>{
+                S.score += 10;
+                return warn("تجاهلت الفرصة الاستثمارية.");
+              }
+            }
+          ]
+        });
+      }
+
+      // NEW: Marketing Event
+      if(S.rep < 50 && S.cash > 800 && rand(1,100) <= 20){
+        events.push({
+          type:"تسويق",
+          title:"حملة تسويقية مقترحة",
+          desc:`فريق التسويق يقترح حملة لتحسين سمعة الشركة بتكلفة.`,
+          choices:[
+            {
+              text:"نفذ الحملة",
+              apply:()=>{
+                const cost = rand(800, 1200);
+                if(S.cash < cost) return fail("سيولتك النقدية لا تكفي للحملة.");
+                S.cash -= cost;
+                S.rep += rand(15, 25);
+                S.score += 80;
+                return ok(`أنفقت ${fmt(cost)} على الحملة. ارتفعت السمعة بشكل ملحوظ.`);
+              }
+            },
+            {
+              text:"رفض الحملة (وفر المال)",
+              apply:()=>{
+                S.score += 20;
+                return warn("رفضت الحملة التسويقية للحفاظ على السيولة النقدية.");
+              }
+            }
+          ]
+        });
+      }
+
+      // NEW: Loan Event
+      if(S.cash < 1000 && S.loan === 0){
+        events.push({
+          type:"قرض",
+          title:"عرض للحصول على قرض",
+          desc:`البنك يعرض عليك قرضاً طارئاً لتحسين سيولتك النقدية، مع التزام سداد يومي.`,
+          choices:[
+            {
+              text:"اقترض المبلغ",
+              apply:()=>{
+                const loanAmount = rand(2000, 3000);
+                S.cash += loanAmount;
+                S.loan = loanAmount;
+                S.loanPaymentDue = Math.round(loanAmount / 10); // Pay back over 10 days
+                S.score += 40;
+                return ok(`حصلت على قرض بقيمة ${fmt(loanAmount)}. عليك سداد ${fmt(S.loanPaymentDue)} يومياً.`);
+              }
+            },
+            {
+              text:"رفض العرض",
+              apply:()=>{
+                S.score += 10;
+                return warn("رفضت القرض. سيتعين عليك إدارة السيولة النقدية بحذر.");
+              }
+            }
+          ]
+        });
+      }
+
+      // Collection / payment pressure events (dynamic)
+      if(S._pendingCollect > 0){
+        events.push({
+          type:"تحصيل",
+          title:"موعد تحصيل الذمم المدينة",
+          desc:`لديك ذمم من العملاء بقيمة ${fmt(S._pendingCollect)}. كيف ستحصل عليها؟`,
+          choices:[
+            {
+              text:"اتصال لطيف + خصم بسيط",
+            apply:()=>{
+                const got = Math.round(S._pendingCollect * rand(55,75)/100);
+                S.cash += got;
+                S.score += 90;
+                S.rep += 2;
+                S._pendingCollect -= got;
+                return ok(`حصلت على ${fmt(got)} دون مشاكل.`);
+              }
+            },
+            {
+              text:"ضغط قوي (تحصيل سريع)",
+              apply:()=>{
+                const got = Math.round(S._pendingCollect * rand(70,90)/100);
+                S.cash += got;
+                S.score += 70;
+                S.rep -= 6;
+                S._pendingCollect -= got;
+                return warn(`حصلت على ${fmt(got)} لكن العملاء غاضبون... السمعة انخفضت.`);
+              }
+            },
+            {
+              text:"اتركهم للغد",
+              apply:()=>{
+                S.score += 10;
+                S.rep -= 1;
+                return warn("أجلت التحصيل... انتبه من نفاد السيولة النقدية.");
+              }
+            }
+          ]
+        });
+      }
+
+      if(S._pendingPay > 0){
+        events.push({
+          type:"سداد",
+          title:"المورد يطالب بمستحقاته",
+          desc:`عليك سداد للموردين بقيمة ${fmt(S._pendingPay)}. ما هو قرارك؟`,
+          choices:[
+            {
+              text:"ادفع كامل المبلغ (ثقة عالية)",
+              apply:()=>{
+                const pay = S._pendingPay;
+                if(S.cash < pay) return fail("تريد الدفع كاملاً لكن السيولة لا تكفي! فقدت الثقة.");
+                S.cash -= pay;
+                S.score += 120;
+                S.rep += 4;
+                S._pendingPay = 0;
+                return ok(`دفعت كامل ${fmt(pay)}. المورد سعيد الآن.`);
+              }
+            },
+            {
+              text:"ادفع جزءاً من المبلغ",
+              apply:()=>{
+                const pay = Math.min(S._pendingPay, rand(400,800));
+                if(S.cash < pay) return fail("حتى الجزء لا يمكنك دفعه... الوضع خطير!");
+                S.cash -= pay;
+                S._pendingPay -= pay;
+                S.score += 55;
+                S.rep -= 3;
+                return warn(`دفعت ${fmt(pay)} وبقي عليك ${fmt(S._pendingPay)}.`);
+              }
+            },
+            {
+              text:"اطلب تمديداً للسداد",
+              apply:()=>{
+                const okChance = 50 + Math.floor(S.rep/2) - riskBoost;
+                const okk = rand(1,100) <= okChance;
+                if(okk){
+                  S.score += 65;
+                  S.rep += 1;
+                  return ok("منحك تمديداً... لكن لا تعود لذلك كثيراً.");
+                } else {
+                  S.score -= 30;
+                  S.rep -= 8;
+                  S.scandal += 6;
+                  return fail("رفض التمديد وهدد بقطع الإمدادات!");
+                }
+              }
+            }
+          ]
+        });
+      }
+
+      // Low inventory emergency
+      if(S.inv <= 3){
+        events.push({
+          type:"إنذار",
+          title:"المخزون على وشك النفاد!",
+          desc:`مخزونك الحالي ${S.inv} قطع فقط. إذا نفد، ستفقد مبيعات وسمعة.`,
+          choices:[
+            {
+              text:"شراء طارئ نقداً",
+              apply:()=>{
+                const cost = rand(600,1000);
+                if(S.cash < cost) return fail("تحتاج للشراء الطارئ لكن السيولة لا تكفي. ضربة قوية.");
+                const gained = rand(10,16);
+                S.cash -= cost;
+                S.inv += gained;
+                S.score += 110;
+                return ok(`تمكنت من الشراء! حصلت على ${gained} قطعة وأنقذت المبيعات.`);
+              }
+            },
+            {
+              text:"طلب بالآجل + استلام عاجل",
+              apply:()=>{
+                const gained = rand(8,14);
+                S.inv += gained;
+                S._pendingPay += rand(650,1000);
+                S.score += 70;
+                return warn("طلبت بالآجل... وصل بسرعة، لكن الديون ستضغط عليك لاحقاً.");
+              }
+            },
+            {
+              text:"تجاهل الأمر (مخاطرة)",
+              apply:()=>{
+                S.rep -= 10;
+                S.score += 15;
+                return fail("نفد المخزون! خسرت سمعة ومبيعات محتملة.");
+              }
+            }
+          ]
+        });
+      }
+
+      // Choose event with some weighting
+      let e = pick(events);
+      if(rep >= 75 && rand(1,100) <= 50){
+        e = pick(events.filter(x => x.type === "بيع" || x.type==="تحصيل" || x.type==="شراء"));
+      }
+      if(rep <= 35 && rand(1,100) <= 45){
+        e = pick(events.filter(x => x.type === "تشغيل" || x.type==="احتيال" || x.type==="إنذار" || x.type==="سداد"));
+      }
+      if(morale <= 30 && rand(1,100) <= 40){
+        e = pick(events.filter(x => x.type === "موظفين"));
+      }
+
+      return e;
+    }
+
+    // ===== Feedback helpers =====
+    function ok(msg){ return {kind:"ok", msg}; }
+    function warn(msg){ return {kind:"warn", msg}; }
+    function fail(msg){ return {kind:"fail", msg}; }
+
+    function bumpCombo(success){
+      if(success){
+        S.combo += 1;
+        S.comboMul = 1 + Math.min(4, Math.floor(S.combo/3));
+      } else {
+        S.combo = 0;
+        S.comboMul = 1;
+      }
+      const bar = $("comboBar");
+      const pct = clamp((S.combo % 3) / 3 * 100 + (S.comboMul-1)*20, 8, 100);
+      bar.style.width = pct + "%";
+      $("comboLbl").textContent = "x" + S.comboMul;
+    }
+
+    function applyDifficultyDrift(){
+      // Daily operating pressure increases over time
+      const dayFactor = 1 + (S.day / S.daysTotal) * 0.5;
+      const dailyDrain = (S.diff === "hard" ? rand(220,420) : S.diff==="normal" ? rand(140,300) : rand(80,200)) * dayFactor;
+      const shield = S._expenseShield || 0;
+      const reduced = dailyDrain - (shield>0 ? 80 : 0);
+      if(shield>0) S._expenseShield -= 1;
+
+      S.cash -= Math.max(0, reduced);
+      
+      // Loan payment
+      if(S.loanPaymentDue > 0){
+        if(S.cash >= S.loanPaymentDue){
+          S.cash -= S.loanPaymentDue;
+          S.loan -= S.loanPaymentDue;
+          if(S.loan <= 0) {
+            S.loan = 0;
+            S.loanPaymentDue = 0;
+            S.log.unshift({day:S.day, title:"سداد القرض", choice:"سددت آخر دفعة", kind:"ok"});
+          }
+        } else {
+          S.rep -= 5;
+          S.morale -= 5;
+          S.log.unshift({day:S.day, title:"سداد القرض", choice:"فشلت في السداد", kind:"fail"});
+        }
+      }
+
+      S.rep -= rand(0,2);
+      S.morale -= rand(0,3);
+    }
+
+    function updateUI(){
+      // Store previous values for flashing effect
+      const currentKpiValues = {cash: S.cash, inv: S.inv, rep: S.rep, morale: S.morale};
+
+      $("dayLbl").textContent = `اليوم ${S.day} / ${S.daysTotal}`;
+      $("timerLbl").textContent = paused ? "موقف مؤقتاً" : `متبقي ${String(S.timeLeft).padStart(2,"0")}`;
+
+      $("cashV").textContent = fmt(S.cash);
+      $("invV").textContent = S.inv + " قطعة";
+      $("repV").textContent = S.rep + " / 100";
+      $("moraleV").textContent = S.morale + " / 100";
+      $("scoreV").textContent = S.score.toLocaleString('ar-JO');
+
+      // Colors
+      $("cashV").className = "value " + (S.cash>=1200 ? "good" : S.cash>=0 ? "warn" : "bad");
+      $("invV").className = "value " + (S.inv>=8 ? "good" : S.inv>=2 ? "warn" : "bad");
+      $("repV").className = "value " + (S.rep>=70 ? "good" : S.rep>=40 ? "warn" : "bad");
+      $("moraleV").className = "value " + (S.morale>=70 ? "good" : S.morale>=40 ? "warn" : "bad");
+      $("scoreV").className = "value good";
+
+      // Flashing effect for KPIs
+      ['cash', 'inv', 'rep', 'morale'].forEach(kpi => {
+        const kpiEl = $(`${kpi}Kpi`);
+        kpiEl.classList.remove('flash-good', 'flash-bad');
+        if (currentKpiValues[kpi] > prevKpiValues[kpi]) {
+          kpiEl.classList.add('flash-good');
+        } else if (currentKpiValues[kpi] < prevKpiValues[kpi]) {
+          kpiEl.classList.add('flash-bad');
+        }
+      });
+      prevKpiValues = currentKpiValues;
+
+      // status
+      let status = [];
+      if(S.cash < 0) status.push("تحذير: إفلاس وشيك!");
+      if(S.rep < 20) status.push("السمعة سيئة جداً");
+      if(S.morale < 20) status.push("الروح المعنوية متدنية جداً");
+      if(S.scandal >= 60) status.push("خطر فضيحة احتيال");
+      if(S.inv <= 2) status.push("المخزون شبه نفد");
+      if(S.loan > 0) status.push(`عليك قرض: ${fmt(S.loan)}`);
+      if(status.length===0) status.push("الوضع جيد. حافظ على الكومبو.");
+      $("statusLine").textContent = status.join(" | ");
+
+      // event
+      const e = S.currentEvent;
+      if(e){
+        $("eventTitle").textContent = e.title;
+        $("eventDesc").textContent = e.desc;
+        $("eventTypeTag").textContent = e.type;
+      }
+
+      // log
+      const body = $("logBody");
+      body.innerHTML = "";
+      S.log.slice(0,8).forEach(r=>{
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${r.day}</td>
+          <td>${r.title}</td>
+          <td>${r.choice}</td>
+          <td style="font-weight:900; color:${r.kind==="ok" ? "var(--good)" : r.kind==="warn" ? "var(--warn)" : "var(--bad)"}">
+            ${r.kind==="ok" ? "نجح" : r.kind==="warn" ? "تحذير" : "فشل"}
+          </td>
+        `;
+        body.appendChild(tr);
+      });
+    }
+
+    function showToast(kind, msg){
+      const t = $("toast");
+      t.className = "toast show " + (kind==="ok"?"ok": kind==="warn"?"warn":"no");
+      t.textContent = msg;
+      setTimeout(()=>{ t.classList.remove("show"); }, 2000);
+    }
+
+    function renderChoices(){
+      const e = S.currentEvent;
+      const box = $("choices");
+      box.innerHTML = "";
+      e.choices.forEach((c, idx)=>{
+        const b = document.createElement("button");
+        b.className = "choiceBtn";
+        b.textContent = c.text;
+        b.onclick = ()=> choose(idx);
+        box.appendChild(b);
+      });
+    }
+
+    function choose(idx){
+      if(paused) return;
+
+      const e = S.currentEvent;
+      const choice = e.choices[idx];
+      const result = choice.apply();
+
+      if(result.kind === "ok"){
+        bumpCombo(true);
+        S.score += 25 * (S.comboMul-1);
+      } else if(result.kind === "warn"){
+        bumpCombo(true);
+        S.score += 10 * (S.comboMul-1);
+      } else {
+        bumpCombo(false);
+        if(e.type === "احتيال") S.scandal = clamp(S.scandal + rand(8,18), 0, 100);
+      }
+
+      S.rep = clamp(S.rep, 0, 100);
+      S.morale = clamp(S.morale, 0, 100);
+      S.scandal = clamp(S.scandal, 0, 100);
+
+      S.log.unshift({day:S.day, title:e.title, choice: choice.text, kind: result.kind});
+
+      showToast(result.kind, result.msg);
+
+      nextEventOrEnd();
+    }
+
+    function nextEventOrEnd(){
+      if(S.cash < -500){
+        endGame("انتهت اللعبة: إفلاس", "السيولة النقدية أصبحت سالبة بشكل خطير. حاول الموازنة بين الشراء والبيع والتحصيل.");
+        return;
+      }
+      if(S.scandal >= 80){
+        endGame("انتهت اللعبة: فضيحة مالية", "حدث اختراق أو احتيال كبير. يجب أن تدقق قبل أي دفع.");
+        return;
+      }
+      if(S.morale < 15){
+        endGame("انتهت اللعبة: استقالة جماعية", "الروح المعنوية وصلت للأسفل. الموظفون استقالوا وتوقفت العمليات.");
+        return;
+      }
+
+      S._eventsDone = (S._eventsDone || 0) + 1;
+
+      if(S._eventsDone >= 3){
+        S._eventsDone = 0;
+        applyDifficultyDrift();
+        S.day += 1;
+        S.skipUsed = false;
+        S.log.unshift({day:S.day-1, title:"نهاية اليوم", choice:`السيولة: ${fmt(S.cash)}`, kind:"ok"});
+
+        if(S.day > S.daysTotal){
+          const grade = (S.cash>=3000 ? 2 : 0) + (S.rep>=70 ? 2 : 0) + (S.score>=1500 ? 2 : 0);
+          confettiBurst();
+          endGame("مبروك! لقد أنقذت الشركة", `تقييمك: ${["مقبول","جيد","جيد جداً","ممتاز","أسطوري"][clamp(grade,0,4)]}
+السيولة: ${fmt(S.cash)} | السمعة: ${S.rep}/100 | النقاط: ${S.score.toLocaleString('ar-JO')}`);
+          return;
+        }
+      }
+
+      S.currentEvent = genEvent();
+      S.timeLeft = S.timePerEvent;
+      renderChoices();
+      updateUI();
+    }
+
+    function tick(){
+      if(!S || paused) return;
+      S.timeLeft -= 1;
+      if(S.timeLeft <= 0){
+        $("mainCard").classList.add("shake");
+        setTimeout(()=> $("mainCard").classList.remove("shake"), 300);
+
+        S.rep = clamp(S.rep - 6, 0, 100);
+        S.morale = clamp(S.morale - 5, 0, 100);
+        S.score = Math.max(0, S.score - 50);
+        bumpCombo(false);
+
+        S.log.unshift({day:S.day, title:S.currentEvent?.title || "حدث", choice:"انتهى الوقت", kind:"fail"});
+        showToast("fail", "انتهى الوقت! خسرت سمعة ونقاط.");
+
+        nextEventOrEnd();
+      } else {
+        updateUI();
+      }
+    }
+
+    function startGame(){
+      initState();
+      paused = false;
+      showScreen("game");
+      S.currentEvent = genEvent();
+      S.timeLeft = S.timePerEvent;
+      renderChoices();
+      bumpCombo(false);
+      updateUI();
+
+      clearInterval(T);
+      T = setInterval(tick, 1000);
+    }
+
+    function resetGame(){
+      clearInterval(T);
+      T = null;
+      paused = false;
+      initState();
+      showScreen("intro");
+      $("toast").classList.remove("show");
+    }
+
+    // ===== Modal =====
+    function openModal(title, text){
+      $("modalTitle").textContent = title;
+      $("modalText").textContent = text;
+      $("modalBack").classList.add("show");
+    }
+    function closeModal(){ $("modalBack").classList.remove("show"); }
+
+    // ===== Screen =====
+    function showScreen(name){
+      ["intro","game"].forEach(id=> $(id).classList.remove("active"));
+      $(name).classList.add("active");
+    }
+
+    function skipEvent(){
+      if(paused) return;
+      if(S.skipUsed){
+        showToast("warn","لقد استخدمت التخطي اليوم!");
+        return;
+      }
+      S.skipUsed = true;
+      S.score = Math.max(0, S.score - 80);
+      S.rep = clamp(S.rep - 3, 0, 100);
+      S.morale = clamp(S.morale - 2, 0, 100);
+      bumpCombo(false);
+      showToast("warn","قمت بتخطي الحدث مع خصم النقاط.");
+      nextEventOrEnd();
+    }
+
+    function endGame(title, text){
+      clearInterval(T);
+      T = null;
+      openModal(title, text);
+    }
+
+    function confettiBurst(){
+      const box = $("confetti");
+      box.innerHTML = "";
+      box.classList.add("show");
+      const colors = ["#2f6bff","#2ee59d","#ffd166","#ff5b7a","#ffffff"];
+      for(let i=0;i<70;i++){
+        const d = document.createElement("div");
+        d.className = "c";
+        d.style.left = rand(0,100) + "vw";
+        d.style.top = rand(-20,10) + "vh";
+        d.style.background = pick(colors);
+        d.style.animationDuration = (0.9 + Math.random()*0.8) + "s";
+        d.style.transform = `rotate(${rand(0,360)}deg)`;
+        box.appendChild(d);
+      }
+      setTimeout(()=> box.classList.remove("show"), 1300);
+    }
+
+    // ===== Buttons =====
+    $("startBtn").onclick = startGame;
+    $("resetBtn").onclick = resetGame;
+    $("startFromIntro").onclick = startGame;
+    $("howBtn").onclick = ()=> openModal("كيف ألعب؟",
+      "كل يوم لديك 3 أحداث. لكل حدث خيارات. اختر بسرعة قبل انتهاء الوقت.\n" +
+      "القرار الصحيح: نقاط + سمعة + كومبو.\n" +
+      "القرار الخاطئ: خصم من السمعة وقد تخسر سيولة نقدية أو تتعرض لفضيحة.\n" +
+      "الهدف: إنهاء عدد الأيام بدون إفلاس أو فضيحة، مع الحفاظ على سيولة نقدية وسمعة عالية."
+    );
+    $("openHowFromIntro").onclick = $("howBtn").onclick;
+
+    $("modalOk").onclick = closeModal;
+    $("modalClose").onclick = closeModal;
+    $("modalBack").onclick = (e)=>{ if(e.target.id==="modalBack") closeModal(); };
+
+    $("pauseBtn").onclick = ()=>{
+      paused = !paused;
+      showToast("warn", paused ? "تم الإيقاف المؤقت" : "تم استئناف اللعبة");
+      updateUI();
+    };
+    $("skipBtn").onclick = skipEvent;
+
+    // init
+    initState();
+  </script>
+</body>
+</html>
