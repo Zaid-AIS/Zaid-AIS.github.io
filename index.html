@@ -327,10 +327,6 @@ margin:25px;
 }
 
 
-
-
-
-
 /* الكود الجديد للاسم */
 .hero h1 span {
     background: linear-gradient(to right, #00ffff 20%, #ffffff 50%, #00ffff 80%);
@@ -350,21 +346,30 @@ margin:25px;
     
 
 /* صورة البروفايل */
-<div class="hero" id="home">
-<div>
+.profile-pic{
+    width:150px;
+    height:150px;
+    border-radius:50%;
+    object-fit:cover;
+    border:3px solid #00ffff;
+    box-shadow:0 0 35px rgba(0,255,255,.6);
+    margin:0 auto 15px;
+    display:block;
+    animation: float 4s ease-in-out infinite;
+}
 
-<img src="profil.png" alt="Zaid Khaled" class="profile-pic">
+@keyframes float{
+    0%{transform:translateY(0)}
+    50%{transform:translateY(-10px)}
+    100%{transform:translateY(0)}
+}
 
-<div class="badge">Accounting Information Systems Graduate</div>
+/* موبايل */
+.mobile .profile-pic{
+    width:120px;
+    height:120px;
+}
 
-<h1 class="typewriter">Hi I'm <span>Zaid Khaled</span></h1>
-
-<h3>Accounting Information Systems (AIS) Graduate</h3>
-
-<p>أجد شغفي في نقطة التلاقي بين المحاسبة، التكنولوجيا، وتحليل البيانات</p>
-
-</div>
-</div>
 
 
 @keyframes float{
@@ -541,6 +546,7 @@ Designed for Zaid Khaled Zaid © 2026
 
 </body>
 </html>
+
 
 
 
