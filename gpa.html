@@ -5,9 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>حاسبة المعدل | AIS.Zaid</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
-<meta name="keywords" content="حساب المعدل,حساب المعدل التراكمي,calc gpa, gpa">
 <style>
-/* إعدادات عامة */
+/* نفس التصميم تماماً */
 *{margin:0;padding:0;box-sizing:border-box}
 body{
     font-family:'Tajawal';
@@ -16,226 +15,81 @@ body{
     min-height:100vh;
     padding-bottom: 50px;
 }
-
-/* العنوان الرئيسي */
 h1{
-    text-align:center;
-    padding:30px 0 10px;
-    font-weight:900;
-    font-size:32px;
-    color:#00ffff;
+    text-align:center; padding:30px 0 10px; font-weight:900; font-size:32px; color:#00ffff;
     text-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
 }
-
-/* الصندوق الزجاجي الرئيسي */
 .wrapper{
-    max-width:800px;
-    margin:20px auto;
-    padding:30px;
+    max-width:850px; margin:20px auto; padding:30px;
     border-radius:28px;
     background:linear-gradient(135deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01));
     backdrop-filter:blur(20px);
     border:1px solid rgba(0,255,255,.2);
     box-shadow:0 0 50px rgba(0,255,255,.1);
 }
-
 h3{text-align:center;margin:12px 0 18px;font-size:18px;opacity:0.9;}
 .line{height:1px;background:linear-gradient(90deg,transparent,#00ffff,transparent);margin:25px 0;opacity:0.5;}
+.inputs-row { display:flex; gap:15px; justify-content:center; }
 
-.inputs-row {
-    display:flex; gap:15px; justify-content:center;
-}
+input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+input[type=number] { -moz-appearance: textfield; }
 
-/* --- تعديلات حقول الإدخال وإخفاء الأسهم --- */
-
-/* 1. إخفاء الأسهم المزعجة نهائياً */
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button { 
-  -webkit-appearance: none; 
-  margin: 0; 
-}
-input[type=number] {
-  -moz-appearance: textfield; /* للفايرفوكس */
-}
-
-/* 2. ستايل الحقول */
 input, select {
     background: rgba(0, 0, 0, 0.6) !important;
     border: 1px solid rgba(0, 255, 255, 0.3) !important;
     color: #fff !important;
-    padding: 12px 15px !important;
+    padding: 12px 10px !important;
     border-radius: 12px !important;
-    font-size: 16px;
-    font-weight: bold;
-    text-align: center;
-    outline: none;
-    width: 100%;
-    transition: 0.3s;
-    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+    font-size: 15px; font-weight: bold; text-align: center; outline: none; width: 100%;
+    transition: 0.3s; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
 }
-
-input:focus, select:focus {
-    border-color: #00ffff !important;
-    box-shadow: 0 0 15px rgba(0, 255, 255, 0.4), inset 0 0 10px rgba(0,0,0,0.5) !important;
-    transform: scale(1.02);
-}
-
+input:focus, select:focus { border-color: #00ffff !important; transform: scale(1.02); }
 select option { background: #000; }
 
-/* كرت المادة الواحدة */
 .subject{
-    display:flex;
-    gap:10px;
-    padding:10px;
-    margin-bottom: 12px;
-    border-radius:16px;
-    background:rgba(255,255,255,0.03);
-    border:1px solid rgba(255,255,255,0.1);
-    align-items: center;
-    transition: 0.3s;
+    display:flex; gap:8px; padding:10px; margin-bottom: 12px;
+    border-radius:16px; background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.1); align-items: center; transition: 0.3s;
 }
 .subject:hover { background:rgba(255,255,255,0.07); }
-
-/* زر الحذف */
+.prev-grade { border-color: rgba(255, 165, 0, 0.4) !important; color: #ffcc80 !important; }
+.prev-grade:focus { border-color: #ff9800 !important; }
 .remove{
-    background:#ff3b3b;
-    border:none; color:white; width: 40px; height: 40px;
-    border-radius:50%; cursor:pointer; font-weight:bold;
-    flex-shrink: 0;
-    transition: 0.2s;
+    background:#ff3b3b; border:none; color:white; width: 35px; height: 35px;
+    border-radius:50%; cursor:pointer; font-weight:bold; flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
 }
-.remove:hover { transform: scale(1.1); box-shadow: 0 0 10px rgba(255, 59, 59, 0.6); }
-
-/* الأزرار السفلية */
+.remove:hover { transform: scale(1.1); }
 .buttons { text-align: center; margin-top: 25px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;}
-.btn {
-    padding:12px 25px; border-radius:15px; border:none; cursor:pointer; font-weight:900;
-    transition: 0.3s; font-family: 'Tajawal'; font-size: 16px;
-}
+.btn { padding:12px 25px; border-radius:15px; border:none; cursor:pointer; font-weight:900; transition: 0.3s; font-family: 'Tajawal'; font-size: 16px; }
 .add { background: #00ffff; color: #000; }
-.add:hover { box-shadow: 0 0 20px rgba(0, 255, 255, 0.6); transform: translateY(-2px); }
-
+.add:hover { transform: translateY(-2px); }
 .clear { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
-.clear:hover { background: rgba(255,255,255,0.2); border-color: white; }
+.calc { background: linear-gradient(45deg, #00ffff, #0077ff); color: #fff; padding: 14px 50px; font-size: 18px; width: 100%; max-width: 300px; }
+.calc:hover { transform: scale(1.05); }
 
-.calc { 
-    background: linear-gradient(45deg, #00ffff, #0077ff); 
-    color: #fff; 
-    padding: 14px 50px; 
-    font-size: 18px;
-    width: 100%; max-width: 300px;
-}
-.calc:hover { transform: scale(1.05); box-shadow: 0 0 30px rgba(0,119,255,0.6); }
-
-/* --- تصميم بطاقات النتائج الجديد --- */
-.results-container {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-top: 35px;
-    flex-wrap: wrap;
-}
-
+.results-container { display: flex; justify-content: center; gap: 20px; margin-top: 35px; flex-wrap: wrap; }
 .result-card {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
-    padding: 20px 30px;
-    text-align: center;
-    min-width: 220px;
-    flex: 1;
-    position: relative;
-    overflow: hidden;
-    transition: 0.4s;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px;
+    padding: 20px 30px; text-align: center; min-width: 220px; flex: 1;
+    position: relative; overflow: hidden;
 }
-
-.result-card:hover {
-    transform: translateY(-5px);
-    border-color: #00ffff;
-    box-shadow: 0 10px 40px rgba(0, 255, 255, 0.15);
-}
-
-/* خط نيون جمالي فوق الكرت */
 .result-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 3px;
-    background: linear-gradient(90deg, transparent, #00ffff, transparent);
-    opacity: 0.8;
+    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px;
+    background: linear-gradient(90deg, transparent, #00ffff, transparent); opacity: 0.8;
 }
+.result-title { font-size: 15px; color: #ccc; margin-bottom: 10px; }
+.result-value { font-size: 36px; font-weight: 900; color: #fff; text-shadow: 0 0 25px rgba(0, 255, 255, 0.6); }
 
-.result-title {
-    font-size: 15px;
-    color: #ccc;
-    margin-bottom: 10px;
-    letter-spacing: 0.5px;
-}
-
-.result-value {
-    font-size: 36px;
-    font-weight: 900;
-    color: #fff;
-    text-shadow: 0 0 25px rgba(0, 255, 255, 0.6);
-}
-
-
-/* =========================================
-   تعديلات خاصة للموبايل (Mobile Responsive)
-   ========================================= */
 @media (max-width: 600px) {
-    
-    /* توسيع الصندوق ليأخذ كامل الشاشة */
-    .wrapper {
-        width: 95%;
-        padding: 15px;
-        margin-top: 10px;
-    }
-
-    /* تكبير العنوان */
-    h1 { font-size: 24px; padding-top: 15px; }
-
-    /* جعل حقول "المعدل السابق" تحت بعض بدل جنب بعض */
-    .inputs-row {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    /* ترتيب عناصر المادة (ساعات - علامة - حذف) */
-    .subject {
-        padding: 8px;
-        gap: 8px;
-    }
-    
-    /* تصغير الخط شوي بالحقول عشان يوسع */
-    input, select {
-        padding: 10px;
-        font-size: 14px;
-    }
-
-    /* الأزرار تصير بعرض الشاشة كاملة (أسهل للكبس بالأصبع) */
-    .buttons {
-        flex-direction: column; /* الأزرار تحت بعض */
-        gap: 10px;
-    }
-    
-    .btn, .calc {
-        width: 100%; /* العرض كامل */
-        max-width: 100%;
-        padding: 12px;
-    }
-
-    /* النتائج تحت بعض */
-    .results-container {
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .result-card {
-        min-width: 100%; /* الكرت ياخد العرض كامل */
-    }
+    .wrapper { width: 95%; padding: 15px; }
+    .inputs-row { flex-direction: column; gap: 10px; }
+    .subject { padding: 8px; gap: 5px; flex-wrap: wrap; }
+    .subject input.hours { flex: 0 0 20%; }
+    .subject select { flex: 1; }
+    .buttons { flex-direction: column; }
+    .result-card { min-width: 100%; }
 }
 </style>
 </head>
@@ -244,7 +98,6 @@ select option { background: #000; }
 <h1>حاسبة المعدل الجامعي</h1>
 
 <div class="wrapper">
-
     <h3>معلوماتك السابقة (للتراكمي)</h3>
     <div class="inputs-row">
         <input type="number" id="oldGPA" placeholder="المعدل التراكمي الحالي">
@@ -268,23 +121,19 @@ select option { background: #000; }
     </div>
 
     <div class="results-container">
-        
         <div class="result-card">
             <div class="result-title">المعدل الفصلي</div>
             <div class="result-value" id="termResult">0.00</div>
         </div>
-
         <div class="result-card">
             <div class="result-title">المعدل التراكمي</div>
             <div class="result-value" id="cgpaResult" style="color: #00ffff;">0.00</div>
         </div>
-
     </div>
-
 </div>
 
 <script>
-    // نظام النقاط (F = 0)
+    // نظام النقاط
     function getPoints(grade) {
         switch(grade) {
             case "A+": return 4.00;
@@ -300,7 +149,7 @@ select option { background: #000; }
             case "D":  return 1.50;
             case "D-": return 1.00;
             case "F":  return 0.00;
-            default:   return 0.00;
+            default:   return -1; 
         }
     }
 
@@ -308,9 +157,16 @@ select option { background: #000; }
         let div = document.createElement("div");
         div.className = "subject";
         div.innerHTML = `
-            <input type="number" class="hours" placeholder="الساعات" value="3">
+            <input type="number" class="hours" placeholder="س" value="3" title="الساعات">
             <select class="grade">
-                <option value="" disabled selected>العلامة المتوقعة</option>
+                <option value="" disabled selected>الحالية</option>
+                <option>A+</option><option>A</option><option>A-</option>
+                <option>B+</option><option>B</option><option>B-</option>
+                <option>C+</option><option>C</option><option>C-</option>
+                <option>D+</option><option>D</option><option>F</option>
+            </select>
+            <select class="prev-grade">
+                <option value="" selected>معادة؟</option>
                 <option>A+</option><option>A</option><option>A-</option>
                 <option>B+</option><option>B</option><option>B-</option>
                 <option>C+</option><option>C</option><option>C-</option>
@@ -321,43 +177,61 @@ select option { background: #000; }
         document.getElementById("list").appendChild(div);
     }
 
-    // إضافة 4 مواد تلقائياً
+    // إضافة 4 مواد افتراضياً
     for(let i=0; i<4; i++) addSubject();
 
     function calculate() {
         let hoursInputs = document.querySelectorAll(".hours");
         let gradeInputs = document.querySelectorAll(".grade");
+        let prevInputs  = document.querySelectorAll(".prev-grade");
         
+        // متغيرات للمعدل الفصلي (يحسب بناء على ما تم تحصيله هذا الفصل فقط)
         let semesterPoints = 0;
         let semesterHours = 0;
 
-        // 1. حساب المعدل الفصلي
+        // متغيرات للمعدل التراكمي (نبدأ من القيم القديمة)
+        let oldGPA = parseFloat(document.getElementById("oldGPA").value) || 0;
+        let oldHours = parseFloat(document.getElementById("oldHours").value) || 0;
+        
+        let cumulativePoints = oldGPA * oldHours;
+        let cumulativeHours = oldHours;
+
         for(let i=0; i<hoursInputs.length; i++) {
             let h = parseFloat(hoursInputs[i].value);
-            let g = getPoints(gradeInputs[i].value);
+            let currentG = getPoints(gradeInputs[i].value); // العلامة الجديدة
+            let oldG = getPoints(prevInputs[i].value);      // العلامة السابقة
 
-            if(h > 0 && gradeInputs[i].value) {
+            if(h > 0 && currentG !== -1) {
+                // 1. حساب الفصلي: دائماً نجمع العلامات الجديدة
                 semesterHours += h;
-                semesterPoints += (h * g);
+                semesterPoints += (h * currentG);
+
+                // 2. حساب التراكمي: هنا الفرق
+                if (oldG !== -1) {
+                    // *** حالة المادة المعادة ***
+                    // بناخذ العلامة الأعلى بين القديمة والجديدة
+                    let bestGrade = Math.max(currentG, oldG);
+                    
+                    // المعادلة: شيل نقاط العلامة القديمة من المجموع، وضيف نقاط العلامة الأفضل
+                    // الساعات (cumulativeHours) ما بنضيف عليها اشي لأنها محسوبة من قبل
+                    let pointsDifference = (bestGrade - oldG) * h;
+                    cumulativePoints += pointsDifference;
+                    
+                } else {
+                    // *** حالة مادة جديدة كلياً ***
+                    // ضيف النقاط والساعات للمجموع الكلي
+                    cumulativePoints += (currentG * h);
+                    cumulativeHours += h;
+                }
             }
         }
 
+        // إظهار النتائج
         let termGPA = semesterHours > 0 ? (semesterPoints / semesterHours) : 0;
+        let finalGPA = cumulativeHours > 0 ? (cumulativePoints / cumulativeHours) : 0;
+
         document.getElementById("termResult").innerText = termGPA.toFixed(2);
-
-        // 2. حساب المعدل التراكمي
-        let oldGPA = parseFloat(document.getElementById("oldGPA").value);
-        let oldHours = parseFloat(document.getElementById("oldHours").value);
-
-        if(oldGPA && oldHours) {
-            let totalPoints = (oldGPA * oldHours) + semesterPoints;
-            let totalHours = oldHours + semesterHours;
-            let finalGPA = totalPoints / totalHours;
-            document.getElementById("cgpaResult").innerText = finalGPA.toFixed(2);
-        } else {
-            // اذا ما دخل معلومات سابقة
-            document.getElementById("cgpaResult").innerText = termGPA.toFixed(2);
-        }
+        document.getElementById("cgpaResult").innerText = finalGPA.toFixed(2);
     }
 
     function reset() {
