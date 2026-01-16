@@ -61,7 +61,7 @@
         .star{
             position:absolute;
             width:2px;
-            height:2px;
+            height:1px;
             background:white;
             opacity:.9;
             animation:blink 3s infinite; /* حركة الوميض */
@@ -85,7 +85,7 @@
             display:flex;
             justify-content:space-between; /* توزيع العناصر يمين ويسار */
             align-items:center;
-            z-index:9999; /* جعل القائمة فوق كل شيء */
+            z-index:99999999; /* جعل القائمة فوق كل شيء */
         }
 
         /* تنسيق اللوجو النصي */
@@ -434,6 +434,50 @@
     z-index:2;
 }
 
+/* تنسيق القائمة المنسدلة */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none; /* إخفاء القائمة افتراضياً */
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.9); /* لون خلفية القائمة */
+    	min-width: 250px;
+    box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+    z-index: 1;
+    border-radius: 8px;
+    top: 25px; /* تظهر أسفل الكلمة مباشرة */
+    right: 0; /* محاذاة لليمين بما أن الموقع بالعربي */
+    border: 1px solid rgba(255,255,255,0.1);
+    overflow: hidden;
+}
+
+.dropdown-content a {
+    color: white;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    transition: 0.3s;
+    text-align: right;
+}
+
+.dropdown-content a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ffd700; /* تغيير اللون عند التمرير */
+}
+
+/* إظهار القائمة عند تمرير الماوس */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* تنسيق السهم الصغير بجانب كلمة ألعاب */
+.dropdown > a::after {
+    content: ' ▾';
+    font-size: 12px;
+}
 
     </style>
 </head>
@@ -454,21 +498,27 @@
     </script>
 
     <nav class="main-nav">
-        <div class="logo">Zaid.Khaled.AIS</div>
+    <div class="logo">Zaid.Khaled.AIS</div>
 
-        <ul class="nav-links">
-            <li><a href="#home">من أنا؟</a></li>
-            <li><a href="#about">تعريف</a></li>
-            <li><a href="#skills">المهارات</a></li>
-            <li><a href="#cert">الشهادات</a></li>
-            <li><a href="#contact">تواصل</a></li>
-            <li><a href="summaries.html">ملخصاتي</a></li>
-            <li><a href="gpa.html">حاسبة المعدل</a></li>
-            <li><a href="ACC_Play.html">تحدي المحاسبة</a></li>
-			<li><a href="Accountant_under_pressure.html">لعبة محاسب تحت الضغط</a></li>
-
-        </ul>
-    </nav>
+    <ul class="nav-links">
+<li class="dropdown">
+            <a href="javascript:void(0)">العاب محاسبية</a>
+            <div class="dropdown-content">
+                <a href="ACC_Play.html">تحدي المحاسبة</a>
+                <a href="Accountant_under_pressure.html">لعبة محاسب تحت الضغط</a>
+            </div>
+        </li>
+        <li><a href="#home">من أنا؟</a></li>
+        <li><a href="#about">تعريف</a></li>
+        <li><a href="#skills">المهارات</a></li>
+        <li><a href="#cert">الشهادات</a></li>
+        <li><a href="#contact">تواصل</a></li>
+        <li><a href="summaries.html">ملخصاتي</a></li>
+        <li><a href="gpa.html">حاسبة المعدل</a></li>
+        
+        
+    </ul>
+</nav>
 
     <div class="switcher" onclick="toggleDevice()">
         <i class="fa-solid fa-desktop"></i>
@@ -513,7 +563,7 @@
 
     <section id="about">
         <h2>نبذة عني</h2>
-        <p style="text-align:center">خريج جامعة آل البيت في تخصص نظم المعلومات المحاسبية (AIS)، مهتم بالمحاسبة وأنظمة ERP وتحليل البيانات وتطبيق التكنولوجيا في مجال الأعمال</p>
+        <p style="text-align:center">خريج جامعة آل البيت في تخصص نظم المعلومات المحاسبية (AIS)<br> مهتم بالمحاسبة وأنظمة ERP وتحليل البيانات وتطبيق التكنولوجيا في مجال الأعمال</p>
     </section>
 
     <section id="skills">
@@ -633,14 +683,3 @@ function closeVideo(){
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
