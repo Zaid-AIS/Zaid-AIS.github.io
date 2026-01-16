@@ -1,0 +1,1528 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة تقاطع الكلمات المحاسبية</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* --- تنسيقات عامة لكل العناصر --- */
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:'Tajawal',sans-serif; /* تطبيق الخط */
+            color:#fff; /* لون الخط أبيض للكل */
+            text-align: center;
+        }
+
+        /* --- تنسيق جسم الصفحة --- */
+        body{
+            overflow-x:hidden; /* منع ظهور شريط التمرير الأفقي */
+            background:#000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* --- خلفية الموقع المتحركة (اللون الأزرق والأسود) --- */
+        #bg{
+            position:fixed; /* ثابتة مهما نزلنا بالصفحة */
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            /* تدرج لوني */
+            background:linear-gradient(120deg,#000428,#004e92,#00111f,#000000);
+            background-size:400% 400%;
+            animation:bgMove 10s infinite; /* تشغيل حركة الألوان */
+            z-index:-3; /* جعل الخلفية وراء كل العناصر */
+        }
+
+        /* كود حركة الخلفية */
+        @keyframes bgMove{
+            0%{background-position:0% 50%}
+            50%{background-position:100% 50%}
+            100%{background-position:0% 50%}
+        }
+
+        /* --- تنسيق النجوم المتطايرة --- */
+        .star{
+            position:absolute;
+            width:2px;
+            height:1px;
+            background:white;
+            opacity:.9;
+            animation:blink 3s infinite; /* حركة الوميض */
+        }
+        @keyframes blink{
+            0%{opacity:.2}
+            50%{opacity:1}
+            100%{opacity:.2}
+        }
+
+        /* ▬▬▬▬▬ القائمة العلوية (NAVBAR) ▬▬▬▬▬ */
+
+        .main-nav{
+            position:fixed; /* تثبيت القائمة في الأعلى */
+            top:0;
+            width:100%;
+            padding:12px 30px;
+            background:rgba(0,0,0,.45); /* لون شفاف */
+            backdrop-filter:blur(12px); /* تأثير الضباب خلف القائمة */
+            border-bottom:1px solid rgba(255,255,255,.15);
+            display:flex;
+            justify-content:space-between; /* توزيع العناصر يمين ويسار */
+            align-items:center;
+            z-index:99999999; /* جعل القائمة فوق كل شيء */
+        }
+
+/* تنسيق اللوجو النصي */
+.logo {
+    font-size: 22px;
+    font-weight: 900;
+    text-align: center;
+
+    /* تلوين النص بتدرج */
+    background: linear-gradient(45deg, #00ffff, #1e90ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+        /* تنسيق روابط القائمة */
+        .nav-links{
+            display:flex;
+            gap:25px; /* المسافة بين الروابط */
+            list-style:none;
+        }
+
+        .nav-links a{
+            text-decoration:none; /* إزالة الخط تحت الرابط */
+            font-weight:900;
+            font-size:15px;
+            color:white;
+        }
+        .nav-links a:hover{
+            color:#00ffff; /* لون الرابط عند مرور الماوس */
+        }
+
+        /* ▬▬▬▬▬ زر تغيير العرض (موبايل/كمبيوتر) ▬▬▬▬▬ */
+
+        .switcher{
+            position:fixed;
+            bottom:25px; /* المسافة من الأسفل */
+            left:25px;   /* المسافة من اليسار */
+            background:rgba(0,0,0,.6);
+            border:1px solid rgba(255,255,255,.2);
+            backdrop-filter:blur(10px);
+            padding:10px 14px;
+            border-radius:16px;
+            cursor:pointer;
+            z-index:9999;
+            display:flex;
+            gap:12px;
+            align-items:center;
+            font-weight:800;
+        }
+
+        .switcher i{
+            color:#00ffff;
+        }
+
+        /* --- تنسيقات خاصة عند تفعيل وضع الموبايل --- */
+        .mobile section{
+            max-width:95% !important; /* توسيع المحتوى */
+        }
+        .mobile .hero h1{
+            font-size:28px; /* تصغير الخط */
+        }
+        .mobile .nav-links{
+            flex-wrap:wrap;
+            gap:12px;
+            justify-content:center;
+        }
+        /* الصندوق الصغير فوق الاسم */
+        .badge{
+            display:inline-block;
+            background:rgba(0,255,255,.15);
+            padding:6px 15px;
+            border-radius:20px;
+            border:1px solid #00ffff;
+            margin-bottom:10px;
+        }
+
+        /* ▬▬▬▬▬ تنسيقات الأقسام (Sections) ▬▬▬▬▬ */
+
+        section{
+            max-width:1000px;
+            margin:40px auto; /* توسيط القسم */
+            padding:20px;
+            background:rgba(255,255,255,.05); /* خلفية شفافة */
+            border:1px solid rgba(255,255,255,.1);
+            backdrop-filter:blur(20px);
+            border-radius:20px;
+        }
+
+        /* --- تنسيق شبكة المهارات (Skills Grid) --- */
+        .grid{
+            text-align: center;
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); /* ترتيب تلقائي */
+            gap:15px;
+        }
+
+        /* كرت المهارة */
+        .card{
+            padding:18px;
+            text-align:center;
+            border-radius:15px;
+            background:rgba(0,0,0,.4);
+            border:1px solid rgba(0,255,255,.2);
+        }
+        .card:hover{
+            transform:scale(1.03); /* تكبير الكرت عند الماوس */
+            box-shadow:0 0 25px rgba(0,255,255,.4);
+        }
+
+        /* --- تنسيق قسم التواصل (Contact) --- */
+        .contact-cards{
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+            gap:20px;
+            margin-top:15px;
+        }
+
+        /* كرت التواصل (Link Style) */
+        .contact-card{
+            text-decoration:none;
+            background:linear-gradient(135deg,rgba(0,255,255,.08),rgba(0,0,0,.6));
+            border:1px solid rgba(255,255,255,.2);
+            border-radius:22px;
+            padding:20px 15px;
+            backdrop-filter:blur(12px);
+            transition:.3s;
+            box-shadow:0 0 25px rgba(0,0,0,.35);
+            color:white;
+            display: block; 
+            width: 100%;
+        }
+
+        .contact-card .icon{
+            font-size:20px;
+            margin-bottom:5px;
+            text-align: center;
+        }
+
+        .contact-card i{
+            color:#00ffff;
+            text-shadow:0 0 15px #00ffff;
+        }
+
+        .contact-card h3{
+            margin-bottom:5px;
+            text-align: center;
+        }
+
+        .contact-card p{
+            opacity:.8;
+            font-size:13px;
+            text-align: center;
+        }
+
+        .contact-card:hover{
+            transform:translateY(-8px) scale(1.03);
+            box-shadow:0 0 35px rgba(0,255,255,.45);
+            border-color:#00ffff;
+        }
+
+        /* --- التذييل (Footer) --- */
+        footer{
+            text-align:center;
+            opacity:.6;
+            margin:25px;
+        }
+
+        /* --- تنسيق قسم الشهادات (Certificates) --- */
+        #cert{
+            text-align:center;
+        }
+
+        .cert-container{
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+            gap:18px;
+            margin-top:15px;
+        }
+
+        .cert-card{
+            background:linear-gradient(135deg,rgba(0,255,255,.08),rgba(0,0,0,.6));
+            border:1px solid rgba(255,255,255,.2);
+            border-radius:18px;
+            padding:18px 12px;
+            backdrop-filter:blur(10px);
+            transition:.25s;
+        }
+
+        .cert-card i{
+            font-size:32px;
+            color:#00ffff;
+            text-shadow:0 0 14px #00ffff;
+            margin-bottom:8px;
+        }
+
+        .cert-card h3{
+            margin:5px 0;
+        }
+
+        .cert-card p{
+            opacity:.8;
+            font-size:13px;
+        }
+
+        .cert-card:hover{
+            transform:translateY(-6px) scale(1.02);
+            box-shadow:0 0 30px rgba(0,255,255,.35);
+            border-color:#00ffff;
+        }
+
+        /* إصلاح خاص لتساوي بطاقات التواصل */
+        .contact-cards{
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 أعمدة */
+            gap: 18px;
+            margin-top: 10px;
+        }
+
+        /* ميديا كويري: تعديلات خاصة لشاشات الموبايل */
+        @media(max-width: 900px){
+            .contact-cards{
+                grid-template-columns: 1fr; /* عمود واحد في الموبايل */
+            }
+        }
+
+        /* --- تأثير اللمعان على الاسم (Animation) --- */
+        .hero h1 span {
+            background: linear-gradient(to right, #00ffff 20%, #ffffff 50%, #00ffff 80%);
+            background-size: 200% auto;
+            color: #000;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 3s linear infinite;
+            font-weight: 900; 
+        }
+
+        @keyframes shine {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        /* --- تنسيق صورة البروفايل --- */
+        .profile-pic{
+            width:150px;
+            height:150px;
+            border-radius:50%; /* جعل الصورة دائرية */
+            object-fit:cover;
+            border:3px solid #00ffff;
+            box-shadow:0 0 35px rgba(0,255,255,.6);
+            margin:0 auto 15px;
+            display:block;
+            animation: float 4s ease-in-out infinite; /* حركة الطفو */
+        }
+
+        /* حركة الطفو (فوق وتحت) */
+        @keyframes float{
+            0%{transform:translateY(0)}
+            50%{transform:translateY(-10px)}
+            100%{transform:translateY(0)}
+        }
+
+        /* تعديل حجم الصورة في الموبايل */
+        .mobile .profile-pic{
+            width:120px;
+            height:120px;
+        }
+
+        /* زر تشغيل الفيديو */
+        .video-btn{
+            margin-top:18px;
+            padding:10px 22px;
+            border-radius:25px;
+            border:1px solid #00ffff;
+            background:rgba(0,255,255,.15);
+            color:#00ffff;
+            font-weight:800;
+            cursor:pointer;
+            transition:.3s;
+        }
+
+        .video-btn i{
+            margin-left:8px;
+        }
+
+        .video-btn:hover{
+            background:#00ffff;
+            color:#000;
+            box-shadow:0 0 25px rgba(0,255,255,.6);
+        }
+
+        /* خلفية الفيديو (Popup) */
+        .video-popup{
+            position:fixed;
+            inset:0;
+            background:rgba(0,0,0,.75);
+            backdrop-filter:blur(8px);
+            display:none;
+            align-items:center;
+            justify-content:center;
+            z-index:10000;
+        }
+
+        /* صندوق الفيديو */
+        .video-box{
+            position:relative;
+            width:90%;
+            max-width:600px;
+            background:#000;
+            border-radius:20px;
+            overflow:hidden;
+            box-shadow:0 0 40px rgba(0,255,255,.5);
+            border:1px solid #00ffff;
+        }
+
+        /* الفيديو */
+        .video-box video{
+            width:100%;
+            display:block;
+        }
+
+        /* زر الإغلاق */
+        .close-video{
+            position:absolute;
+            top:10px;
+            right:15px;
+            font-size:22px;
+            color:#00ffff;
+            cursor:pointer;
+            z-index:2;
+        }
+
+        /* تنسيق القائمة المنسدلة */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none; /* إخفاء القائمة افتراضياً */
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.9); /* لون خلفية القائمة */
+            min-width: 250px;
+            box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 8px;
+            top: 25px; /* تظهر أسفل الكلمة مباشرة */
+            right: 0; /* محاذاة لليمين بما أن الموقع بالعربي */
+            border: 1px solid rgba(255,255,255,0.1);
+            overflow: hidden;
+        }
+
+        .dropdown-content a {
+            color: white;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: 0.3s;
+            text-align: right;
+        }
+
+        .dropdown-content a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #ffd700; /* تغيير اللون عند التمرير */
+        }
+
+        /* إظهار القائمة عند تمرير الماوس */
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        /* تنسيق السهم الصغير بجانب كلمة ألعاب */
+        .dropdown > a::after {
+            content: ' ▾';
+            font-size: 12px;
+        }
+
+        /* تنسيقات لعبة تحدي المحاسب */
+        .game-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            display: grid;
+            grid-template-columns: auto 340px;
+            gap: 20px;
+        }
+
+        .game-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-top: 100px;
+        }
+
+        .level-badge {
+            background: rgba(0, 255, 255, 0.2);
+            color: #00ffff;
+            padding: 6px 18px;
+            border-radius: 25px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: inline-block;
+            border: 1px solid #00ffff;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            margin: 5px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 10px;
+            min-width: 120px;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00ffff;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+        .grid-container {
+            position: relative;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(10, 42px);
+            grid-template-rows: repeat(10, 42px);
+            gap: 1px;
+            background-color: rgba(0, 255, 255, 0.2);
+            border: 2px solid #00ffff;
+            position: relative;
+        }
+
+        .cell { 
+            width: 42px; 
+            height: 42px; 
+            background-color: #000428; 
+            position: relative; 
+        }
+        
+        .cell.white { 
+            background-color: rgba(255, 255, 255, 0.9); 
+            cursor: pointer;
+        }
+        
+        .cell.white:hover {
+            background-color: rgba(0, 255, 255, 0.2);
+        }
+        
+        .cell.active {
+            background-color: rgba(0, 255, 255, 0.3) !important;
+            box-shadow: 0 0 0 2px #00ffff;
+            z-index: 10;
+        }
+        
+        .cell.correct-word {
+            background-color: rgba(0, 255, 0, 0.3) !important;
+        }
+        
+        .cell input {
+            width: 100%; 
+            height: 100%; 
+            border: none; 
+            text-align: center;
+            font-size: 1.3rem; 
+            font-weight: bold; 
+            outline: none; 
+            background: transparent;
+            color: #000;
+            position: relative;
+            z-index: 5;
+        }
+
+        .cell-num { 
+            position: absolute; 
+            top: 1px; 
+            right: 4px; 
+            font-size: 0.65rem; 
+            color: #000; 
+            font-weight: normal; 
+            z-index: 10;
+        }
+
+        .clue-box { 
+            background: rgba(0, 0, 0, 0.5); 
+            padding: 20px; 
+            border-radius: 10px; 
+            border: 1px solid rgba(0, 255, 255, 0.2); 
+            height: 100%;
+        }
+        
+        .clue-list { 
+            list-style: none; 
+            padding: 0; 
+            margin: 0 0 15px 0; 
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .clue-list li { 
+            padding: 8px 0; 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
+            font-size: 0.95rem; 
+            cursor: pointer; 
+            transition: 0.2s; 
+            border-radius: 5px;
+        }
+        
+        .clue-list li:hover { 
+            color: #00ffff; 
+            padding-right: 5px; 
+            background-color: rgba(0, 255, 255, 0.1);
+        }
+        
+        .clue-list li.solved {
+            color: #22c55e;
+            text-decoration: line-through;
+        }
+
+        .controls { 
+            grid-column: span 2; 
+            display: flex; 
+            justify-content: center; 
+            gap: 15px; 
+            margin-top: 20px; 
+            flex-wrap: wrap;
+        }
+        
+        .btn { 
+            padding: 12px 30px; 
+            border: none; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-check { 
+            background: rgba(0, 255, 255, 0.2); 
+            color: #00ffff; 
+            border: 1px solid #00ffff;
+        }
+        
+        .btn-check:hover {
+            background: rgba(0, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+        
+        .btn-next { 
+            background: rgba(0, 255, 0, 0.2); 
+            color: #22c55e; 
+            display: none; 
+            border: 1px solid #22c55e;
+        }
+        
+        .btn-next:hover {
+            background: rgba(0, 255, 0, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+        }
+        
+        .btn-hint {
+            background: rgba(255, 193, 7, 0.2);
+            color: #f59e0b;
+            border: 1px solid #f59e0b;
+        }
+        
+        .btn-hint:hover {
+            background: rgba(255, 193, 7, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(255, 193, 7, 0.5);
+        }
+        
+        .btn-reset {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+        
+        .btn-reset:hover {
+            background: rgba(239, 68, 68, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+        }
+        
+        .correct { 
+            background-color: rgba(34, 197, 94, 0.3) !important;
+            animation: correctPulse 0.5s;
+        }
+        
+        @keyframes correctPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .incorrect { 
+            background-color: rgba(239, 68, 68, 0.3) !important;
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ffff, #22c55e);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: rgba(0, 0, 0, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            border: 1px solid #00ffff;
+            animation: modalFadeIn 0.5s;
+        }
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .modal h2 {
+            color: #00ffff;
+            margin-top: 0;
+        }
+        
+        .modal p {
+            margin-bottom: 20px;
+            color: #94a3b8;
+        }
+        
+        .modal button {
+            margin: 0 5px;
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #00ffff;
+            position: absolute;
+            animation: confetti-fall 3s linear;
+            z-index: 999;
+        }
+        
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        @media (max-width: 850px) {
+            .game-container { 
+                grid-template-columns: 1fr; 
+            }
+            
+            .controls { 
+                grid-column: 1; 
+            }
+            
+            .clue-box {
+                margin-top: 20px;
+            }
+        }
+
+        /* إضافة تأثيرات إضافية */
+        .glow {
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+
+        .text-glow {
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
+        }
+
+        .achievement {
+            position: fixed;
+            top: 100px;
+            right: -300px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #ffd700;
+            border-radius: 10px;
+            padding: 15px;
+            color: #ffd700;
+            font-weight: bold;
+            z-index: 10000;
+            transition: right 0.5s ease;
+        }
+
+        .achievement.show {
+            right: 20px;
+        }
+
+        .achievement i {
+            margin-left: 10px;
+        }
+
+        /* تحسينات إضافية للوحة المفاتيح */
+        .keyboard-hint {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #00ffff;
+            border-radius: 10px;
+            padding: 10px 15px;
+            color: #00ffff;
+            font-size: 14px;
+            z-index: 1000;
+        }
+
+        .keyboard-hint kbd {
+            background: rgba(0, 255, 255, 0.2);
+            border: 1px solid #00ffff;
+            border-radius: 3px;
+            padding: 2px 5px;
+            margin: 0 2px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <!-- خلفية الموقع المتحركة -->
+    <div id="bg"></div>
+
+    <!-- القائمة العلوية -->
+    <nav class="main-nav">
+        <div class="logo">لعبة تقاطع الكلمات المحاسبية</div>
+    </nav>
+
+    <!-- قسم اللعبة -->
+    <section id="game">
+        <div class="game-header">
+            <div id="level-indicator" class="level-badge">جاري التحميل...</div>
+            <h2 class="text-glow">لعبة تقاطع الكلمات المحاسبية </h2>
+            <p>إختبر نفسك في إكتشاف المصطلحات المحاسبية</p>
+            
+            <div class="stats-container">
+                <div class="stat-item">
+                    <div id="timer" class="stat-value">00:00</div>
+                    <div class="stat-label">الوقت</div>
+                </div>
+                <div class="stat-item">
+                    <div id="score" class="stat-value">0</div>
+                    <div class="stat-label">النقاط</div>
+                </div>
+                <div class="stat-item">
+                    <div id="hints" class="stat-value">3</div>
+                    <div class="stat-label">المساعدات</div>
+                </div>
+                <div class="stat-item">
+                    <div id="completed" class="stat-value">0/4</div>
+                    <div class="stat-label">الكلمات</div>
+                </div>
+            </div>
+            
+            <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill"></div>
+            </div>
+        </div>
+
+        <div class="game-container">
+            <div class="grid-container">
+                <div id="grid" class="grid"></div>
+            </div>
+
+            <div class="clues-section">
+                <div class="clue-box">
+                    <h3 style="margin-top:0; color:#00ffff; border-bottom: 2px solid #00ffff; display: inline-block;">أفقي ⮕</h3>
+                    <ul id="across-clues" class="clue-list"></ul>
+                    <h3 style="color:#00ffff; border-bottom: 2px solid #00ffff; display: inline-block; margin-top: 10px;">عمودي ⬇</h3>
+                    <ul id="down-clues" class="clue-list"></ul>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button id="check-btn" class="btn btn-check" onclick="checkLevel()">
+                    <i class="fas fa-check"></i> تحقق من الحل
+                </button>
+                <button id="hint-btn" class="btn btn-hint" onclick="useHint()">
+                    <i class="fas fa-lightbulb"></i> تلميح
+                </button>
+                <button id="reset-btn" class="btn btn-reset" onclick="resetLevel()">
+                    <i class="fas fa-redo"></i> إعادة المرحلة
+                </button>
+                <button id="next-btn" class="btn btn-next" onclick="nextLevel()">
+                    <i class="fas fa-arrow-right"></i> انتقل للمرحلة التالية ⮕
+                </button>
+            </div>
+        </div>
+    </section>
+    <!-- التذييل -->
+    <footer>
+        <p>إعداد زيد خالد</p>
+    </footer>
+
+    <!-- نافذة إنهاء المستوى -->
+    <div id="level-complete-modal" class="modal">
+        <div class="modal-content">
+            <h2>أحسنت انت جاهز للمرحلة القادمة</h2>
+            <p>الوقت المستغرق: <span id="final-time">00:00</span></p>
+            <p>النقاط المكتسبة: <span id="final-score">0</span></p>
+            <button id="modal-next-btn" class="btn btn-next" onclick="nextLevel()">
+                <i class="fas fa-arrow-right"></i> المرحلة التالية
+            </button>
+            <button class="btn btn-check" onclick="closeModal()">
+                <i class="fas fa-times"></i> إغلاق
+            </button>
+        </div>
+    </div>
+
+    <!-- نافذة إنهاء اللعبة -->
+    <div id="game-complete-modal" class="modal">
+        <div class="modal-content">
+            <h2>🏆 مبروك! لقد أكملت جميع المراحل 🏆</h2>
+            <p>الوقت الإجمالي: <span id="total-time">00:00</span></p>
+            <p>النقاط الإجمالية: <span id="total-score">0</span></p>
+            <button class="btn btn-check" onclick="location.reload()">
+                <i class="fas fa-redo"></i> ابدأ من جديد
+            </button>
+        </div>
+    </div>
+
+    <!-- إشعار الإنجاز -->
+    <div id="achievement" class="achievement">
+        <i class="fas fa-trophy"></i>
+        <span id="achievement-text">إنجاز جديد!</span>
+    </div>
+
+   
+    <script>
+        // إنشاء النجوم المتحركة في الخلفية
+        function createStars() {
+            const starsContainer = document.createElement('div');
+            starsContainer.style.position = 'fixed';
+            starsContainer.style.top = '0';
+            starsContainer.style.left = '0';
+            starsContainer.style.width = '100%';
+            starsContainer.style.height = '100%';
+            starsContainer.style.pointerEvents = 'none';
+            starsContainer.style.zIndex = '-2';
+            document.body.appendChild(starsContainer);
+            
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+
+        createStars();
+
+        // بيانات المستويات
+        const allLevels = [
+            {
+                title: "المرحلة الأولى: المبادئ ",
+                words: [
+                    { num: 1, word: "الأصول", clue: "موارد اقتصادية تملكها المنشأة", r: 4, c: 2, dir: "across" },
+                    { num: 2, word: "الخصوم", clue: "التزامات المنشأة تجاه الغير", r: 1, c: 5, dir: "down" },
+                    { num: 3, word: "ميزانية", clue: "قائمة تبين المركز المالي", r: 8, c: 1, dir: "across" },
+                    { num: 4, word: "قيد", clue: "تسجيل العملية في الدفاتر", r: 7, c: 2, dir: "down" }
+                ]
+            },
+            {
+                title: "المرحلة 2: الحسابات (متوسط)",
+                words: [
+                    { num: 1, word: "رأسمال", clue: "حقوق الملكية التي يبدأ بها المشروع", r: 3, c: 1, dir: "across" },
+                    { num: 2, word: "محاسب", clue: "الشخص المسؤول عن الدفاتر", r: 0, c: 3, dir: "down" },
+                    { num: 3, word: "إهلاك", clue: "نقص تدريجي في قيمة الأصل الثابت", r: 6, c: 2, dir: "across" },
+                    { num: 4, word: "ارباح", clue: "الرقم النهائي في قائمة الدخل موجب", r: 3, c: 5, dir: "down" }
+                ]
+            },
+            {
+                title: "المرحلة 3: التحليل (خبير)",
+                words: [
+                    { num: 1, word: "استحقاق", clue: "مبدأ تسجيل الإيراد عند تحققه", r: 4, c: 1, dir: "across" },
+                    { num: 2, word: "مراجعة", clue: "فحص الدفاتر والقوائم المالية", r: 2, c: 6, dir: "down" },
+                    { num: 3, word: "زكاة", clue: "مبلغ واجب يُحسب على المال عند بلوغه النصاب", r: 7, c: 3, dir: "across" },
+                    { num: 4, word: "توازن", clue: "يجب أن يتساوى طرفا الميزانية دائمًا", r: 5, c: 5, dir: "down" }
+                ]
+            }
+        ];
+
+        // متغيرات اللعبة
+        let currentLevelIdx = 0;
+        let score = 0;
+        let hints = 3;
+        let startTime;
+        let timerInterval;
+        let completedWords = [];
+        let totalGameTime = 0;
+        let totalGameScore = 0;
+        let currentWordDirection = null;
+        let currentWordStart = null;
+
+        // تهيئة المستوى
+        function initLevel() {
+            const level = allLevels[currentLevelIdx];
+            document.getElementById('level-indicator').innerText = level.title;
+            document.getElementById('next-btn').style.display = 'none';
+            document.getElementById('check-btn').style.display = 'block';
+            document.getElementById('hints').innerText = hints;
+            completedWords = [];
+            updateProgress();
+            
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            
+            // بناء الشبكة
+            for (let r = 0; r < 10; r++) {
+                for (let c = 0; c < 10; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.id = `cell-${r}-${c}`;
+                    grid.appendChild(cell);
+                }
+            }
+
+            // إضافة الكلمات
+            level.words.forEach(item => {
+                for (let i = 0; i < item.word.length; i++) {
+                    const r = item.dir === 'across' ? item.r : item.r + i;
+                    const c = item.dir === 'across' ? item.c + i : item.c;
+                    const cell = document.getElementById(`cell-${r}-${c}`);
+                    
+                    if (!cell) continue;
+                    
+                    cell.classList.add('white');
+                    if (!cell.querySelector('input')) {
+                        const input = document.createElement('input');
+                        input.maxLength = 1;
+                        input.dataset.row = r;
+                        input.dataset.col = c;
+                        input.dataset.answer = item.word[i];
+                        input.dataset.wordNum = item.num;
+                        input.dataset.wordDir = item.dir;
+                        
+                        // تحسين معالجة الإدخال
+                        input.addEventListener('input', function(e) {
+                            const value = e.target.value;
+                            if (value) {
+                                // البحث عن الخلية التالية في نفس اتجاه الكلمة
+                                const nextR = item.dir === 'across' ? r : r + 1;
+                                const nextC = item.dir === 'across' ? c + 1 : c;
+                                const nextCell = document.getElementById(`cell-${nextR}-${nextC}`);
+                                
+                                if (nextCell && nextCell.classList.contains('white')) {
+                                    const nextInput = nextCell.querySelector('input');
+                                    if (nextInput) {
+                                        nextInput.focus();
+                                    }
+                                } else {
+                                    // إذا لم توجد خلية تالية، انتقل إلى أول حرف في الكلمة التالية
+                                    moveToNextWord(item);
+                                }
+                                
+                                // تحقق من اكتمال الكلمة تلقائياً
+                                checkWordCompletion(item.num);
+                            }
+                        });
+                        
+                        // تحسين معالجة التركيز
+                        input.addEventListener('focus', function(e) {
+                            // تحديد اتجاه الكلمة ونقطة البداية
+                            currentWordDirection = item.dir;
+                            currentWordStart = { r: item.r, c: item.c };
+                            
+                            // تمييز جميع خلايا الكلمة الحالية
+                            highlightWord(item);
+                        });
+                        
+                        // معالجة ضغط مفتاح المسافة للتنقل بين الكلمات
+                        input.addEventListener('keydown', function(e) {
+                            if (e.key === ' ') {
+                                e.preventDefault();
+                                moveToNextWord(item);
+                            } else if (e.key === 'Backspace' && !e.target.value) {
+                                e.preventDefault();
+                                moveToPreviousCell(item, r, c);
+                            }
+                        });
+                        
+                        cell.appendChild(input);
+                    }
+                    
+                    // إضافة رقم الكلمة
+                    if (i === 0) {
+                        let numSpan = cell.querySelector('.cell-num');
+                        if (!numSpan) {
+                            numSpan = document.createElement('span');
+                            numSpan.className = 'cell-num';
+                            cell.appendChild(numSpan);
+                        }
+                        numSpan.innerText = item.num;
+                    }
+                }
+            });
+            
+            renderClues();
+            startTimer();
+        }
+
+        // الانتقال إلى الكلمة التالية
+        function moveToNextWord(currentWord) {
+            const level = allLevels[currentLevelIdx];
+            const currentWordIndex = level.words.findIndex(w => w.num === currentWord.num);
+            let nextWord = null;
+            
+            // البحث عن الكلمة التالية غير المكتملة
+            for (let i = 1; i <= level.words.length; i++) {
+                const nextIndex = (currentWordIndex + i) % level.words.length;
+                if (!completedWords.includes(level.words[nextIndex].num)) {
+                    nextWord = level.words[nextIndex];
+                    break;
+                }
+            }
+            
+            if (nextWord) {
+                const firstCell = document.querySelector(`input[data-row="${nextWord.r}"][data-col="${nextWord.c}"]`);
+                if (firstCell) {
+                    firstCell.focus();
+                }
+            }
+        }
+
+        // الانتقال إلى الخلية السابقة
+        function moveToPreviousCell(word, currentR, currentC) {
+            const prevR = word.dir === 'across' ? currentR : currentR - 1;
+            const prevC = word.dir === 'across' ? currentC - 1 : currentC;
+            const prevCell = document.getElementById(`cell-${prevR}-${prevC}`);
+            
+            if (prevCell && prevCell.classList.contains('white')) {
+                const prevInput = prevCell.querySelector('input');
+                if (prevInput) {
+                    prevInput.focus();
+                }
+            }
+        }
+
+        // تمييز الكلمة الحالية
+        function highlightWord(word) {
+            // إزالة التمييز من جميع الخلايا
+            document.querySelectorAll('.cell').forEach(cell => {
+                cell.classList.remove('active');
+            });
+            
+            // تمييز خلايا الكلمة الحالية
+            for (let i = 0; i < word.word.length; i++) {
+                const r = word.dir === 'across' ? word.r : word.r + i;
+                const c = word.dir === 'across' ? word.c + i : word.c;
+                const cell = document.getElementById(`cell-${r}-${c}`);
+                
+                if (cell) {
+                    cell.classList.add('active');
+                }
+            }
+        }
+
+        // التحقق من اكتمال الكلمة
+        function checkWordCompletion(wordNum) {
+            const level = allLevels[currentLevelIdx];
+            const word = level.words.find(w => w.num === wordNum);
+            
+            if (!word || completedWords.includes(wordNum)) return;
+            
+            let isComplete = true;
+            
+            for (let i = 0; i < word.word.length; i++) {
+                const r = word.dir === 'across' ? word.r : word.r + i;
+                const c = word.dir === 'across' ? word.c + i : word.c;
+                const input = document.querySelector(`input[data-row="${r}"][data-col="${c}"]`);
+                
+                if (!input || input.value !== word.word[i]) {
+                    isComplete = false;
+                    break;
+                }
+            }
+            
+            if (isComplete) {
+                completedWords.push(wordNum);
+                updateProgress();
+                
+                // تمييز الكلمة المكتملة
+                for (let i = 0; i < word.word.length; i++) {
+                    const r = word.dir === 'across' ? word.r : word.r + i;
+                    const c = word.dir === 'across' ? word.c + i : word.c;
+                    const cell = document.getElementById(`cell-${r}-${c}`);
+                    
+                    if (cell) {
+                        cell.classList.add('correct-word');
+                    }
+                }
+                
+                // تمييز الدليل في القائمة
+                const clueElement = document.querySelector(`.clue-list li[data-word-num="${wordNum}"]`);
+                if (clueElement) {
+                    clueElement.classList.add('solved');
+                }
+                
+                // إضافة نقاط
+                addScore(50);
+                
+                // عرض إشعار الإنجاز
+                showAchievement(`تم حل كلمة "${word.word}"!`);
+                
+                // التحقق من اكتمال المرحلة
+                if (completedWords.length === level.words.length) {
+                    setTimeout(() => {
+                        levelComplete();
+                    }, 500);
+                }
+            }
+        }
+
+        // تحديث شريط التقدم
+        function updateProgress() {
+            const level = allLevels[currentLevelIdx];
+            const progress = (completedWords.length / level.words.length) * 100;
+            document.getElementById('progress-fill').style.width = `${progress}%`;
+            document.getElementById('completed').innerText = `${completedWords.length}/${level.words.length}`;
+        }
+
+        // بدء المؤقت
+        function startTimer() {
+            startTime = Date.now();
+            
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            
+            timerInterval = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+                document.getElementById('timer').innerText = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        // إيقاف المؤقت
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                return document.getElementById('timer').innerText;
+            }
+            return "00:00";
+        }
+
+        // إضافة نقاط
+        function addScore(points) {
+            score += points;
+            document.getElementById('score').innerText = score;
+            
+            // تأثير إضافة النقاط
+            const scoreElement = document.getElementById('score');
+            scoreElement.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                scoreElement.style.transform = 'scale(1)';
+            }, 300);
+        }
+
+        // استخدام مساعدة
+        function useHint() {
+            if (hints <= 0) {
+                showAchievement("لقد استنفدت جميع المساعدات!", false);
+                return;
+            }
+            
+            const level = allLevels[currentLevelIdx];
+            const unsolvedWords = level.words.filter(w => !completedWords.includes(w.num));
+            
+            if (unsolvedWords.length === 0) return;
+            
+            // اختيار كلمة عشوائية غير مكتملة
+            const randomWord = unsolvedWords[Math.floor(Math.random() * unsolvedWords.length)];
+            
+            // اختيار حرف عشوائي من الكلمة
+            const randomIndex = Math.floor(Math.random() * randomWord.word.length);
+            const r = randomWord.dir === 'across' ? randomWord.r : randomWord.r + randomIndex;
+            const c = randomWord.dir === 'across' ? randomWord.c + randomIndex : randomWord.c;
+            const input = document.querySelector(`input[data-row="${r}"][data-col="${c}"]`);
+            
+            if (input && !input.value) {
+                input.value = randomWord.word[randomIndex];
+                hints--;
+                document.getElementById('hints').innerText = hints;
+                
+                // خصم نقاط لاستخدام المساعدة
+                addScore(-25);
+                
+                // تحقق من اكتمال الكلمة
+                checkWordCompletion(randomWord.num);
+                
+                // تمييز الحقل الذي تمت المساعدة فيه
+                input.parentElement.classList.add('correct');
+                setTimeout(() => {
+                    input.parentElement.classList.remove('correct');
+                }, 1000);
+                
+                showAchievement(`تم الكشف عن حرف "${randomWord.word[randomIndex]}"`);
+            }
+        }
+
+        // إعادة تعيين المستوى
+        function resetLevel() {
+            if (confirm("هل أنت متأكد من إعادة تعيين المرحلة الحالية؟")) {
+                initLevel();
+            }
+        }
+
+        // عرض الأدلة
+        function renderClues() {
+            const aList = document.getElementById('across-clues');
+            const dList = document.getElementById('down-clues');
+            aList.innerHTML = ''; 
+            dList.innerHTML = '';
+            
+            allLevels[currentLevelIdx].words.forEach(item => {
+                const li = document.createElement('li');
+                li.innerText = `${item.num}. ${item.clue}`;
+                li.setAttribute('data-word-num', item.num);
+                li.onclick = () => {
+                    const input = document.querySelector(`input[data-row="${item.r}"][data-col="${item.c}"]`);
+                    if(input) {
+                        input.focus();
+                        highlightWord(item);
+                    }
+                };
+                
+                if (completedWords.includes(item.num)) {
+                    li.classList.add('solved');
+                }
+                
+                if (item.dir === 'across') aList.appendChild(li);
+                else dList.appendChild(li);
+            });
+        }
+
+        // التحقق من المستوى
+        function checkLevel() {
+            let isComplete = true;
+            const inputs = document.querySelectorAll('.cell.white input');
+            
+            inputs.forEach(input => {
+                const expectedAnswer = input.dataset.answer;
+                const userAnswer = input.value;
+                
+                if (userAnswer === expectedAnswer) {
+                    input.parentElement.classList.add('correct');
+                    input.parentElement.classList.remove('incorrect');
+                } else {
+                    input.parentElement.classList.add('incorrect');
+                    input.parentElement.classList.remove('correct');
+                    isComplete = false;
+                }
+            });
+
+            if (isComplete) {
+                levelComplete();
+            } else {
+                // خصم نقاط للإجابة الخاطئة
+                addScore(-10);
+                showAchievement("في عندك أخطاء، تأكد من الحروف الحمراء.", false);
+            }
+        }
+
+        // إنهاء المستوى
+        function levelComplete() {
+            const finalTime = stopTimer();
+            const levelScore = score;
+            
+            // حفظ الإحصائيات الإجمالية
+            totalGameTime += Math.floor((Date.now() - startTime) / 1000);
+            totalGameScore += score;
+            
+            // إضافة مكافأة إنهاء المرحلة
+            addScore(100);
+            
+            // إنشاء تأثير الاحتفال
+            createConfetti();
+            
+            if (currentLevelIdx < allLevels.length - 1) {
+                // عرض نافذة إنهاء المرحلة
+                document.getElementById('final-time').innerText = finalTime;
+                document.getElementById('final-score').innerText = levelScore;
+                document.getElementById('level-complete-modal').style.display = 'flex';
+                
+                document.getElementById('next-btn').style.display = 'block';
+                document.getElementById('check-btn').style.display = 'none';
+            } else {
+                // عرض نافذة إنهاء اللعبة
+                const totalMinutes = Math.floor(totalGameTime / 60);
+                const totalSeconds = totalGameTime % 60;
+                document.getElementById('total-time').innerText = 
+                    `${totalMinutes.toString().padStart(2, '0')}:${totalSeconds.toString().padStart(2, '0')}`;
+                document.getElementById('total-score').innerText = totalGameScore;
+                document.getElementById('game-complete-modal').style.display = 'flex';
+                
+                document.getElementById('check-btn').style.display = 'none';
+                
+                showAchievement(" مبارك أنجزت كامل المراحل ", true);
+            }
+        }
+
+        // إنشاء تأثير الاحتفال
+        function createConfetti() {
+            const colors = ['#f87171', '#fb923c', '#fbbf24', '#a3e635', '#4ade80', '#22d3ee', '#818cf8', '#c084fc'];
+            
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 3000);
+                }, i * 30);
+            }
+        }
+
+        // عرض إشعار الإنجاز
+        function showAchievement(text, isSuccess = true) {
+            const achievement = document.getElementById('achievement');
+            const achievementText = document.getElementById('achievement-text');
+            
+            achievementText.innerText = text;
+            achievement.style.borderColor = isSuccess ? '#ffd700' : '#ef4444';
+            achievement.style.color = isSuccess ? '#ffd700' : '#ef4444';
+            
+            achievement.classList.add('show');
+            
+            setTimeout(() => {
+                achievement.classList.remove('show');
+            }, 3000);
+        }
+
+        // إغلاق النافذة المنبثقة
+        function closeModal() {
+            document.getElementById('level-complete-modal').style.display = 'none';
+        }
+
+        // الانتقال للمستوى التالي
+        function nextLevel() {
+            closeModal();
+            currentLevelIdx++;
+            score = 0;
+            document.getElementById('score').innerText = score;
+            initLevel();
+        }
+
+        // تحميل مستوى معين
+        function loadLevel(levelIndex) {
+            if (levelIndex >= 0 && levelIndex < allLevels.length) {
+                currentLevelIdx = levelIndex;
+                score = 0;
+                hints = 3;
+                document.getElementById('score').innerText = score;
+                scrollToGame();
+                initLevel();
+            }
+        }
+
+        // التمرير إلى قسم اللعبة
+        function scrollToGame() {
+            document.getElementById('game').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // معالجة أحداث لوحة المفاتيح
+        document.addEventListener('keydown', function(e) {
+            // التحقق من الضغط على Enter للتحقق من الإجابة
+            if (e.key === 'Enter' && document.activeElement.tagName === 'INPUT') {
+                checkLevel();
+            }
+        });
+
+        // بدء اللعبة
+        initLevel();
+    </script>
+</body>
+</html>
