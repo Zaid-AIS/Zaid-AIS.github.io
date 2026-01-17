@@ -1525,5 +1525,28 @@
         // بدء اللعبة
         initLevel();
     </script>
+    </nav>
+
+    <div class="switcher" onclick="toggleDevice()">
+        <i class="fa-solid fa-desktop"></i>
+        تغيير وضع العرض
+    </div>
+
+    <script>
+        let mode="desktop";
+
+        function toggleDevice(){
+            if(mode==="desktop"){
+                document.documentElement.classList.add("mobile");
+                mode="mobile";
+                document.querySelector(".switcher").innerHTML=`<i class="fa-solid fa-mobile-screen"></i> وضع الهاتف`;
+            }
+            else{
+                document.documentElement.classList.remove("mobile");
+                mode="desktop";
+                document.querySelector(".switcher").innerHTML=`<i class="fa-solid fa-desktop"></i> وضع الكمبيوتر`;
+            }
+        }
+    </script>
 </body>
 </html>
