@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>قاموس نظم المعلومات المحاسبية | زيد AIS</title>
+    <style>
+        /* إعدادات الخلفية والنجوم */
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #fff;
+            background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* صناعة النجوم باستخدام الـ Box-shadow */
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: twinkle var(--duration) infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* تنسيق المحتوى الرئيسي */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        header h1 {
+            color: #f1c40f; /* لون ذهبي */
+            margin: 0;
+            font-size: 2.5rem;
+            text-shadow: 0 0 15px rgba(241, 196, 15, 0.5);
+        }
+
+        header p {
+            color: #bdc3c7;
+            font-size: 1.1rem;
+            margin-top: 10px;
+        }
+
+        /* صندوق البحث */
+        .search-box {
+            width: 100%;
+            padding: 15px 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(241, 196, 15, 0.3);
+            border-radius: 50px;
+            color: white;
+            font-size: 1.2rem;
+            outline: none;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .search-box:focus {
+            border-color: #f1c40f;
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 20px rgba(241, 196, 15, 0.4);
+        }
+
+        /* الجدول */
+        .table-wrapper {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: rgba(241, 196, 15, 0.8);
+            color: #1b2735;
+            padding: 18px;
+            font-size: 1.2rem;
+            text-align: right;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: background 0.2s;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.1);
+            color: #f1c40f;
+        }
+
+        .no-results {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            color: #e74c3c;
+            font-size: 1.2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+        }
+
+        /* تحسين العرض للموبايل */
+        @media (max-width: 600px) {
+            header h1 { font-size: 1.8rem; }
+            th, td { padding: 12px; font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="stars-container" id="stars"></div>
+
+<div class="container">
+    <header>
+        <h1>قاموس نظم المعلومات المحاسبية</h1>
+        <p>Accounting Information Systems (AIS) Glossary</p>
+    </header>
+
+    <input type="text" id="searchInput" class="search-box" placeholder="اكتب المصطلح اللي ببالك (عربي أو إنجليزي)...">
+
+    <div class="table-wrapper">
+        <table id="aisTable">
+            <thead>
+                <tr>
+                    <th>المصطلح بالعربي</th>
+                    <th>الترجمة بالإنجليزي</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                </tbody>
+        </table>
+    </div>
+    <div id="noResults" class="no-results">يا غالي، هالمصطلح مش موجود بالقائمة، جرب كلمة ثانية!</div>
+</div>
+
+<script>
+    // إنشاء النجوم برمجياً ليعطي شكل عشوائي وجميل
+    function createStars() {
+        const container = document.getElementById('stars');
+        const count = 150; // عدد النجوم
+        for (let i = 0; i < count; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            const size = Math.random() * 3 + 'px';
+            star.style.width = size;
+            star.style.height = size;
+            star.style.top = Math.random() * 100 + '%';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.setProperty('--duration', Math.random() * 3 + 2 + 's');
+            container.appendChild(star);
+        }
+    }
+    createStars();
+
+    // البيانات (مختصرة للمثال - يمكنك وضع كل بياناتك هنا)
+    const data = [
+        ["نظم المعلومات المحاسبية", "Accounting Information Systems"],
+        ["البيانات", "Data"],
+        ["المعلومات", "Information"],
+        ["معالجة البيانات", "Data Processing"],
+        ["دورة المحاسبة", "Accounting Cycle"],
+        ["المستندات", "Documents"],
+        ["القيود المحاسبية", "Journal Entries"],
+        ["دفتر اليومية", "Journal"],
+        ["دفتر الأستاذ", "General Ledger"],
+        ["القوائم المالية", "Financial Statements"],
+        ["نظام يدوي", "Manual System"],
+        ["نظام محوسب", "Computerized System"],
+        ["نظام متكامل", "Integrated System"],
+        ["مدخلات النظام", "System Inputs"],
+        ["مخرجات النظام", "System Outputs"],
+        ["معالجة العمليات", "Transaction Processing"],
+        ["العمليات المالية", "Financial Transactions"],
+        ["نظام معالجة العمليات", "Transaction Processing System (TPS)"],
+        ["نظام معلومات إداري", "Management Information System (MIS)"],
+        ["نظام دعم القرار", "Decision Support System (DSS)"],
+        ["نظام تخطيط موارد المؤسسة", "Enterprise Resource Planning (ERP)"],
+        ["الرقابة الداخلية", "Internal Control"],
+        ["فصل المهام", "Segregation of Duties"],
+        ["الصلاحيات", "Authorization"],
+        ["التحقق", "Verification"],
+        ["التدقيق الداخلي", "Internal Auditing"],
+        ["التدقيق الخارجي", "External Auditing"],
+        ["مخاطر النظام", "System Risks"],
+        ["الاحتيال", "Fraud"],
+        ["الأخطاء", "Errors"],
+        ["أمن المعلومات", "Information Security"],
+        ["سرية المعلومات", "Confidentiality"],
+        ["سلامة البيانات", "Data Integrity"],
+        ["توافر النظام", "Availability"],
+        ["التحكم بالوصول", "Access Control"],
+        ["كلمة المرور", "Password"],
+        ["التشفير", "Encryption"],
+        ["النسخ الاحتياطي", "Backup"],
+        ["الاسترجاع", "Recovery"],
+        ["قواعد البيانات", "Databases"],
+        ["قاعدة بيانات علائقية", "Relational Database"],
+        ["الجداول", "Tables"],
+        ["الحقول", "Fields"],
+        ["السجلات", "Records"],
+        ["المفتاح الأساسي", "Primary Key"],
+        ["المفتاح الخارجي", "Foreign Key"],
+        ["لغة الاستعلام", "Query Language"],
+        ["SQL", "Structured Query Language"],
+        ["تحليل النظم", "Systems Analysis"],
+        ["تصميم النظم", "Systems Design"],
+        ["تطوير النظم", "Systems Development"],
+        ["دورة حياة النظام", "System Development Life Cycle (SDLC)"],
+        ["تحليل المتطلبات", "Requirements Analysis"],
+        ["الاختبار", "Testing"],
+        ["التنفيذ", "Implementation"],
+        ["الصيانة", "Maintenance"],
+        ["توثيق النظام", "System Documentation"],
+        ["بيئة الرقابة", "Control Environment"],
+        ["تقييم المخاطر", "Risk Assessment"],
+        ["أنشطة الرقابة", "Control Activities"],
+        ["المعلومات والاتصال", "Information & Communication"],
+        ["المراقبة", "Monitoring"],
+        ["إطار COSO", "COSO Framework"],
+        ["الضوابط الوقائية", "Preventive Controls"],
+        ["الضوابط الكاشفة", "Detective Controls"],
+        ["ضوابط يدوية", "Manual Controls"],
+        ["ضوابط آلية", "Automated Controls"],
+        ["ضوابط عامة", "General Controls"],
+        ["ضوابط التطبيقات", "Application Controls"],
+        ["مسار التدقيق", "Audit Trail"],
+        ["أدلة التدقيق", "Audit Evidence"],
+        ["اختبار الضوابط", "Test of Controls"],
+        ["مخاطر الرقابة", "Control Risk"],
+        ["مخاطر الاكتشاف", "Detection Risk"],
+        ["المخاطر الكامنة", "Inherent Risk"],
+        ["تأكيدات الإدارة", "Management Assertions"],
+        ["نظام التشغيل", "Operating System"],
+        ["الخادم", "Server"],
+        ["العميل", "Client"],
+        ["الشبكات", "Networks"],
+        ["شبكة محلية", "Local Area Network (LAN)"],
+        ["شبكة واسعة", "Wide Area Network (WAN)"],
+        ["الحوسبة السحابية", "Cloud Computing"],
+        ["نموذج البيانات", "Data Model"],
+        ["تطبيع البيانات", "Data Normalization"],
+        ["احتيال مالي", "Financial Fraud"],
+        ["جدار الحماية", "Firewall"],
+        ["مخطط التدفق", "Flowchart"],
+        ["نظام SAP", "SAP System"],
+        ["وحدة المحاسبة المالية", "Financial Accounting (FI)"],
+        ["ذكاء الأعمال", "Business Intelligence (BI)"],
+        ["مستودع البيانات", "Data Warehouse"],
+        ["مؤشرات الأداء", "Key Performance Indicators (KPIs)"],
+        ["المطابقة البنكية", "Bank Reconciliation"],
+        ["حوكمة تقنية المعلومات", "IT Governance"],
+        ["دورة الإيرادات", "Revenue Cycle"],
+        ["دورة المشتريات", "Expenditure Cycle"],
+        ["مطابقة ثلاثية", "Three-way Matching"],
+        ["التبادل الإلكتروني للبيانات", "Electronic Data Interchange (EDI)"],
+        ["التحول الرقمي", "Digital Transformation"],
+        ["البلوك تشين", "Blockchain"],
+        ["المحاسبة", "Accounting"],
+        ["المعادلة المحاسبية", "Accounting Equation"],
+        ["الأصول", "Assets"],
+        ["الخصوم", "Liabilities"],
+        ["حقوق الملكية", "Equity"],
+        ["الإيرادات", "Revenues"],
+        ["المصروفات", "Expenses"],
+        ["الربح", "Profit"],
+        ["الخسارة", "Loss"],
+        ["رأس المال", "Capital"],
+        ["المسحوبات", "Drawings"],
+        ["القيد المحاسبي", "Journal Entry"],
+        ["مدين", "Debit"],
+        ["دائن", "Credit"],
+        ["ميزان المراجعة", "Trial Balance"],
+        ["قائمة المركز المالي", "Statement of Financial Position"],
+        ["الميزانية العمومية", "Balance Sheet"],
+        ["قائمة الدخل", "Income Statement"],
+        ["قائمة التدفقات النقدية", "Cash Flow Statement"],
+        ["قائمة التغير في حقوق الملكية", "Statement of Changes in Equity"],
+        ["صافي الدخل", "Net Income"],
+        ["إجمالي الربح", "Gross Profit"],
+        ["الربح التشغيلي", "Operating Income"],
+        ["الربح قبل الضريبة", "Profit Before Tax"],
+        ["الربح بعد الضريبة", "Profit After Tax"],
+        ["النقد", "Cash"],
+        ["الذمم المدينة", "Accounts Receivable"],
+        ["المخزون", "Inventory"],
+        ["الأصول المتداولة", "Current Assets"],
+        ["الأصول غير المتداولة", "Non-current Assets"],
+        ["الأصول الثابتة", "Fixed Assets"],
+        ["الممتلكات والمصانع والمعدات", "Property, Plant and Equipment (PPE)"],
+        ["الإهتلاك", "Depreciation"],
+        ["مجمع الإهتلاك", "Accumulated Depreciation"],
+        ["الإطفاء", "Amortization"],
+        ["القيمة الدفترية", "Book Value"],
+        ["الذمم الدائنة", "Accounts Payable"],
+        ["القروض", "Loans"],
+        ["الخصوم المتداولة", "Current Liabilities"],
+        ["الخصوم طويلة الأجل", "Long-term Liabilities"],
+        ["المخصصات", "Provisions"],
+        ["رأس المال المدفوع", "Paid-in Capital"],
+        ["الأرباح المحتجزة", "Retained Earnings"],
+        ["توزيعات الأرباح", "Dividends"],
+        ["محاسبة التكاليف", "Cost Accounting"],
+        ["التكلفة الثابتة", "Fixed Cost"],
+        ["التكلفة المتغيرة", "Variable Cost"],
+        ["التكلفة المختلطة", "Mixed Cost"],
+        ["التكلفة المباشرة", "Direct Cost"],
+        ["التكلفة غير المباشرة", "Indirect Cost"],
+        ["نقطة التعادل", "Break-even Point"],
+        ["هامش المساهمة", "Contribution Margin"],
+        ["الموازنة", "Budget"],
+        ["الموازنة التقديرية", "Budgeting"],
+        ["التدقيق", "Auditing"],
+        ["الالتزام", "Compliance"],
+        ["الاستحقاق", "Accrual"],
+        ["الأساس النقدي", "Cash Basis"],
+        ["أساس الاستحقاق", "Accrual Basis"],
+        ["مبدأ المقابلة", "Matching Principle"],
+        ["مبدأ الحيطة والحذر", "Prudence (Conservatism)"],
+        ["الأهمية النسبية", "Materiality"],
+        ["الاستمرارية", "Going Concern"],
+        ["القيمة العادلة", "Fair Value"],
+        ["الاعتراف بالإيراد", "Revenue Recognition"],
+        ["الاعتراف المحاسبي", "Accounting Recognition"],
+        ["القياس المحاسبي", "Accounting Measurement"],
+        ["العرض والإفصاح", "Presentation and Disclosure"],
+        ["الفترة المحاسبية", "Accounting Period"],
+        ["السياسات المحاسبية", "Accounting Policies"],
+        ["التقديرات المحاسبية", "Accounting Estimates"],
+        ["التغير في السياسات", "Change in Accounting Policy"],
+        ["الأخطاء المحاسبية", "Accounting Errors"],
+        ["أحداث لاحقة", "Subsequent Events"],
+        ["القيمة القابلة للتحقق", "Net Realizable Value (NRV)"],
+        ["انخفاض القيمة", "Impairment"],
+        ["خسائر انخفاض القيمة", "Impairment Loss"],
+        ["إعادة التقييم", "Revaluation"],
+        ["الاحتياطي", "Reserve"],
+        ["مخصص الديون المشكوك فيها", "Allowance for Doubtful Accounts"],
+        ["تكلفة البضاعة المباعة", "Cost of Goods Sold (COGS)"],
+        ["مخزون أول المدة", "Beginning Inventory"],
+        ["مخزون آخر المدة", "Ending Inventory"],
+        ["الجرد الدوري", "Periodic Inventory System"],
+        ["الجرد المستمر", "Perpetual Inventory System"],
+        ["طريقة الوارد أولاً صادر أولاً", "FIFO"],
+        ["طريقة الوارد أخيراً صادر أولاً", "LIFO"],
+        ["المتوسط المرجح", "Weighted Average"],
+        ["مردودات المبيعات", "Sales Returns"],
+        ["الخصم التجاري", "Trade Discount"],
+        ["الخصم النقدي", "Cash Discount"],
+        ["العمر الإنتاجي", "Useful Life"],
+        ["القيمة التخريدية", "Residual Value"],
+        ["طريقة القسط الثابت", "Straight-line Method"],
+        ["طريقة القسط المتناقص", "Declining Balance Method"],
+        ["طريقة وحدات الإنتاج", "Units of Production Method"],
+        ["إطفاء الأصول غير الملموسة", "Intangible Assets Amortization"],
+        ["الأصول غير الملموسة", "Intangible Assets"],
+        ["الشهرة", "Goodwill"],
+        ["الشركة الأم", "Parent Company"],
+        ["الشركة التابعة", "Subsidiary"],
+        ["الشركة الشقيقة", "Associate Company"],
+        ["توحيد القوائم المالية", "Consolidated Financial Statements"],
+        ["حقوق الأقلية", "Non-controlling Interest"],
+        ["الاستحواذ", "Acquisition"],
+        ["الاندماج", "Merger"],
+        ["القيمة العادلة للاستحواذ", "Fair Value of Acquisition"],
+        ["طريقة حقوق الملكية", "Equity Method"],
+        ["الضريبة", "Tax"],
+        ["ضريبة الدخل", "Income Tax"],
+        ["الضريبة المستحقة", "Tax Payable"],
+        ["الضريبة المؤجلة", "Deferred Tax"],
+        ["أصل ضريبي مؤجل", "Deferred Tax Asset"],
+        ["التزام ضريبي مؤجل", "Deferred Tax Liability"],
+        ["الوعاء الضريبي", "Tax Base"],
+        ["التخطيط الضريبي", "Tax Planning"],
+        ["التحليل المالي", "Financial Analysis"],
+        ["النسب المالية", "Financial Ratios"],
+        ["نسبة السيولة", "Liquidity Ratio"],
+        ["نسبة الربحية", "Profitability Ratio"],
+        ["نسبة المديونية", "Leverage Ratio"],
+        ["العائد على الأصول", "Return on Assets (ROA)"],
+        ["العائد على حقوق الملكية", "Return on Equity (ROE)"],
+        ["التدفقات النقدية الحرة", "Free Cash Flow"],
+        ["القيمة الحالية", "Present Value"],
+        ["القيمة المستقبلية", "Future Value"],
+        ["المعايير الدولية لإعداد التقارير المالية", "International Financial Reporting Standards (IFRS)"],
+        ["معايير المحاسبة الدولية", "International Accounting Standards (IAS)"],
+        ["تأكيدات الإدارة", "Management Assertions"],
+        ["التزامات الأداء", "Performance Obligations"],
+        ["قياس القيمة العادلة", "Fair Value Measurement"],
+        ["تكلفة الاستبدال", "Replacement Cost"],
+        ["القيمة القابلة للاسترداد", "Recoverable Amount"],
+        ["القيمة في الاستخدام", "Value in Use"],
+        ["الإفصاح", "Disclosure"],
+        ["العرض العادل", "Fair Presentation"],
+        ["الأدوات المالية", "Financial Instruments"],
+        ["الأصول المالية", "Financial Assets"],
+        ["الالتزامات المالية", "Financial Liabilities"],
+        ["الاستثمارات", "Investments"],
+        ["الاستثمارات قصيرة الأجل", "Short-term Investments"],
+        ["الاستثمارات طويلة الأجل", "Long-term Investments"],
+        ["القيمة العادلة من خلال الربح أو الخسارة", "Fair Value Through Profit or Loss (FVTPL)"],
+        ["القيمة العادلة من خلال الدخل الشامل الآخر", "Fair Value Through Other Comprehensive Income (FVOCI)"],
+        ["التكلفة المطفأة", "Amortized Cost"],
+        ["خسائر الائتمان المتوقعة", "Expected Credit Losses (ECL)"],
+        ["الدخل الشامل", "Comprehensive Income"],
+        ["الدخل الشامل الآخر", "Other Comprehensive Income (OCI)"],
+        ["فائض إعادة التقييم", "Revaluation Surplus"],
+        ["احتياطي ترجمة العملات", "Foreign Currency Translation Reserve"],
+	["التكاليف المعيارية", "Standard Costing"],
+        ["انحراف التكاليف", "Cost Variance"],
+        ["محاسبة المسؤولية", "Responsibility Accounting"],
+        ["مراكز التكلفة", "Cost Centers"],
+        ["مراكز الربحية", "Profit Centers"],
+        ["التسعير التحويلي", "Transfer Pricing"],
+        ["القيمة المضافة", "Value Added"],
+        ["ضريبة القيمة المضافة", "Value Added Tax (VAT)"],
+        ["الإقرار الضريبي", "Tax Return"],
+        ["التهرب الضريبي", "Tax Evasion"],
+        ["تجنب ضريبي", "Tax Avoidance"],
+        ["الاستقطاع الضريبي", "Tax Deduction"],
+        ["الضريبة المستقطعة", "Withholding Tax"],
+        ["التدقيق القائم على المخاطر", "Risk-Based Auditing"],
+        ["برنامج التدقيق", "Audit Program"],
+        ["أوراق عمل التدقيق", "Audit Working Papers"],
+        ["تقرير التدقيق", "Audit Report"],
+        ["رأي نظيف", "Unqualified Opinion"],
+        ["رأي متحفظ", "Qualified Opinion"],
+        ["رأي معارض", "Adverse Opinion"],
+        ["امتناع عن إبداء الرأي", "Disclaimer of Opinion"],
+        ["الأحداث اللاحقة", "Subsequent Events"],
+        ["الاستمرارية", "Going Concern"],
+        ["الارتباطات المهنية", "Professional Engagements"],
+        ["أخلاقيات المهنة", "Professional Ethics"],
+        ["الاستقلالية", "Independence"],
+        ["العناية المهنية الواجبة", "Due Professional Care"],
+        ["نظم تشغيل البيانات", "Data Operating Systems"],
+        ["المعالجة الآنية", "Real-time Processing"],
+        ["المعالجة بالدفعات", "Batch Processing"],
+        ["تحليل المسار", "Path Analysis"],
+        ["أمن الشبكات", "Network Security"],
+        ["الاختراق", "Hacking"],
+        ["هجوم الحرمان من الخدمة", "DoS Attack"],
+        ["البرمجيات الخبيثة", "Malware"],
+        ["الفيروسات", "Viruses"],
+        ["برامج التجسس", "Spyware"],
+        ["التصيد الاحتيالي", "Phishing"],
+        ["التحقق الثنائي", "Two-Factor Authentication (2FA)"],
+        ["البصمة الحيوية", "Biometrics"],
+        ["التوقيع الإلكتروني", "Electronic Signature"],
+        ["التجارة الإلكترونية", "E-Commerce"],
+        ["الخدمات المصرفية عبر الإنترنت", "Online Banking"],
+        ["الدفع الإلكتروني", "Electronic Payment"],
+        ["المحفظة الرقمية", "Digital Wallet"],
+        ["العملات المشفرة", "Cryptocurrencies"],
+        ["الأصول الرقمية", "Digital Assets"],
+        ["تعدين البيانات", "Data Mining"],
+        ["تنقيب البيانات المحاسبية", "Accounting Data Mining"],
+        ["الذكاء الاصطناعي", "Artificial Intelligence (AI)"],
+        ["تعلم الآلة", "Machine Learning"],
+        ["تحليل البيانات الضخمة", "Big Data Analytics"],
+        ["أتمتة العمليات الروبوتية", "Robotic Process Automation (RPA)"],
+        ["الواقع الافتراضي في التعليم", "VR in Education"],
+        ["تحليل النظم وتصميمها", "Systems Analysis and Design"],
+        ["دراسة الجدوى", "Feasibility Study"],
+        ["الجدوى الاقتصادية", "Economic Feasibility"],
+        ["الجدوى التقنية", "Technical Feasibility"],
+        ["مخطط كيان العلاقة", "Entity-Relationship Diagram (ERD)"],
+        ["قاموس البيانات", "Data Dictionary"],
+        ["تطبيع الجداول", "Table Normalization"],
+        ["سلامة المرجع", "Referential Integrity"],
+        ["مخازن البيانات", "Data Marts"],
+        ["الاستعلام عن البيانات", "Data Querying"],
+        ["تقارير مخصصة", "Ad-hoc Reports"],
+        ["لوحة التحكم", "Dashboard"],
+        ["تخزين السحابة", "Cloud Storage"],
+        ["البرمجيات كخدمة", "Software as a Service (SaaS)"],
+        ["البنية التحتية كخدمة", "Infrastructure as a Service (IaaS)"],
+        ["المنصة كخدمة", "Platform as a Service (PaaS)"],
+        ["المحاسبة السحابية", "Cloud Accounting"],
+        ["التدقيق المحوسب", "Computer Assisted Audit Techniques (CAATs)"],
+        ["العينات الإحصائية", "Statistical Sampling"],
+        ["المجتمع الإحصائي", "Population"],
+        ["وحدة المعاينة", "Sampling Unit"],
+        ["خطأ المعاينة", "Sampling Error"],
+        ["مستوى الثقة", "Confidence Level"],
+        ["الانحراف المعياري", "Standard Deviation"],
+        ["تحليل الانحدار", "Regression Analysis"],
+        ["محاسبة الموارد البشرية", "Human Resource Accounting"],
+        ["المسؤولية الاجتماعية", "Social Responsibility"],
+        ["تقارير الاستدامة", "Sustainability Reporting"],
+        ["حوكمة الشركات", "Corporate Governance"],
+        ["مجلس الإدارة", "Board of Directors"],
+        ["لجنة التدقيق", "Audit Committee"],
+        ["أصحاب المصلحة", "Stakeholders"],
+        ["الشفافية", "Transparency"],
+        ["المساءلة", "Accountability"],
+        ["تعارض المصالح", "Conflict of Interest"],
+        ["قانون ساربينز أوكسلي", "Sarbanes-Oxley Act (SOX)"],
+        ["إدارة المخاطر المؤسسية", "Enterprise Risk Management (ERM)"],
+        ["شهية المخاطر", "Risk Appetite"],
+        ["المخاطر المتبقية", "Residual Risk"],
+        ["الاستجابة للمخاطر", "Risk Response"],
+        ["خطة الطوارئ", "Contingency Plan"],
+        ["التعافي من الكوارث", "Disaster Recovery"],
+        ["استمرارية الأعمال", "Business Continuity"],
+        ["نظام إدارة المعلومات", "Information Management System"],
+        ["هيكل تجزئة العمل", "Work Breakdown Structure (WBS)"],
+        ["المسار الحرجي", "Critical Path Method (CPM)"],
+	["الأوراق المالية", "Securities"],
+        ["سندات الخزينة", "Treasury Bills"],
+        ["الأسهم الممتازة", "Preferred Stocks"],
+        ["الأسهم العادية", "Common Stocks"],
+        ["المشتقات المالية", "Financial Derivatives"],
+        ["عقود الخيارات", "Options Contracts"],
+        ["العقود الآجلة", "Futures Contracts"],
+        ["صناديق الاستثمار", "Mutual Funds"],
+        ["المحافظ الاستثمارية", "Investment Portfolios"],
+        ["تنويع الاستثمارات", "Diversification"],
+        ["العائد على الاستثمار", "Return on Investment (ROI)"],
+        ["معدل العائد الداخلي", "Internal Rate of Return (IRR)"],
+        ["صافي القيمة الحالية", "Net Present Value (NPV)"],
+        ["فترة الاسترداد", "Payback Period"],
+        ["تكلفة رأس المال", "Cost of Capital"],
+        ["المتوسط المرجح لتكلفة رأس المال", "Weighted Average Cost of Capital (WACC)"],
+        ["الرفع المالي", "Financial Leverage"],
+        ["القيمة السوقية", "Market Value"],
+        ["القيمة الاسمية", "Nominal Value"],
+        ["القيمة التصفوية", "Liquidation Value"],
+        ["تحليل القوائم المالية المقارن", "Comparative Financial Analysis"],
+        ["تحليل الاتجاه", "Trend Analysis"],
+        ["التحليل الرأسي", "Vertical Analysis"],
+        ["التحليل الأفقي", "Horizontal Analysis"],
+        ["نسبة التداول", "Current Ratio"],
+        ["نسبة السيولة السريعة", "Quick Ratio (Acid Test)"],
+        ["معدل دوران المخزون", "Inventory Turnover Ratio"],
+        ["معدل دوران الذمم المدينة", "Accounts Receivable Turnover"],
+        ["فترة التحصيل", "Collection Period"],
+        ["هامش صافي الربح", "Net Profit Margin"],
+        ["ربحية السهم المخفضة", "Diluted Earnings Per Share"],
+        ["القيمة الاقتصادية المضافة", "Economic Value Added (EVA)"],
+        ["رأس المال العامل", "Working Capital"],
+        ["المخصصات الفنية", "Technical Provisions"],
+        ["الاحتياطيات القانونية", "Statutory Reserves"],
+        ["الأرباح غير المحققة", "Unrealized Gains"],
+        ["الخسائر غير المحققة", "Unrealized Losses"],
+        ["إعادة تصنيف الأصول", "Reclassification of Assets"],
+        ["التدفقات النقدية التشغيلية", "Operating Cash Flows"],
+        ["التدفقات النقدية الاستثمارية", "Investing Cash Flows"],
+        ["التدفقات النقدية التمويلية", "Financing Cash Flows"],
+        ["المعادلة المحاسبية الموسعة", "Expanded Accounting Equation"],
+        ["أساس الاستحقاق المعدل", "Modified Accrual Basis"],
+        ["المحاسبة الحكومية", "Governmental Accounting"],
+        ["المحاسبة عن الزكاة", "Zakat Accounting"],
+        ["المحاسبة الإسلامية", "Islamic Accounting"],
+        ["المصارف الإسلامية", "Islamic Banking"],
+        ["المشاركة والمضاربة", "Musharaka and Mudaraba"],
+        ["المرابحة والاجارة", "Murabaha and Ijarah"],
+        ["صكوك الاستثمار", "Investment Sukuk"],
+        ["هيئة المحاسبة والمراجعة للمؤسسات المالية الإسلامية", "AAOIFI"],
+        ["معايير التدقيق الدولية", "International Standards on Auditing (ISA)"],
+        ["مخاطر الائتمان", "Credit Risk"],
+        ["مخاطر السوق", "Market Risk"],
+        ["مخاطر التشغيل", "Operational Risk"],
+        ["مخاطر السيولة", "Liquidity Risk"],
+        ["كفاية رأس المال", "Capital Adequacy"],
+        ["معايير بازل", "Basel Accords"],
+        ["غسيل الأموال", "Money Laundering"],
+        ["مكافحة غسيل الأموال", "Anti-Money Laundering (AML)"],
+        ["اعرف عميلك", "Know Your Customer (KYC)"],
+        ["الامتثال الضريبي", "Tax Compliance"],
+        ["التحقيق الجنائي المحاسبي", "Forensic Accounting"],
+        ["فحص ما بعد التنفيذ", "Post-Implementation Review"],
+        ["نظم المعلومات الجغرافية في المحاسبة", "GIS in Accounting"],
+        ["مستودعات البيانات المالية", "Financial Data Warehousing"],
+        ["ذكاء الأعمال المالي", "Financial Business Intelligence"],
+        ["التنقيب في النص المالي", "Financial Text Mining"],
+        ["التقارير المالية المرحلية", "Interim Financial Reporting"],
+        ["القطاعات التشغيلية", "Operating Segments"],
+        ["ربح السهم الأساسي", "Basic Earnings Per Share"],
+        ["العمليات المتوقفة", "Discontinued Operations"],
+        ["المشاريع المشتركة", "Joint Ventures"],
+        ["الترتيبات المشتركة", "Joint Arrangements"],
+        ["الأطراف ذات العلاقة", "Related Parties"],
+        ["عقود التأمين", "Insurance Contracts"],
+        ["أدوات الملكية", "Equity Instruments"],
+        ["الالتزامات المحتملة", "Contingent Liabilities"],
+        ["الأصول المحتملة", "Contingent Assets"],
+        ["القيمة المتبقية للأصل", "Salvage Value"],
+        ["طريقة مجموع أرقام السنوات", "Sum-of-the-Years'-Digits Method"],
+        ["الإطفاء على أساس القسط الثابت", "Straight-line Amortization"],
+        ["الأصول البيولوجية", "Biological Assets"],
+        ["المنتجات الزراعية", "Agricultural Produce"],
+        ["العقارات الاستثمارية", "Investment Property"],
+        ["تكلفة الإحلال", "Replacement Cost"],
+        ["صافي القيمة البيعية", "Net Realizable Value"],
+        ["فترة التقرير", "Reporting Period"],
+        ["سنة الأساس", "Base Year"],
+        ["الأهمية النسبية في التدقيق", "Audit Materiality"],
+        ["خطاب الارتباط", "Engagement Letter"],
+        ["خطاب التمثيل", "Representation Letter"],
+        ["المراجعة التحليلية", "Analytical Review"],
+        ["نقطة الضعف الجوهرية", "Material Weakness"],
+        ["تعديلات سنوات سابقة", "Prior Period Adjustments"],
+        ["الاحتياطي العام", "General Reserve"],
+        ["الاحتياطي الإجباري", "Compulsory Reserve"],
+        ["علاوة الإصدار", "Share Premium"],
+	["سلسلة الكتل", "Blockchain Technology"],
+        ["العقود الذكية", "Smart Contracts"],
+        ["دفاتر الحسابات الموزعة", "Distributed Ledgers"],
+        ["التكنولوجيا المالية", "FinTech"],
+        ["الخدمات المصرفية المفتوحة", "Open Banking"],
+        ["واجهة برمجة التطبيقات", "API (Application Programming Interface)"],
+        ["الأمن السيبراني المالي", "Financial Cybersecurity"],
+        ["التدقيق المستمر", "Continuous Auditing"],
+        ["المراقبة المستمرة", "Continuous Monitoring"],
+        ["تحليل البيانات الاستكشافي", "Exploratory Data Analysis (EDA)"],
+        ["النمذجة المالية", "Financial Modeling"],
+        ["التنبؤ المالي", "Financial Forecasting"],
+        ["إدارة علاقات العملاء", "Customer Relationship Management (CRM)"],
+        ["إدارة سلسلة التوريد", "Supply Chain Management (SCM)"],
+        ["المشتريات الإلكترونية", "E-Procurement"],
+        ["الفواتير الإلكترونية", "E-Invoicing"],
+        ["أرشفة البيانات", "Data Archiving"],
+        ["هجرة البيانات", "Data Migration"],
+        ["تطهير البيانات", "Data Cleansing"],
+        ["حوكمة البيانات", "Data Governance"],
+        ["خصوصية البيانات", "Data Privacy"],
+        ["اللائحة العامة لحماية البيانات", "GDPR"],
+        ["الاستجابة للحوادث", "Incident Response"],
+        ["إدارة استمرارية الخدمة", "Service Continuity Management"],
+        ["اتفاقية مستوى الخدمة", "Service Level Agreement (SLA)"],
+        ["تعهيد العمليات", "Outsourcing"],
+        ["مراكز الخدمات المشتركة", "Shared Service Centers (SSC)"],
+        ["إعادة هندسة العمليات", "Business Process Reengineering (BPR)"],
+        ["بطاقة الأداء المتوازن", "Balanced Scorecard"],
+        ["خرائط التدفق الوظيفية", "Cross-Functional Flowcharts"],
+        ["تحليل SWOT المحاسبي", "Accounting SWOT Analysis"],
+        ["الميزة التنافسية", "Competitive Advantage"],
+        ["اقتصاديات الحجم", "Economies of Scale"],
+        ["تكامل النظم", "System Integration"],
+        ["نظم الإرث / القديمة", "Legacy Systems"],
+        ["تطبيقات الويب", "Web Applications"],
+        ["تطبيقات الهواتف الذكية", "Mobile Applications"],
+        ["تجربة المستخدم", "User Experience (UX)"],
+        ["واجهة المستخدم", "User Interface (UI)"],
+        ["التدقيق البيئي", "Environmental Audit"],
+        ["المحاسبة الخضراء", "Green Accounting"],
+        ["محاسبة الموارد", "Resource Accounting"],
+        ["المحاسبة عن رأس المال الفكري", "Intellectual Capital Accounting"],
+        ["الأصول غير الملموسة المولدة داخلياً", "Internally Generated Intangible Assets"],
+        ["براءات الاختراع", "Patents"],
+        ["العلامات التجارية", "Trademarks"],
+        ["حقوق التأليف والنشر", "Copyrights"],
+        ["الأسرار التجارية", "Trade Secrets"],
+        ["المنافسة غير العادلة", "Unfair Competition"],
+        ["الاحتكار", "Monopoly"],
+        ["مكافحة الاحتكار", "Anti-Trust"],
+        ["الإعسار المالي", "Insolvency"],
+        ["الإفلاس", "Bankruptcy"],
+        ["تصفية الشركات", "Company Liquidation"],
+        ["إعادة الهيكلة", "Restructuring"],
+        ["الاندماج والاستحواذ", "Mergers and Acquisitions (M&A)"],
+        ["العناية الواجبة", "Due Diligence"],
+        ["الرافعة التشغيلية", "Operating Leverage"],
+        ["تحليل الحساسية", "Sensitivity Analysis"],
+        ["محاكاة مونت كارلو", "Monte Carlo Simulation"],
+        ["أشجار القرار", "Decision Trees"],
+        ["المحاسبة القطاعية", "Segmental Accounting"],
+        ["العمليات المشتركة", "Joint Operations"],
+        ["تحويل العملات الأجنبية", "Foreign Currency Conversion"],
+        ["التضخم المالي", "Inflation"],
+        ["محاسبة التضخم", "Inflation Accounting"],
+        ["القوة الشرائية", "Purchasing Power"],
+        ["مؤشر أسعار المستهلك", "Consumer Price Index (CPI)"],
+        ["القيمة الوقتية للنقود", "Time Value of Money"],
+        ["معدل الخصم", "Discount Rate"],
+        ["الفائدة المركبة", "Compound Interest"],
+        ["الفائدة البسيطة", "Simple Interest"],
+        ["الأقساط السنوية", "Annuities"],
+        ["القروض والسلف", "Loans and Advances"],
+        ["التسهيلات الائتمانية", "Credit Facilities"],
+        ["الضمانات البنكية", "Bank Guarantees"],
+        ["الاعتمادات المستندية", "Letters of Credit (LC)"],
+        ["الشيكات المرتجعة", "Bounced Checks"],
+        ["تبييض الأموال", "Money Laundering"],
+        ["تمويل الإرهاب", "Terrorism Financing"],
+        ["الملاذات الضريبية", "Tax Havens"],
+        ["التسعير التحويلي الدولي", "International Transfer Pricing"],
+        ["اتفاقيات الازدواج الضريبي", "Double Taxation Agreements"],
+        ["الضريبة الانتقائية", "Excise Tax"],
+        ["الرسوم الجمركية", "Customs Duties"],
+        ["التخليص الجمركي", "Customs Clearance"],
+        ["قواعد المنشأ", "Rules of Origin"],
+        ["منطقة التجارة الحرة", "Free Trade Zone"],
+        ["التدقيق التشغيلي", "Operational Audit"],
+        ["تدقيق الالتزام", "Compliance Audit"],
+        ["تدقيق نظم المعلومات", "IS Audit"],
+        ["مراجعة النظراء", "Peer Review"],
+	["التحليل التنبؤي", "Predictive Analytics"],
+        ["التحليل الوصفي", "Descriptive Analytics"],
+        ["التحليل التشخيصي", "Diagnostic Analytics"],
+        ["التحليل التوجيهي", "Prescriptive Analytics"],
+        ["التدقيق عن بعد", "Remote Auditing"],
+        ["أدوات التدقيق الرقمي", "Digital Audit Tools"],
+        ["أخذ العينات الحكمي", "Judgmental Sampling"],
+        ["أخذ العينات العشوائي", "Random Sampling"],
+        ["أخذ العينات الطبقي", "Stratified Sampling"],
+        ["خطر عدم الكشف", "Non-Detection Risk"],
+        ["الأدلة الرقمية", "Digital Evidence"],
+        ["التوقيع الرقمي المشفر", "Encrypted Digital Signature"],
+        ["المصادقة المتعددة", "Multi-Factor Authentication"],
+        ["هندسة البيانات", "Data Architecture"],
+        ["إدارة البيانات الضخمة", "Big Data Management"],
+        ["بحيرة البيانات", "Data Lake"],
+        ["تنسيق البيانات", "Data Formatting"],
+        ["استخراج البيانات وتغييرها وتحميلها", "ETL (Extract, Transform, Load)"],
+        ["المحاسبة في الوقت الحقيقي", "Real-time Accounting"],
+        ["التقارير المالية التفاعلية", "Interactive Financial Reporting"],
+        ["لغة تقارير الأعمال الموسعة", "XBRL"],
+        ["حوكمة الشركات والامتثال", "GRC (Governance, Risk, and Compliance)"],
+        ["إدارة الأداء المؤسسي", "Enterprise Performance Management (EPM)"],
+        ["مؤشرات المخاطر الرئيسية", "Key Risk Indicators (KRIs)"],
+        ["تقييم الرقابة الذاتية", "Control Self-Assessment (CSA)"],
+        ["مصفوفة الرقابة", "Control Matrix"],
+        ["خرائط العمليات", "Process Maps"],
+        ["إدارة التغيير", "Change Management"],
+        ["هندسة البرمجيات المحاسبية", "Accounting Software Engineering"],
+        ["تطوير التطبيقات المالية", "Financial App Development"],
+        ["اختبار الاختراق المالي", "Financial Pentesting"],
+        ["أمن البيانات المحاسبية", "Accounting Data Security"],
+        ["تشفير قواعد البيانات", "Database Encryption"],
+        ["الاستجابة للاختراق", "Breach Response"],
+        ["إدارة الهوية والوصول", "Identity and Access Management (IAM)"],
+        ["جرد الأصول الرقمية", "Digital Asset Inventory"],
+        ["المحاسبة عن المشتقات", "Accounting for Derivatives"],
+        ["التحوط المالي", "Financial Hedging"],
+        ["محاسبة التحوط", "Hedge Accounting"],
+        ["عقود المبادلة", "Swaps Contracts"],
+        ["الخيارات المالية", "Financial Options"],
+        ["القيمة الجوهرية", "Intrinsic Value"],
+        ["القيمة الزمنية", "Time Value"],
+        ["مخاطر الائتمان الطرف الآخر", "Counterparty Credit Risk"],
+        ["التصنيف الائتماني", "Credit Rating"],
+        ["وكالات التصنيف الائتماني", "Credit Rating Agencies"],
+        ["الديون المعدومة", "Bad Debts"],
+        ["الديون المشكوك في تحصيلها", "Doubtful Debts"],
+        ["شطب الديون", "Debt Write-off"],
+        ["تحصيل الديون", "Debt Collection"],
+        ["إعادة جدولة الديون", "Debt Rescheduling"],
+        ["التمويل الجماعي", "Crowdfunding"],
+        ["رأس المال المغامر", "Venture Capital"],
+        ["المستثمرون الملائكة", "Angel Investors"],
+        ["الاكتتاب العام الأولي", "Initial Public Offering (IPO)"],
+        ["الإدراج في البورصة", "Stock Exchange Listing"],
+        ["إلغاء الإدراج", "Delisting"],
+        ["حوكمة تكنولوجيا المعلومات", "IT Governance (COBIT)"],
+        ["إدارة خدمات المعلومات", "ITIL (IT Infrastructure Library)"],
+        ["نضج العمليات", "Process Maturity"],
+        ["نموذج نضج القدرات", "CMMI"],
+        ["إدارة المشاريع المحاسبية", "Accounting Project Management"],
+        ["منهجية أجايل", "Agile Methodology"],
+        ["منهجية الشلال", "Waterfall Methodology"],
+        ["إدارة الموارد", "Resource Management"],
+        ["تخصيص التكاليف", "Cost Allocation"],
+        ["التكاليف المشتركة", "Joint Costs"],
+        ["التكاليف الغارقة", "Sunk Costs"],
+        ["تكلفة الفرصة البديلة", "Opportunity Cost"],
+        ["التكلفة الحدية", "Marginal Cost"],
+        ["اقتصاديات المعلومات", "Economics of Information"],
+        ["المنفعة المحاسبية", "Accounting Utility"],
+        ["اتخاذ القرار تحت الظروف غير المؤكدة", "Decision Making under Uncertainty"],
+        ["نظرية الوكالة", "Agency Theory"],
+        ["عدم تماثل المعلومات", "Information Asymmetry"],
+        ["التنبؤ المالي بالسلاسل الزمنية", "Time Series Financial Forecasting"],
+        ["تحليل الفجوة", "Gap Analysis"],
+        ["المقارنة المرجعية", "Benchmarking"],
+        ["تخطيط موارد المؤسسات السحابي", "Cloud ERP"],
+        ["تخصيص النظام", "System Customization"],
+        ["تكوين النظام", "System Configuration"],
+        ["قابلية التوسع", "Scalability"],
+        ["قابلية التشغيل البيني", "Interoperability"],
+        ["سهولة الاستخدام", "Usability"],
+        ["الموثوقية", "Reliability"],
+        ["قابلية الصيانة", "Maintainability"],
+        ["التدقيق الاجتماعي", "Social Audit"],
+        ["محاسبة الموارد البشرية", "Human Capital Accounting"],
+        ["رأس المال الفكري", "Intellectual Capital"],
+        ["الأخلاقيات المحاسبية الرقمية", "Digital Accounting Ethics"],
+        ["المحاسبة القضائية", "Investigative Accounting"],
+        ["غسيل الأموال الرقمي", "Digital Money Laundering"],
+        ["الامتثال للأنظمة واللوائح", "Regulatory Compliance"],
+        ["السلطات التنظيمية", "Regulatory Authorities"],
+        ["هيئة الأوراق المالية", "Securities Commission"],
+        ["البنك المركزي", "Central Bank"],
+        ["السياسة النقدية", "Monetary Policy"],
+        ["السياسة المالية", "Fiscal Policy"],
+        ["العجز المالي", "Fiscal Deficit"],
+        ["الدين العام", "Public Debt"],
+        ["النمو الاقتصادي", "Economic Growth"],
+        ["ضبط الجودة", "Quality Control"],
+        ["تأكيد الجودة", "Quality Assurance"],
+        ["إدارة الجودة الشاملة", "Total Quality Management (TQM)"],
+        ["ستة سيجما", "Six Sigma"],
+        ["الإنتاج الرشيق", "Lean Production"],
+        ["المحاسبة الرشيقة", "Lean Accounting"],
+        ["إدارة الوقت", "Time Management"],
+        ["المسؤولية القانونية للمحاسب", "Accountant's Legal Liability"],
+        ["خصم الإصدار", "Share Discount"],
+        ["أسهم الخزينة", "Treasury Shares"],
+        ["أسهم عادية", "Ordinary Shares"],
+        ["أسهم ممتازة", "Preference Shares"],
+        ["علاوة إصدار الأسهم", "Share Premium"],
+        ["ربح السهم", "Earnings Per Share (EPS)"],
+        ["تخفيض رأس المال", "Capital Reduction"],
+        ["الإيجار", "Lease"],
+        ["حق استخدام الأصل", "Right-of-Use Asset"],
+        ["التزام الإيجار", "Lease Liability"],
+        ["مدة الإيجار", "Lease Term"],
+        ["دفعات الإيجار", "Lease Payments"],
+        ["سعر الخصم", "Discount Rate"],
+        ["الإيجار التشغيلي", "Operating Lease"],
+        ["الإيجار التمويلي", "Finance Lease"],
+        ["العملة الوظيفية", "Functional Currency"],
+        ["عملة العرض", "Presentation Currency"],
+        ["فروق العملة", "Foreign Exchange Differences"],
+        ["أرباح فروق العملة", "Exchange Gain"],
+        ["خسائر فروق العملة", "Exchange Loss"],
+        ["ترجمة القوائم المالية", "Financial Statement Translation"],
+        ["الجوهر قبل الشكل", "Substance Over Form"],
+        ["القياس اللاحق", "Subsequent Measurement"],
+        ["الأحداث غير المعدلة", "Non-adjusting Events"],
+        ["الأحداث المعدلة", "Adjusting Events"],
+        ["الأخطاء الجوهرية", "Material Misstatements"],
+        ["إعادة إصدار القوائم", "Restatement"]
+    ];
+
+
+    const tableBody = document.getElementById('tableBody');
+    const searchInput = document.getElementById('searchInput');
+    const noResults = document.getElementById('noResults');
+
+    function displayData(items) {
+        tableBody.innerHTML = "";
+        if (items.length === 0) {
+            noResults.style.display = "block";
+            document.querySelector('.table-wrapper').style.display = "none";
+        } else {
+            noResults.style.display = "none";
+            document.querySelector('.table-wrapper').style.display = "block";
+            items.forEach(item => {
+                const row = `<tr>
+                    <td>${item[0]}</td>
+                    <td dir="ltr">${item[1]}</td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+        }
+    }
+
+    searchInput.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase();
+        const filtered = data.filter(item => 
+            item[0].toLowerCase().includes(term) || 
+            item[1].toLowerCase().includes(term)
+        );
+        displayData(filtered);
+    });
+
+    displayData(data);
+</script>
+
+</body>
+</html>
