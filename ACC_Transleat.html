@@ -63,7 +63,7 @@
 
         header h1 {
             color: #f1c40f; /* لون ذهبي */
-            margin: 0;
+                   margin: 0;
             font-size: 2.5rem;
             text-shadow: 0 0 15px rgba(241, 196, 15, 0.5);
         }
@@ -115,7 +115,6 @@
             color: #1b2735;
             padding: 18px;
             font-size: 1.2rem;
-            text-align: left;
         }
 
         td {
@@ -162,8 +161,8 @@
         <table id="aisTable">
             <thead>
                 <tr>
-                    <th>المصطلح بالعربي</th>
-                    <th>الترجمة بالإنجليزي</th>
+                    <th style="text-align: right;">المصطلح بالعربي</th>
+                    <th style="text-align: left;">الترجمة بالإنجليزي</th>
                 </tr>
             </thead>
             <tbody id="tableBody">
@@ -906,15 +905,9 @@
 
     displayData(data);
 </script>
-<footer>
+<footer style="text-align: center;">
         Designed for Zaid Khaled Zaid © 2026
     </footer>
 </body>
 
 </html>
-
-
-
-
-
-
