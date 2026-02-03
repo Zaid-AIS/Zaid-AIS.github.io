@@ -337,7 +337,7 @@
     timerDisplay.textContent = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
     let offset = CIRCUMFERENCE - (timeLeft / totalTime) * CIRCUMFERENCE;
     progress.style.strokeDashoffset = offset;
-    document.title = `(${timerDisplay.textContent}) دراسة`;
+    document.title = `(${timerDisplay.textContent}) `;
   }
 
   function finishTimer() {
@@ -349,10 +349,10 @@
       totalTime = min * 60;
       timeLeft = totalTime;
       document.documentElement.style.setProperty('--primary', '#10b981'); // أخضر
-      alert("انتهى وقت الدراسة! خذ استراحة ☕");
+      alert("انتهى وقت العمل خذ استراحة");
     } else {
       resetTimer();
-      alert("يلا نرجع للدراسة 💪");
+      alert("يلا نتابع العمل ");
     }
     updateTimerUI();
   }
@@ -449,6 +449,7 @@
 </body>
 
 </html>
+
 
 
 
