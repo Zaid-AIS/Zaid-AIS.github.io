@@ -101,7 +101,7 @@
         /* تنسيق روابط القائمة */
         .nav-links{
             display:flex;
-            gap:25px; /* المسافة بين الروابط */
+            gap:50px; /* المسافة بين الروابط */
             list-style:none;
         }
 
@@ -443,7 +443,7 @@
         .dropdown-content {
             display: none;
             position: absolute;
-            top: calc(100% + 2px); /* مسافة قريبة جداً */
+            top: calc(100% + 10px); /* مسافة قريبة جداً */
             right: 0;
             background: rgba(0,0,0,0.95);
             min-width: 200px;
@@ -555,14 +555,10 @@
         </div>
     </li>
 
-    <li class="dropdown">
-        <a href="javascript:void(0)">للطلاب</a>
-        <div class="dropdown-content">
             <a href="student.html">المكتب الدراسي</a>
             <a href="ACC_Transleat.html">قاموس المحاسب</a>
             <a href="gpa.html">حاسبة المعدل</a>
-        </div>
-    </li>
+
 
 </ul>
 
@@ -755,7 +751,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 // للكمبيوتر
                 content.style.position = 'absolute';
-                content.style.top = 'calc(100% + 2px)';
+                content.style.top = 'calc(100% + 20px)';
                 content.style.right = '0';
                 content.style.left = 'auto';
                 content.style.width = 'auto';
