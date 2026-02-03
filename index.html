@@ -101,7 +101,7 @@
         /* تنسيق روابط القائمة */
         .nav-links{
             display:flex;
-            gap:50px; /* المسافة بين الروابط */
+            gap:25px; /* المسافة بين الروابط */
             list-style:none;
         }
 
@@ -434,7 +434,7 @@
             z-index:2;
         }	
 
-        /* القائمة المنسدلة - مسافة قريبة جداً */
+        /* القائمة المنسدلة - تعمل بالضغط فقط */
         .dropdown {
             position: relative;
             display: inline-block;
@@ -443,7 +443,7 @@
         .dropdown-content {
             display: none;
             position: absolute;
-            top: calc(100% + 1px); /* مسافة قريبة جداً - فقط 2px */
+            top: calc(100% + 2px); /* مسافة قريبة جداً */
             right: 0;
             background: rgba(0,0,0,0.95);
             min-width: 200px;
@@ -452,10 +452,6 @@
             border-radius: 8px;
             border: 2px solid #00ffff;
             backdrop-filter: blur(10px);
-        }
-
-        .dropdown:hover .dropdown-content {
-            display: block !important;
         }
 
         .dropdown-content a {
@@ -481,6 +477,7 @@
         .dropdown > a {
             position: relative;
             padding-right: 15px;
+            cursor: pointer;
         }
 
         .dropdown > a::after {
@@ -491,6 +488,11 @@
             transform: translateY(-50%);
             font-size: 8px;
             color: #00ffff;
+            transition: transform 0.3s ease;
+        }
+
+        .dropdown.active > a::after {
+            transform: translateY(-50%) rotate(180deg);
         }
 
         /* تحسينات للموبايل */
@@ -553,10 +555,14 @@
         </div>
     </li>
 
+    <li class="dropdown">
+        <a href="javascript:void(0)">للطلاب</a>
+        <div class="dropdown-content">
             <a href="student.html">المكتب الدراسي</a>
             <a href="ACC_Transleat.html">قاموس المحاسب</a>
             <a href="gpa.html">حاسبة المعدل</a>
-        
+        </div>
+    </li>
 
 </ul>
 
@@ -614,7 +620,7 @@
         <div class="grid">
             <div class="card"><i class="fa-brands fa-python fa-2x"></i><h3>Python</h3></div>
             <div class="card"><i class="fas fa-database fa-2x"></i><h3>SQL</h3></div>
-	    <div class="card"><i class="fa-solid fa-code"></i><h3>Visual Besic</h3></div>
+			<div class="card"><i class="fa-solid fa-code"></i><h3>Visual Besic</h3></div>
             <div class="card"><i class="fas fa-chart-simple fa-2x"></i><h3>Power BI</h3></div>
             <div class="card"><i class="fas fa-file-excel fa-2x"></i><h3>Advanced Excel</h3></div>
             <div class="card"><i class="fa-solid fa-cash-register fa-2x"></i><h3>Odoo</h3></div>
@@ -729,18 +735,16 @@ function closeVideo(){
     video.currentTime = 0;
 }
 
-// حل نهائي للقائمة المنسدلة مع مسافة قريبة جداً
+// القائمة المنسدلة - تعمل بالضغط فقط وتغلق عند الخروج
 document.addEventListener('DOMContentLoaded', function() {
     const dropdowns = document.querySelectorAll('.dropdown');
     
     dropdowns.forEach(dropdown => {
+        const link = dropdown.querySelector('a');
         const content = dropdown.querySelector('.dropdown-content');
         
         // تحديث موقع القائمة عند فتحها
         function updateDropdownPosition() {
-            const rect = dropdown.getBoundingClientRect();
-            const navRect = dropdown.closest('.main-nav').getBoundingClientRect();
-            
             // للموبايل
             if (window.innerWidth <= 900) {
                 content.style.position = 'fixed';
@@ -749,60 +753,72 @@ document.addEventListener('DOMContentLoaded', function() {
                 content.style.left = '10px';
                 content.style.width = 'auto';
             } else {
-                // للكمبيوتر - تحديد الموقع بالنسبة للقائمة الأم بمسافة قريبة جداً
+                // للكمبيوتر
                 content.style.position = 'absolute';
-                content.style.top = 'calc(100% + 1.9px)'; /* مسافة قريبة جداً - فقط 2px */
+                content.style.top = 'calc(100% + 2px)';
                 content.style.right = '0';
                 content.style.left = 'auto';
                 content.style.width = 'auto';
             }
         }
         
-        // فتح القائمة عند تمرير الماوس
-        dropdown.addEventListener('mouseenter', function() {
-            updateDropdownPosition();
-            content.style.display = 'block';
-        });
-        
-        // إغلاق القائمة عند مغادرة الماوس
-        dropdown.addEventListener('mouseleave', function() {
-            content.style.display = 'none';
-        });
-        
-        // للتحكم في الموبايل
-        dropdown.addEventListener('click', function(e) {
+        // فتح/إغلاق القائمة عند الضغط فقط
+        link.addEventListener('click', function(e) {
             e.preventDefault();
             
             // إغلاق القوائم الأخرى
-            document.querySelectorAll('.dropdown-content').forEach(otherContent => {
-                if (otherContent !== content) {
-                    otherContent.style.display = 'none';
+            document.querySelectorAll('.dropdown').forEach(other => {
+                if (other !== dropdown) {
+                    other.classList.remove('active');
+                    other.querySelector('.dropdown-content').style.display = 'none';
                 }
             });
             
             // فتح/إغلاق القائمة الحالية
             if (content.style.display === 'block') {
                 content.style.display = 'none';
+                dropdown.classList.remove('active');
             } else {
                 updateDropdownPosition();
                 content.style.display = 'block';
+                dropdown.classList.add('active');
             }
+        });
+        
+        // إغلاق القائمة عند الضغط على الروابط الداخلية
+        content.querySelectorAll('a').forEach(menuItem => {
+            menuItem.addEventListener('click', function() {
+                content.style.display = 'none';
+                dropdown.classList.remove('active');
+            });
         });
     });
     
-    // إغلاق القوائم عند النقر خارجها
+    // إغلاق جميع القوائم عند النقر خارجها
     document.addEventListener('click', function(e) {
         if (!e.target.closest('.dropdown')) {
-            document.querySelectorAll('.dropdown-content').forEach(content => {
-                content.style.display = 'none';
+            document.querySelectorAll('.dropdown').forEach(dropdown => {
+                dropdown.classList.remove('active');
+                dropdown.querySelector('.dropdown-content').style.display = 'none';
+            });
+        }
+    });
+    
+    // إغلاق القوائم عند الضغط على زر ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.dropdown').forEach(dropdown => {
+                dropdown.classList.remove('active');
+                dropdown.querySelector('.dropdown-content').style.display = 'none';
             });
         }
     });
     
     // تحديث المواقع عند تغيير حجم الشاشة
     window.addEventListener('resize', function() {
-        document.querySelectorAll('.dropdown-content').forEach(content => {
-            content.style.display = 'none';
+        document.querySelectorAll('.dropdown').forEach(dropdown => {
+            dropdown.classList.remove('active');
+            dropdown.querySelector('.dropdown-content').style.display = 'none';
         });
     });
 });
@@ -811,4 +827,3 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </body>
 </html>
-
