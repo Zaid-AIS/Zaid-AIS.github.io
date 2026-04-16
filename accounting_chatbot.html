@@ -1,125 +1,699 @@
-
-<h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;">مساعد محاسبي ذكي - تصميم أزرق وأسود</h2>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>المساعد المحاسبي الذكي</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  .cw{display:flex;flex-direction:column;height:580px;background:#0a0f1a;border-radius:14px;overflow:hidden;border:1px solid #1a2a4a;font-family:var(--font-sans)}
-  .ch{padding:14px 18px;background:#0d1525;border-bottom:1px solid #1a2a4a;display:flex;align-items:center;gap:12px}
-  .av{width:40px;height:40px;border-radius:50%;background:#0e3a6e;border:1.5px solid #378ADD;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:#85B7EB;flex-shrink:0}
-  .dot{width:8px;height:8px;border-radius:50%;background:#1D9E75;display:inline-block;margin-right:5px}
-  .qb{display:flex;flex-wrap:wrap;gap:6px;padding:10px 16px;background:#0d1525;border-bottom:1px solid #1a2a4a}
-  .qbtn{font-size:12px;padding:5px 12px;border-radius:20px;border:1px solid #1e3a6a;background:transparent;color:#85B7EB;cursor:pointer;transition:all 0.15s;white-space:nowrap}
-  .qbtn:hover{background:#0e3a6e;border-color:#378ADD;color:#B5D4F4}
-  .cm{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px;scrollbar-width:thin;scrollbar-color:#1a2a4a transparent}
-  .cm::-webkit-scrollbar{width:4px}
-  .cm::-webkit-scrollbar-track{background:transparent}
-  .cm::-webkit-scrollbar-thumb{background:#1a2a4a;border-radius:4px}
-  .msg{max-width:80%;display:flex;flex-direction:column;gap:4px}
-  .msg.user{align-self:flex-end;align-items:flex-end}
-  .msg.bot{align-self:flex-start;align-items:flex-start}
-  .bub{padding:10px 14px;border-radius:12px;font-size:14px;line-height:1.65;white-space:pre-wrap;word-break:break-word}
-  .msg.user .bub{background:#0e3a6e;color:#B5D4F4;border:1px solid #185FA5;border-bottom-right-radius:3px}
-  .msg.bot .bub{background:#0d1525;color:#c8d8f0;border:1px solid #1a2a4a;border-bottom-left-radius:3px}
-  .mt{font-size:11px;color:#2a4a7a}
-  .cia{padding:12px 14px;border-top:1px solid #1a2a4a;display:flex;gap:8px;background:#0d1525;align-items:flex-end}
-  .cia textarea{flex:1;resize:none;border:1px solid #1a2a4a;border-radius:10px;padding:9px 13px;font-size:14px;font-family:var(--font-sans);background:#070d18;color:#c8d8f0;outline:none;height:40px;overflow-y:hidden;line-height:1.5;transition:border-color 0.15s}
-  .cia textarea::placeholder{color:#2a4a7a}
-  .cia textarea:focus{border-color:#378ADD}
-  .sb{width:40px;height:40px;border-radius:10px;background:#185FA5;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background 0.15s}
-  .sb:hover{background:#378ADD}
-  .sb:disabled{background:#0e2040;cursor:not-allowed}
-  .typing{display:flex;gap:5px;align-items:center;padding:10px 14px}
-  .typing span{width:7px;height:7px;border-radius:50%;background:#2a4a7a;animation:bl 1.2s infinite}
-  .typing span:nth-child(2){animation-delay:.2s}
-  .typing span:nth-child(3){animation-delay:.4s}
-  @keyframes bl{0%,80%,100%{opacity:.25}40%{opacity:1}}
-  .hname{font-size:14px;font-weight:500;color:#B5D4F4}
-  .hstat{font-size:12px;color:#2a6a9a}
-  .badge{display:inline-block;padding:2px 8px;border-radius:4px;background:#0e3a6e;color:#85B7EB;font-size:11px;border:1px solid #185FA5;margin-right:6px}
+:root {
+  --bg-deep:    #040c18;
+  --bg-base:    #070f1e;
+  --bg-card:    #0b1628;
+  --bg-input:   #081020;
+  --border:     #162844;
+  --border-mid: #1f3d6a;
+  --accent:     #2f7aff;
+  --accent-glow:#1a4fcc;
+  --accent-soft:#6aaeff;
+  --gold:       #f0a500;
+  --gold-soft:  #ffc84a;
+  --text:       #cde0ff;
+  --text-dim:   #6b8fbf;
+  --text-muted: #3a5580;
+  --success:    #00cc88;
+  --error:      #ff4d6a;
+  --user-bg:    #0e2045;
+  --bot-bg:     #0b1a30;
+  --radius:     14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+
+body {
+  font-family:'Cairo',sans-serif;
+  background:var(--bg-deep);
+  color:var(--text);
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+  overflow:hidden;
+}
+
+/* Ambient background */
+body::before {
+  content:'';
+  position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 10%, rgba(47,122,255,.07) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 30% at 80% 90%, rgba(240,165,0,.05) 0%, transparent 60%);
+  pointer-events:none;
+  z-index:0;
+}
+
+.app {
+  position:relative;z-index:1;
+  width:100%;max-width:960px;
+  height:92vh;
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:20px;
+  display:flex;flex-direction:column;
+  overflow:hidden;
+  box-shadow:0 0 80px rgba(47,122,255,.08), 0 40px 80px rgba(0,0,0,.6);
+}
+
+/* ── HEADER ── */
+.header {
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 20px;
+  background:var(--bg-base);
+  border-bottom:1px solid var(--border);
+}
+.header-left { display:flex;align-items:center;gap:12px }
+.logo {
+  width:38px;height:38px;
+  background:linear-gradient(135deg,var(--accent),var(--accent-glow));
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;
+  box-shadow:0 0 20px rgba(47,122,255,.3);
+}
+.header-text .title { font-size:16px;font-weight:700;color:#fff }
+.header-text .sub   { font-size:11px;color:var(--text-dim);margin-top:1px }
+.header-right { display:flex;align-items:center;gap:8px }
+.status-dot {
+  width:8px;height:8px;border-radius:50%;
+  background:var(--success);
+  box-shadow:0 0 8px var(--success);
+  animation:pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
+.status-label { font-size:11px;color:var(--success) }
+.clear-btn {
+  background:none;border:1px solid var(--border-mid);
+  color:var(--text-dim);border-radius:8px;padding:5px 10px;
+  font-size:11px;cursor:pointer;font-family:'Cairo',sans-serif;
+  transition:all .2s;
+}
+.clear-btn:hover { border-color:var(--error);color:var(--error) }
+
+/* ── QUICK ACTIONS ── */
+.quick-bar {
+  display:flex;gap:6px;flex-wrap:wrap;
+  padding:10px 16px;
+  border-bottom:1px solid var(--border);
+  background:var(--bg-base);
+}
+.q-btn {
+  background:var(--bg-card);
+  border:1px solid var(--border-mid);
+  color:var(--accent-soft);
+  border-radius:999px;
+  padding:5px 12px;
+  font-size:12px;
+  cursor:pointer;
+  font-family:'Cairo',sans-serif;
+  transition:all .2s;
+  white-space:nowrap;
+}
+.q-btn:hover {
+  background:var(--accent);color:#fff;
+  border-color:var(--accent);
+  box-shadow:0 0 14px rgba(47,122,255,.3);
+}
+
+/* ── MESSAGES ── */
+.msgs {
+  flex:1;overflow-y:auto;
+  padding:20px 18px;
+  display:flex;flex-direction:column;gap:14px;
+  scroll-behavior:smooth;
+}
+.msgs::-webkit-scrollbar { width:4px }
+.msgs::-webkit-scrollbar-track { background:transparent }
+.msgs::-webkit-scrollbar-thumb { background:var(--border-mid);border-radius:4px }
+
+.row { display:flex;gap:10px;animation:fadeIn .3s ease }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+
+.row.user { flex-direction:row-reverse }
+.row.bot  { flex-direction:row }
+
+.avatar {
+  width:32px;height:32px;border-radius:10px;
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  font-size:14px;margin-top:4px;
+}
+.user .avatar { background:var(--accent-glow) }
+.bot  .avatar { background:linear-gradient(135deg,var(--gold),#e08000) }
+
+.bubble-wrap { display:flex;flex-direction:column;gap:4px;max-width:78% }
+.row.user .bubble-wrap { align-items:flex-end }
+.row.bot  .bubble-wrap { align-items:flex-start }
+
+.bubble {
+  padding:12px 16px;
+  border-radius:16px;
+  line-height:1.75;
+  font-size:14px;
+  white-space:pre-wrap;
+  word-break:break-word;
+}
+.user .bubble {
+  background:var(--user-bg);
+  border:1px solid #1e3a6e;
+  border-bottom-left-radius:4px;
+}
+.bot .bubble {
+  background:var(--bot-bg);
+  border:1px solid var(--border);
+  border-bottom-right-radius:4px;
+}
+
+/* Tables inside bot messages */
+.bubble table {
+  width:100%;border-collapse:collapse;
+  margin:10px 0;font-size:13px;
+}
+.bubble th {
+  background:rgba(47,122,255,.15);
+  color:var(--accent-soft);
+  padding:6px 10px;
+  border:1px solid var(--border-mid);
+  text-align:center;
+}
+.bubble td {
+  padding:5px 10px;
+  border:1px solid var(--border);
+  text-align:center;
+}
+.bubble tr:nth-child(even) td { background:rgba(255,255,255,.02) }
+
+.bubble code {
+  font-family:'JetBrains Mono',monospace;
+  background:rgba(47,122,255,.1);
+  color:var(--gold-soft);
+  padding:1px 6px;border-radius:4px;
+  font-size:12px;
+}
+.bubble pre {
+  background:rgba(0,0,0,.4);
+  border:1px solid var(--border-mid);
+  border-radius:8px;padding:10px 12px;
+  overflow-x:auto;margin:8px 0;
+}
+.bubble pre code {
+  background:none;padding:0;font-size:12px;color:var(--text);
+}
+.bubble strong { color:#fff;font-weight:700 }
+.bubble em     { color:var(--gold-soft);font-style:normal }
+
+.timestamp { font-size:10px;color:var(--text-muted) }
+
+/* typing indicator */
+.typing-dots span {
+  display:inline-block;width:6px;height:6px;
+  background:var(--accent-soft);border-radius:50%;margin:0 2px;
+  animation:bounce .8s infinite;
+}
+.typing-dots span:nth-child(2){animation-delay:.15s}
+.typing-dots span:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
+
+/* ── META BAR ── */
+.meta-bar {
+  display:flex;gap:12px;flex-wrap:wrap;align-items:center;
+  padding:6px 18px;
+  background:var(--bg-base);
+  border-top:1px solid var(--border);
+  font-size:11px;color:var(--text-muted);
+}
+.meta-chip {
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:6px;padding:2px 8px;
+  color:var(--text-dim);
+}
+.meta-chip span { color:var(--accent-soft) }
+#token-info { margin-right:auto }
+
+/* ── INPUT AREA ── */
+.input-area {
+  display:flex;flex-direction:column;gap:8px;
+  padding:12px 16px;
+  background:var(--bg-base);
+  border-top:1px solid var(--border);
+}
+.input-row { display:flex;gap:10px;align-items:flex-end }
+.textarea-wrap {
+  flex:1;position:relative;
+}
+.textarea-wrap textarea {
+  width:100%;
+  min-height:46px;max-height:140px;
+  resize:none;
+  background:var(--bg-input);
+  border:1px solid var(--border-mid);
+  border-radius:12px;
+  color:var(--text);
+  font-family:'Cairo',sans-serif;
+  font-size:14px;
+  line-height:1.6;
+  padding:11px 44px 11px 14px;
+  transition:border-color .2s,box-shadow .2s;
+  outline:none;
+}
+.textarea-wrap textarea:focus {
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(47,122,255,.12);
+}
+.char-count {
+  position:absolute;bottom:8px;left:12px;
+  font-size:10px;color:var(--text-muted);
+}
+.send-btn {
+  width:46px;height:46px;border-radius:12px;
+  background:linear-gradient(135deg,var(--accent),var(--accent-glow));
+  border:none;color:#fff;
+  font-size:18px;cursor:pointer;
+  flex-shrink:0;
+  transition:all .2s;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 16px rgba(47,122,255,.3);
+}
+.send-btn:hover:not(:disabled) {
+  transform:translateY(-1px);
+  box-shadow:0 6px 20px rgba(47,122,255,.45);
+}
+.send-btn:disabled { opacity:.4;cursor:not-allowed;transform:none }
+.hints { font-size:11px;color:var(--text-muted);text-align:center }
+.hints kbd {
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:4px;padding:1px 5px;font-size:10px;
+  font-family:'JetBrains Mono',monospace;
+}
+
+/* ── WELCOME ── */
+.welcome {
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:16px;
+  padding:40px;text-align:center;
+}
+.welcome-icon {
+  width:64px;height:64px;
+  background:linear-gradient(135deg,var(--accent),var(--accent-glow));
+  border-radius:18px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;
+  box-shadow:0 0 40px rgba(47,122,255,.25);
+}
+.welcome h2 { font-size:22px;font-weight:700;color:#fff }
+.welcome p  { font-size:14px;color:var(--text-dim);max-width:420px;line-height:1.7 }
+.welcome-grid {
+  display:grid;grid-template-columns:repeat(2,1fr);gap:10px;
+  width:100%;max-width:460px;margin-top:8px;
+}
+.welcome-card {
+  background:var(--bg-input);
+  border:1px solid var(--border);
+  border-radius:12px;padding:14px;
+  cursor:pointer;text-align:right;
+  transition:all .2s;
+}
+.welcome-card:hover {
+  border-color:var(--accent);
+  background:rgba(47,122,255,.06);
+  transform:translateY(-2px);
+}
+.welcome-card .wc-icon { font-size:20px;margin-bottom:6px }
+.welcome-card .wc-title { font-size:13px;font-weight:700;color:#fff }
+.welcome-card .wc-desc  { font-size:11px;color:var(--text-dim);margin-top:3px;line-height:1.5 }
+
+/* ── SCROLLBAR ── */
+.msgs { scrollbar-width:thin;scrollbar-color:var(--border-mid) transparent }
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px){
+  .app { height:95vh;border-radius:12px }
+  .quick-bar { display:none }
+  .welcome-grid { grid-template-columns:1fr }
+}
 </style>
+</head>
+<body>
+<div class="app">
 
-<div class="cw">
-  <div class="ch">
-    <div class="av">AI</div>
-    <div>
-      <div class="hname"><span class="badge">محاسبة</span>المساعد المالي</div>
-      <div class="hstat"><span class="dot"></span>متاح الآن</div>
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <div class="logo">⚖️</div>
+      <div class="header-text">
+        <div class="title">المساعد المحاسبي الذكي</div>
+        <div class="sub">مدعوم بـ Claude AI · محاسبة · IFRS · GAAP</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="status-dot" id="statusDot"></div>
+      <div class="status-label" id="statusLabel">جاهز</div>
+      <button class="clear-btn" onclick="clearChat()">🗑 مسح</button>
     </div>
   </div>
 
-  <div class="qb">
-    <button class="qbtn" onclick="sq('ما هو القيد المحاسبي لشراء أصل ثابت؟')">قيد أصل ثابت</button>
-    <button class="qbtn" onclick="sq('اشرح قائمة التدفقات النقدية')">التدفقات النقدية</button>
-    <button class="qbtn" onclick="sq('ما الفرق بين IFRS وGAAP؟')">IFRS vs GAAP</button>
-    <button class="qbtn" onclick="sq('أعطني تمريناً على الاستهلاك')">تمرين استهلاك</button>
-    <button class="qbtn" onclick="sq('ما هي نسب السيولة وكيف تُحسب؟')">نسب السيولة</button>
+  <!-- QUICK BAR -->
+  <div class="quick-bar">
+    <button class="q-btn" onclick="ask('اشرح قائمة التدفقات النقدية بمثال عملي')">💵 التدفقات النقدية</button>
+    <button class="q-btn" onclick="ask('ما الفرق بين IFRS وGAAP؟ وضّح الفروقات الرئيسية')">📋 IFRS vs GAAP</button>
+    <button class="q-btn" onclick="ask('أعطني قيد يومية لشراء أصل ثابت بقيمة 50,000 دينار')">📒 قيد أصل ثابت</button>
+    <button class="q-btn" onclick="ask('كيف أحسب نسبة التداول ونسبة السيولة السريعة؟')">📊 نسب مالية</button>
+    <button class="q-btn" onclick="ask('اشرح الفرق بين الإيرادات والمكاسب في قائمة الدخل')">📈 قائمة الدخل</button>
+    <button class="q-btn" onclick="ask('ما هي طرق الاستهلاك وكيف تؤثر على القوائم المالية؟')">🔄 الاستهلاك</button>
+    <button class="q-btn" onclick="ask('اشرح لي محاسبة عقود الإيجار وفق IFRS 16')">🏢 IFRS 16</button>
   </div>
 
-  <div class="cm" id="msgs">
-    <div class="msg bot">
-      <div class="bub">مرحباً! أنا مساعدك المحاسبي الذكي.
-يمكنني مساعدتك في:
-
-• شرح المعايير المحاسبية (IFRS, GAAP)
-• حل التمارين خطوة بخطوة
-• تحليل القوائم المالية
-• القيود اليومية والاستهلاك والنسب المالية
-
-كيف يمكنني مساعدتك اليوم؟</div>
-      <div class="mt">الآن</div>
+  <!-- MESSAGES -->
+  <div class="msgs" id="msgs">
+    <div class="welcome" id="welcome">
+      <div class="welcome-icon">📊</div>
+      <h2>مرحباً بك في المساعد المحاسبي</h2>
+      <p>أنا مساعدك المحاسبي المدعوم بالذكاء الاصطناعي. اسألني عن القيود، المعايير الدولية، التحليل المالي، أو أي مسألة محاسبية.</p>
+      <div class="welcome-grid">
+        <div class="welcome-card" onclick="ask('حل هذه المسألة: شركة اشترت بضاعة بـ10,000 دينار نقداً وباعت نصفها بـ8,000 دينار بالأجل. سجّل القيود اللازمة')">
+          <div class="wc-icon">✏️</div>
+          <div class="wc-title">حل مسائل محاسبية</div>
+          <div class="wc-desc">قيود يومية خطوة بخطوة</div>
+        </div>
+        <div class="welcome-card" onclick="ask('اشرح مكونات الميزانية العمومية وكيفية قراءتها')">
+          <div class="wc-icon">📑</div>
+          <div class="wc-title">القوائم المالية</div>
+          <div class="wc-desc">ميزانية، دخل، تدفقات</div>
+        </div>
+        <div class="welcome-card" onclick="ask('ما هي معايير IFRS الأكثر شيوعاً وأهمها؟')">
+          <div class="wc-icon">🌍</div>
+          <div class="wc-title">معايير IFRS</div>
+          <div class="wc-desc">المعايير الدولية للتقرير المالي</div>
+        </div>
+        <div class="welcome-card" onclick="ask('كيف أحلل الأداء المالي لشركة باستخدام النسب المالية الرئيسية؟')">
+          <div class="wc-icon">🔬</div>
+          <div class="wc-title">تحليل مالي</div>
+          <div class="wc-desc">نسب السيولة والربحية والنشاط</div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="cia">
-    <textarea id="inp" placeholder="اكتب سؤالك المحاسبي..." onkeydown="hk(event)" oninput="ar(this)" dir="auto"></textarea>
-    <button class="sb" id="sb" onclick="sm()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
-      </svg>
-    </button>
+  <!-- META BAR -->
+  <div class="meta-bar">
+    <div class="meta-chip" id="token-info">الرسائل: <span id="msgCount">0</span></div>
+    <div class="meta-chip">النموذج: <span>Claude Sonnet</span></div>
+    <div class="meta-chip" id="lastTime">آخر رد: —</div>
   </div>
+
+  <!-- INPUT -->
+  <div class="input-area">
+    <div class="input-row">
+      <div class="textarea-wrap">
+        <textarea id="input"
+          placeholder="اكتب سؤالك المحاسبي... (مثال: كيف أسجل قيد توزيع الأرباح؟)"
+          rows="1"
+          oninput="autoResize(this);updateCharCount(this)"></textarea>
+        <span class="char-count" id="charCount">0</span>
+      </div>
+      <button class="send-btn" id="sendBtn" onclick="sendMsg()" title="إرسال">➤</button>
+    </div>
+    <div class="hints">
+      <kbd>Enter</kbd> للإرسال &nbsp;·&nbsp; <kbd>Shift+Enter</kbd> لسطر جديد
+    </div>
+  </div>
+
 </div>
 
 <script>
-const KEY="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";
-const URL="https://api.groq.com/openai/v1/chat/completions";
-const SYS=`You are an AI accounting assistant integrated into a website. Your role is to help users understand accounting concepts, solve accounting problems, and explain financial statements in a simple, clear, and educational way.
-Your responsibilities: Explain accounting topics (IFRS, GAAP, financial statements, journal entries, etc.), Solve accounting exercises step-by-step, Help users understand cash flow statements, income statements, and balance sheets, Clarify concepts like depreciation, accruals, inventory, cost accounting, and ratios, Correct user answers and explain why they are right or wrong, Simplify complex accounting ideas for beginners.
-Rules: Always respond in a clear and structured way. Use simple language when possible but remain accurate. When solving problems show steps clearly. If the user is wrong explain the mistake politely. Do not hallucinate laws or standards. Focus only on accounting and finance topics. If outside accounting redirect politely. Respond in the same language the user writes in (Arabic or English).`;
-let hist=[];
-function gt(){return new Date().toLocaleTimeString('ar',{hour:'2-digit',minute:'2-digit'})}
-function am(role,txt){
-  const m=document.getElementById('msgs');
-  const d=document.createElement('div');
-  d.className='msg '+(role==='user'?'user':'bot');
-  d.innerHTML=`<div class="bub">${txt}</div><div class="mt">${gt()}</div>`;
-  m.appendChild(d);m.scrollTop=m.scrollHeight;
+// ─── CONFIG ────────────────────────────────────────────────────────────────
+const SYSTEM = `أنت مساعد محاسبي احترافي متخصص في:
+- المحاسبة المالية والإدارية
+- القيود اليومية والأستاذ العام
+- المعايير الدولية للتقرير المالي (IFRS)
+- مبادئ المحاسبة المقبولة عموماً (GAAP)
+- القوائم المالية وتحليلها
+- النسب المالية والتحليل المالي
+- محاسبة التكاليف
+- المراجعة والتدقيق
+
+قواعد الإجابة:
+1. أجب دائماً بنفس لغة المستخدم (عربي أو إنجليزي)
+2. عند القيود: استخدم جدول واضح مع عمودَي المدين والدائن
+3. اشرح الخطوات بوضوح مرقّمة
+4. إذا كان السؤال يحتوي أرقاماً، اعرض الحسابات خطوة بخطوة
+5. أضف ملاحظات مهنية عند الضرورة
+6. استخدم **النص الغامق** للمصطلحات والعناوين المهمة`;
+
+let history = [];
+let isLoading = false;
+
+// ─── HELPERS ────────────────────────────────────────────────────────────────
+function getTime() {
+  return new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
 }
-function at(){
-  const m=document.getElementById('msgs');
-  const d=document.createElement('div');
-  d.className='msg bot';d.id='ti';
-  d.innerHTML=`<div class="bub typing"><span></span><span></span><span></span></div>`;
-  m.appendChild(d);m.scrollTop=m.scrollHeight;
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 140) + 'px';
 }
-function rt(){const t=document.getElementById('ti');if(t)t.remove();}
-function ar(el){el.style.height='40px';el.style.height=Math.min(el.scrollHeight,120)+'px';}
-function hk(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sm();}}
-function sq(t){document.getElementById('inp').value=t;sm();}
-async function sm(){
-  const inp=document.getElementById('inp');
-  const txt=inp.value.trim();if(!txt)return;
-  const btn=document.getElementById('sb');
-  btn.disabled=true;inp.value='';inp.style.height='40px';
-  am('user',txt);hist.push({role:'user',content:txt});at();
-  try{
-    const r=await fetch(URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+KEY},
-      body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'system',content:SYS},...hist],max_tokens:1024,temperature:0.7})});
-    const d=await r.json();rt();
-    if(d.choices&&d.choices[0]){
-      const rep=d.choices[0].message.content;
-      hist.push({role:'assistant',content:rep});am('bot',rep);
-    }else{am('bot','عذراً، حدث خطأ. الرجاء المحاولة مرة أخرى.');console.error(d);}
-  }catch(e){rt();am('bot','تعذر الاتصال بالخادم.');console.error(e);}
-  btn.disabled=false;inp.focus();
+
+function updateCharCount(el) {
+  document.getElementById('charCount').textContent = el.value.length;
 }
+
+function formatText(raw) {
+  let t = raw;
+  // Tables: detect | col | pattern
+  if (t.includes('|')) {
+    t = t.replace(/(\|[^\n]+\|\n)([\s\S]*?)(?=\n\n|$)/g, (match) => {
+      const rows = match.trim().split('\n').filter(r => r.includes('|'));
+      let html = '<table>';
+      rows.forEach((row, i) => {
+        const cells = row.split('|').filter(c => c.trim());
+        const tag = (i === 0) ? 'th' : 'td';
+        if (row.includes('---')) return;
+        html += '<tr>' + cells.map(c => `<${tag}>${c.trim()}</${tag}>`).join('') + '</tr>';
+      });
+      return html + '</table>';
+    });
+  }
+  // Code blocks
+  t = t.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+  t = t.replace(/`([^`]+)`/g, '<code>$1</code>');
+  // Bold
+  t = t.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  // Italic / highlight
+  t = t.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+  // Numbered list (preserve)
+  t = t.replace(/^(\d+)\. /gm, '<b style="color:var(--accent-soft)">$1.</b> ');
+  return t;
+}
+
+function setStatus(state) {
+  const dot = document.getElementById('statusDot');
+  const lbl = document.getElementById('statusLabel');
+  if (state === 'loading') {
+    dot.style.background = 'var(--gold)';
+    dot.style.boxShadow = '0 0 8px var(--gold)';
+    lbl.style.color = 'var(--gold)';
+    lbl.textContent = 'يفكر...';
+  } else if (state === 'error') {
+    dot.style.background = 'var(--error)';
+    dot.style.boxShadow = '0 0 8px var(--error)';
+    lbl.style.color = 'var(--error)';
+    lbl.textContent = 'خطأ';
+  } else {
+    dot.style.background = 'var(--success)';
+    dot.style.boxShadow = '0 0 8px var(--success)';
+    lbl.style.color = 'var(--success)';
+    lbl.textContent = 'جاهز';
+  }
+}
+
+function updateMeta() {
+  document.getElementById('msgCount').textContent = history.length;
+  document.getElementById('lastTime').textContent = 'آخر رد: ' + getTime();
+}
+
+// ─── ADD MESSAGE ─────────────────────────────────────────────────────────────
+function addMessage(role, content, isHTML = false) {
+  const welcome = document.getElementById('welcome');
+  if (welcome) welcome.remove();
+
+  const msgs = document.getElementById('msgs');
+  const row = document.createElement('div');
+  row.className = 'row ' + role;
+
+  const avatar = document.createElement('div');
+  avatar.className = 'avatar';
+  avatar.textContent = role === 'user' ? '👤' : '⚖️';
+
+  const wrap = document.createElement('div');
+  wrap.className = 'bubble-wrap';
+
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  if (isHTML) bubble.innerHTML = content;
+  else bubble.innerHTML = formatText(content);
+
+  const ts = document.createElement('div');
+  ts.className = 'timestamp';
+  ts.textContent = getTime();
+
+  wrap.appendChild(bubble);
+  wrap.appendChild(ts);
+  row.appendChild(avatar);
+  row.appendChild(wrap);
+  msgs.appendChild(row);
+  msgs.scrollTop = msgs.scrollHeight;
+  return bubble;
+}
+
+function addTyping() {
+  const welcome = document.getElementById('welcome');
+  if (welcome) welcome.remove();
+
+  const msgs = document.getElementById('msgs');
+  const row = document.createElement('div');
+  row.className = 'row bot';
+  row.id = 'typing-row';
+
+  const avatar = document.createElement('div');
+  avatar.className = 'avatar';
+  avatar.textContent = '⚖️';
+
+  const wrap = document.createElement('div');
+  wrap.className = 'bubble-wrap';
+
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+
+  wrap.appendChild(bubble);
+  row.appendChild(avatar);
+  row.appendChild(wrap);
+  msgs.appendChild(row);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function removeTyping() {
+  const t = document.getElementById('typing-row');
+  if (t) t.remove();
+}
+
+// ─── SEND ─────────────────────────────────────────────────────────────────────
+async function sendMsg() {
+  if (isLoading) return;
+  const el = document.getElementById('input');
+  const text = el.value.trim();
+  if (!text) return;
+
+  el.value = '';
+  el.style.height = 'auto';
+  document.getElementById('charCount').textContent = '0';
+  isLoading = true;
+  document.getElementById('sendBtn').disabled = true;
+  setStatus('loading');
+
+  addMessage('user', text);
+  history.push({ role: 'user', content: text });
+  addTyping();
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1500,
+        system: SYSTEM,
+        messages: history
+      })
+    });
+
+    removeTyping();
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error?.message || `HTTP ${res.status}`);
+    }
+
+    const data = await res.json();
+    const reply = data.content?.[0]?.text || 'لم أتمكن من الحصول على رد.';
+
+    addMessage('bot', reply);
+    history.push({ role: 'assistant', content: reply });
+
+    // Persist
+    try { localStorage.setItem('acct_history', JSON.stringify(history.slice(-30))); } catch(e){}
+
+    setStatus('ready');
+    updateMeta();
+
+  } catch (e) {
+    removeTyping();
+    setStatus('error');
+    addMessage('bot', `⚠️ **خطأ في الاتصال**\n${e.message}\n\nتأكد من صلاحية مفتاح API وإعدادات CORS.`);
+  }
+
+  isLoading = false;
+  document.getElementById('sendBtn').disabled = false;
+  el.focus();
+}
+
+function ask(text) {
+  document.getElementById('input').value = text;
+  updateCharCount(document.getElementById('input'));
+  sendMsg();
+}
+
+function clearChat() {
+  if (!history.length && !document.getElementById('welcome')) return;
+  if (!confirm('هل تريد مسح المحادثة؟')) return;
+  history = [];
+  localStorage.removeItem('acct_history');
+  const msgs = document.getElementById('msgs');
+  msgs.innerHTML = '';
+
+  // Restore welcome screen
+  const welcome = document.createElement('div');
+  welcome.className = 'welcome';
+  welcome.id = 'welcome';
+  welcome.innerHTML = `
+    <div class="welcome-icon">📊</div>
+    <h2>مرحباً بك في المساعد المحاسبي</h2>
+    <p>تم مسح المحادثة. يمكنك البدء من جديد بأي سؤال محاسبي.</p>
+  `;
+  msgs.appendChild(welcome);
+  updateMeta();
+  setStatus('ready');
+}
+
+// ─── KEYBOARD ────────────────────────────────────────────────────────────────
+document.getElementById('input').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+});
+
+// ─── LOAD HISTORY ────────────────────────────────────────────────────────────
+window.onload = () => {
+  try {
+    const saved = localStorage.getItem('acct_history');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed.length) {
+        history = parsed;
+        parsed.forEach(m => addMessage(m.role === 'user' ? 'user' : 'bot', m.content));
+        updateMeta();
+      }
+    }
+  } catch(e) {}
+  document.getElementById('input').focus();
+};
 </script>
+</body>
+</html>
