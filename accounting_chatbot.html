@@ -1,0 +1,125 @@
+
+<h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;">مساعد محاسبي ذكي - تصميم أزرق وأسود</h2>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  .cw{display:flex;flex-direction:column;height:580px;background:#0a0f1a;border-radius:14px;overflow:hidden;border:1px solid #1a2a4a;font-family:var(--font-sans)}
+  .ch{padding:14px 18px;background:#0d1525;border-bottom:1px solid #1a2a4a;display:flex;align-items:center;gap:12px}
+  .av{width:40px;height:40px;border-radius:50%;background:#0e3a6e;border:1.5px solid #378ADD;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:#85B7EB;flex-shrink:0}
+  .dot{width:8px;height:8px;border-radius:50%;background:#1D9E75;display:inline-block;margin-right:5px}
+  .qb{display:flex;flex-wrap:wrap;gap:6px;padding:10px 16px;background:#0d1525;border-bottom:1px solid #1a2a4a}
+  .qbtn{font-size:12px;padding:5px 12px;border-radius:20px;border:1px solid #1e3a6a;background:transparent;color:#85B7EB;cursor:pointer;transition:all 0.15s;white-space:nowrap}
+  .qbtn:hover{background:#0e3a6e;border-color:#378ADD;color:#B5D4F4}
+  .cm{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px;scrollbar-width:thin;scrollbar-color:#1a2a4a transparent}
+  .cm::-webkit-scrollbar{width:4px}
+  .cm::-webkit-scrollbar-track{background:transparent}
+  .cm::-webkit-scrollbar-thumb{background:#1a2a4a;border-radius:4px}
+  .msg{max-width:80%;display:flex;flex-direction:column;gap:4px}
+  .msg.user{align-self:flex-end;align-items:flex-end}
+  .msg.bot{align-self:flex-start;align-items:flex-start}
+  .bub{padding:10px 14px;border-radius:12px;font-size:14px;line-height:1.65;white-space:pre-wrap;word-break:break-word}
+  .msg.user .bub{background:#0e3a6e;color:#B5D4F4;border:1px solid #185FA5;border-bottom-right-radius:3px}
+  .msg.bot .bub{background:#0d1525;color:#c8d8f0;border:1px solid #1a2a4a;border-bottom-left-radius:3px}
+  .mt{font-size:11px;color:#2a4a7a}
+  .cia{padding:12px 14px;border-top:1px solid #1a2a4a;display:flex;gap:8px;background:#0d1525;align-items:flex-end}
+  .cia textarea{flex:1;resize:none;border:1px solid #1a2a4a;border-radius:10px;padding:9px 13px;font-size:14px;font-family:var(--font-sans);background:#070d18;color:#c8d8f0;outline:none;height:40px;overflow-y:hidden;line-height:1.5;transition:border-color 0.15s}
+  .cia textarea::placeholder{color:#2a4a7a}
+  .cia textarea:focus{border-color:#378ADD}
+  .sb{width:40px;height:40px;border-radius:10px;background:#185FA5;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background 0.15s}
+  .sb:hover{background:#378ADD}
+  .sb:disabled{background:#0e2040;cursor:not-allowed}
+  .typing{display:flex;gap:5px;align-items:center;padding:10px 14px}
+  .typing span{width:7px;height:7px;border-radius:50%;background:#2a4a7a;animation:bl 1.2s infinite}
+  .typing span:nth-child(2){animation-delay:.2s}
+  .typing span:nth-child(3){animation-delay:.4s}
+  @keyframes bl{0%,80%,100%{opacity:.25}40%{opacity:1}}
+  .hname{font-size:14px;font-weight:500;color:#B5D4F4}
+  .hstat{font-size:12px;color:#2a6a9a}
+  .badge{display:inline-block;padding:2px 8px;border-radius:4px;background:#0e3a6e;color:#85B7EB;font-size:11px;border:1px solid #185FA5;margin-right:6px}
+</style>
+
+<div class="cw">
+  <div class="ch">
+    <div class="av">AI</div>
+    <div>
+      <div class="hname"><span class="badge">محاسبة</span>المساعد المالي</div>
+      <div class="hstat"><span class="dot"></span>متاح الآن</div>
+    </div>
+  </div>
+
+  <div class="qb">
+    <button class="qbtn" onclick="sq('ما هو القيد المحاسبي لشراء أصل ثابت؟')">قيد أصل ثابت</button>
+    <button class="qbtn" onclick="sq('اشرح قائمة التدفقات النقدية')">التدفقات النقدية</button>
+    <button class="qbtn" onclick="sq('ما الفرق بين IFRS وGAAP؟')">IFRS vs GAAP</button>
+    <button class="qbtn" onclick="sq('أعطني تمريناً على الاستهلاك')">تمرين استهلاك</button>
+    <button class="qbtn" onclick="sq('ما هي نسب السيولة وكيف تُحسب؟')">نسب السيولة</button>
+  </div>
+
+  <div class="cm" id="msgs">
+    <div class="msg bot">
+      <div class="bub">مرحباً! أنا مساعدك المحاسبي الذكي.
+يمكنني مساعدتك في:
+
+• شرح المعايير المحاسبية (IFRS, GAAP)
+• حل التمارين خطوة بخطوة
+• تحليل القوائم المالية
+• القيود اليومية والاستهلاك والنسب المالية
+
+كيف يمكنني مساعدتك اليوم؟</div>
+      <div class="mt">الآن</div>
+    </div>
+  </div>
+
+  <div class="cia">
+    <textarea id="inp" placeholder="اكتب سؤالك المحاسبي..." onkeydown="hk(event)" oninput="ar(this)" dir="auto"></textarea>
+    <button class="sb" id="sb" onclick="sm()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<script>
+const KEY="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";
+const URL="https://api.groq.com/openai/v1/chat/completions";
+const SYS=`You are an AI accounting assistant integrated into a website. Your role is to help users understand accounting concepts, solve accounting problems, and explain financial statements in a simple, clear, and educational way.
+Your responsibilities: Explain accounting topics (IFRS, GAAP, financial statements, journal entries, etc.), Solve accounting exercises step-by-step, Help users understand cash flow statements, income statements, and balance sheets, Clarify concepts like depreciation, accruals, inventory, cost accounting, and ratios, Correct user answers and explain why they are right or wrong, Simplify complex accounting ideas for beginners.
+Rules: Always respond in a clear and structured way. Use simple language when possible but remain accurate. When solving problems show steps clearly. If the user is wrong explain the mistake politely. Do not hallucinate laws or standards. Focus only on accounting and finance topics. If outside accounting redirect politely. Respond in the same language the user writes in (Arabic or English).`;
+let hist=[];
+function gt(){return new Date().toLocaleTimeString('ar',{hour:'2-digit',minute:'2-digit'})}
+function am(role,txt){
+  const m=document.getElementById('msgs');
+  const d=document.createElement('div');
+  d.className='msg '+(role==='user'?'user':'bot');
+  d.innerHTML=`<div class="bub">${txt}</div><div class="mt">${gt()}</div>`;
+  m.appendChild(d);m.scrollTop=m.scrollHeight;
+}
+function at(){
+  const m=document.getElementById('msgs');
+  const d=document.createElement('div');
+  d.className='msg bot';d.id='ti';
+  d.innerHTML=`<div class="bub typing"><span></span><span></span><span></span></div>`;
+  m.appendChild(d);m.scrollTop=m.scrollHeight;
+}
+function rt(){const t=document.getElementById('ti');if(t)t.remove();}
+function ar(el){el.style.height='40px';el.style.height=Math.min(el.scrollHeight,120)+'px';}
+function hk(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sm();}}
+function sq(t){document.getElementById('inp').value=t;sm();}
+async function sm(){
+  const inp=document.getElementById('inp');
+  const txt=inp.value.trim();if(!txt)return;
+  const btn=document.getElementById('sb');
+  btn.disabled=true;inp.value='';inp.style.height='40px';
+  am('user',txt);hist.push({role:'user',content:txt});at();
+  try{
+    const r=await fetch(URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+KEY},
+      body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'system',content:SYS},...hist],max_tokens:1024,temperature:0.7})});
+    const d=await r.json();rt();
+    if(d.choices&&d.choices[0]){
+      const rep=d.choices[0].message.content;
+      hist.push({role:'assistant',content:rep});am('bot',rep);
+    }else{am('bot','عذراً، حدث خطأ. الرجاء المحاولة مرة أخرى.');console.error(d);}
+  }catch(e){rt();am('bot','تعذر الاتصال بالخادم.');console.error(e);}
+  btn.disabled=false;inp.focus();
+}
+</script>
